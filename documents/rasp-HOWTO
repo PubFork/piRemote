@@ -1,0 +1,14 @@
+Stand der Konfiguration "backup0" (01.11.2015):
+-> Raspbian Jessie ZIP laden: https://www.raspberrypi.org/downloads/raspbian/
+-> Entpacken und per dd auf eine schnelle, verlässliche SD-Karte schmeissen (ganzes Device, nicht Partition, bs=4M für mehr Power)
+-> SD-Karte ins Rasp einführen
+-> Irgendwie an einen Bildschirm anschliessen (ich (Sandro) habe mir dafür extra einen schweineteuren HDMI zu DVI Adapter kaufen müssen). An der ETH gibt's HDMI-fähige Beamer.
+-> Tastatur und Maus per USB anschliessen (kann auch HUB verwenden)
+-> Wer will, Jack anschliessen (Ton)
+-> Lan anschliessen (bei mir hängt das am Laptop, der dank Networkmanager meine WLAN-Verbindung ans LAN weitergibt: Verbindungen bearbeiten, neue Verbindung, unter IPv4 "Gemeinsam mit anderen Rechnern" wählen)
+-> Strom anschliessen, z.B. Handy-Ladegerät mit gutem altem normalem USB-Standard
+-> Gerät fährt hoch, jetzt besser Anschlüsse nicht mehr verändern (z.B. Maus anschliessen = crash bei mir, Resultat: Dateisystem futsch)
+-> Updates und feh installieren, neu starten
+-> sudo raspi-config: Zeitzone und Tastatur einstellen, expand_rootfs, change_pass (hier zu "piremote"), ssh anschalten
+-> SSH testen
+-> Geräte mit sudo poweroff herunterfahren, dann erst Strom rausziehen!
