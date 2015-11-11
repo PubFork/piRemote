@@ -1,5 +1,6 @@
 package MessageObject;
 
+import MessageObject.PayloadObject.Payload;
 import SharedConstants.ApplicationCsts;
 import SharedConstants.CoreCsts;
 import StateObject.State;
