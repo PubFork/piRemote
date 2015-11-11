@@ -1,5 +1,6 @@
 package Core;
 
+import MessageObject.Message;
 import SharedConstants.ApplicationCsts;
 
 /**
@@ -10,8 +11,25 @@ public abstract class AbstractApplication {
 
     protected static ApplicationCsts.ApplicationState applicationState;
 
-    public static ApplicationCsts.ApplicationState getApplicationState(){
+    public ApplicationCsts.ApplicationState getApplicationState(){
         return applicationState;
+    }
+
+    public void processMessage(Message msg){
+        if(!checkApplicationState(msg)){
+            // Application State mismatch! Send ss to whoever sent this to us
+            ServerCore.sendMessage(ServerCore.makeSS(msg.getUuid()));
+            return;
+        }
+
+        // Application State is consistent. Look at the payload
+        if(msg.hasPayload()){
+            // TODO: if payload instanceof blah...
+        }// otherwise it was just an ss.
+    }
+
+    protected boolean checkApplicationState(Message msg) {
+        return msg.getApplicationState().equals(applicationState);
     }
 
     public abstract void onApplicationStart(ApplicationCsts.ApplicationState initialState);   // Called right after creation of the application
