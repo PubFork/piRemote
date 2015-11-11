@@ -1,10 +1,11 @@
 package MessageObject.PayloadObject;
 
-import com.sun.org.apache.xerces.internal.xs.StringList;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by sandro on 11.11.15.
  */
 public class Offer extends Payload{
-    StringList paths;
+    public List<String> paths = new LinkedList<>();
 }
