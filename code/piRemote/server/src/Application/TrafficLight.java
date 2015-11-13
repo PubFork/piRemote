@@ -3,6 +3,8 @@ package Application;
 import Core.AbstractApplication;
 import SharedConstants.ApplicationCsts;
 
+import java.io.File;
+
 /**
  * Created by sandro on 11.11.15.
  */
@@ -23,7 +25,7 @@ public class TrafficLight extends AbstractApplication {
     }
 
     @Override
-    public void onFilePicked(String path) {
+    public void onFilePicked(File file) {
 
     }
 
