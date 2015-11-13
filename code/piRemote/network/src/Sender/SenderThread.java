@@ -13,5 +13,4 @@ public class SenderThread extends Thread {
 
     public final static BlockingQueue<Message> sendingQueue = new LinkedBlockingQueue<Message>();
 
-
 }
