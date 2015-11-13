@@ -1,3 +1,5 @@
+package KeepAlive;
+
 import java.lang.Thread;
 
 /**
@@ -6,5 +8,5 @@ import java.lang.Thread;
 
 public class ServerKeepAliveThread extends Thread {
 
-    
+
 }
