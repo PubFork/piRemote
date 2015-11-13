@@ -15,15 +15,11 @@ public class ServerDispatcherThread extends AbstractDispatcherThread {
     private Thread serverDispatcher;
     private ServerSocket serverSocket;
 
-    public ServerDispatcherThread() {
+    public ServerDispatcherThread(ServerSocket socket, ServerKeepAliveThread keepAlive) {
 
-        keepAliveThread = new ServerKeepAliveThread();
+        keepAliveThread = keepAlive;
 
-        try {
-            serverSocket = new ServerSocket(1234);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        serverSocket = socket;
     }
 
 }

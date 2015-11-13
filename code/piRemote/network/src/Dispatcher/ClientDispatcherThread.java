@@ -16,18 +16,13 @@ public class ClientDispatcherThread extends AbstractDispatcherThread {
     private Socket socket;
 
     // constructor
-    public ClientDispatcherThread(){
+    public ClientDispatcherThread(Socket socket, ClientKeepAliveThread keepAlive){
 
         // set keep-alive thread
-        keepAliveThread = new ClientKeepAliveThread();
+        keepAliveThread = keepAlive;
 
         // set the socket for the client/server connection
-        try {
-            // TODO: where get the server info?
-            socket = new Socket("server", 1234);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        this.socket = socket;
     }
 
 
