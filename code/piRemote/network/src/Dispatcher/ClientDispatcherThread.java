@@ -12,6 +12,8 @@ import java.net.Socket;
 public class ClientDispatcherThread extends AbstractDispatcherThread {
 
     private ClientKeepAliveThread keepAliveThread;
+    private Thread clientDispatcher;
+    private Socket socket;
 
     // constructor
     public ClientDispatcherThread(){
@@ -28,4 +30,9 @@ public class ClientDispatcherThread extends AbstractDispatcherThread {
         }
     }
 
+
+    @Override
+    public void run() {
+
+    }
 }
