@@ -7,6 +7,6 @@ import java.lang.Thread;
  */
 
 public class ClientKeepAliveThread extends Thread {
-
+    // maybe implements Runnable instead of extending Thread?
 
 }

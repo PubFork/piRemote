@@ -10,7 +10,9 @@ import MessageObject.Message;
  */
 
 public class SenderThread extends Thread {
+    // maybe implements Runnable instead of extending Thread?
 
     public final static BlockingQueue<Message> sendingQueue = new LinkedBlockingQueue<Message>();
+
 
 }
