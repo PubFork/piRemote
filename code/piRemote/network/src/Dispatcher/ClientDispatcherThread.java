@@ -14,6 +14,7 @@ public class ClientDispatcherThread extends AbstractDispatcherThread {
     private ClientKeepAliveThread keepAliveThread;
     private Thread clientDispatcher;
     private Socket socket;
+    // private ClientCore clientCore;
 
     // constructor
     public ClientDispatcherThread(Socket socket, ClientKeepAliveThread keepAlive){

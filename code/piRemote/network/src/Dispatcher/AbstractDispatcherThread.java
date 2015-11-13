@@ -1,14 +1,13 @@
 package Dispatcher;
 
-import Sender.SenderThread;
-import java.net.Socket;
+import Sender.ClientSenderThread;
 
 /**
  * Created by fabian on 13.11.15.
  */
 public class AbstractDispatcherThread implements Runnable {
 
-    public SenderThread senderThread;
+    public ClientSenderThread senderThread;
 
 
     @Override

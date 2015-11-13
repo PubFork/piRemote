@@ -1,6 +1,6 @@
 import Dispatcher.ClientDispatcherThread;
 import KeepAlive.ClientKeepAliveThread;
-import Sender.SenderThread;
+import Sender.ClientSenderThread;
 
 import java.net.Socket;
 
@@ -11,9 +11,10 @@ public class ClientNetwork {
 
     ClientDispatcherThread dispatcherThread;
     ClientKeepAliveThread keepAliveThread;
-    SenderThread senderThread;
+    ClientSenderThread clientSenderThread;
 
-    Socket socket;
+    public static Socket socket;
+
 
     // TODO: bring it all together
 }
