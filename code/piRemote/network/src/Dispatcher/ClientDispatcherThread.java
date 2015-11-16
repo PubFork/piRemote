@@ -14,14 +14,13 @@ public class ClientDispatcherThread extends AbstractDispatcherThread {
     private ClientKeepAliveThread keepAliveThread;
     private Thread clientDispatcher;
     private Socket socket;
-    // private ClientCore clientCore;
+    // private ClientCore clientCore needed for the mainQueue;
 
     // constructor
     public ClientDispatcherThread(Socket socket, ClientKeepAliveThread keepAlive){
 
         // set keep-alive thread
         keepAliveThread = keepAlive;
-
         // set the socket for the client/server connection
         this.socket = socket;
     }

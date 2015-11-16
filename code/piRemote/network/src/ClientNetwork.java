@@ -16,5 +16,18 @@ public class ClientNetwork {
     public static Socket socket;
 
 
-    // TODO: bring it all together
+    /**
+     * create a ClientNetwork object that has several threads
+     */
+    public ClientNetwork() {
+        /**
+         * create the socket -> TODO: where get the ip and port of the server?
+         */
+        // socket = new Socket(address, port);
+
+        clientSenderThread = new ClientSenderThread(socket);
+        keepAliveThread = new ClientKeepAliveThread(clientSenderThread);
+        dispatcherThread = new ClientDispatcherThread(socket, keepAliveThread);
+    }
+
 }
