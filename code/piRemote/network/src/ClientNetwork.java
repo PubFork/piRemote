@@ -2,6 +2,8 @@ import Dispatcher.ClientDispatcherThread;
 import KeepAlive.ClientKeepAliveThread;
 import Sender.ClientSenderThread;
 
+import java.io.IOException;
+import java.net.InetAddress;
 import java.net.Socket;
 
 /**
@@ -19,11 +21,15 @@ public class ClientNetwork {
     /**
      * create a ClientNetwork object that has several threads
      */
-    public ClientNetwork() {
+    public ClientNetwork(InetAddress address, int port) {
         /**
          * create the socket -> TODO: where get the ip and port of the server?
          */
-        // socket = new Socket(address, port);
+        try {
+            socket = new Socket(address, port);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         clientSenderThread = new ClientSenderThread(socket);
         keepAliveThread = new ClientKeepAliveThread(clientSenderThread);
