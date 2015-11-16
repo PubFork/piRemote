@@ -1,6 +1,7 @@
 package Sender;
 
 import MessageObject.Message;
+import org.json.JSONObject;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -46,8 +47,20 @@ public class ClientSenderThread implements Runnable {
              */
 
 
-            // JSONObject jsonObject = new JSONObject();
-            messageToSend.getServerState();
+            JSONObject header = new JSONObject();
+            JSONObject payload = new JSONObject();
+            JSONObject message = new JSONObject();
+
+            header.put("UUID", messageToSend.getUuid().toString());
+            header.put("ServerState", messageToSend.getServerState().name());
+
+            if (messageToSend.hasApplicationState()) {
+                header.put("ApplicationState", messageToSend.getApplicationState().toString());
+            }
+
+            if (messageToSend.hasPayload()) {
+                payload.put("PayloadType", messageToSend.getPayload().getClass().getName());
+            }
 
 
             // outputStream.write();
