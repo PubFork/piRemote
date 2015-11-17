@@ -5,7 +5,6 @@ import Sender.ClientSenderThread;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -21,12 +20,14 @@ public class ClientNetwork {
 
 
     /**
-     * create a ClientNetwork object that has several threads
+     * create a ClientNetwork object that has several threads. This constructor is called
+     * from the ClientCore to build its network
+     * @param address core needs to provide the address of the server
+     * @param port core also needs to provide the port of the server
+     * @param mainQueue mainqueue on which the dispatcher will put the messages for the core
      */
     public ClientNetwork(InetAddress address, int port, LinkedBlockingQueue mainQueue) {
-        /**
-         * create the socket -> TODO: where get the ip and port of the server?
-         */
+
         try {
             socket = new Socket(address, port);
         } catch (IOException e) {

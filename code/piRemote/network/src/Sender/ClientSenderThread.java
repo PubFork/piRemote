@@ -24,7 +24,7 @@ public class ClientSenderThread implements Runnable {
 
         try {
             // get the output stream of the socket
-            outputStream = new ObjectOutputStream(socket.getOutputStream());
+            outputStream = new ObjectOutputStream(this.socket.getOutputStream());
         } catch (IOException e) {
             e.printStackTrace();
         }
