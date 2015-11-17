@@ -13,7 +13,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * created by fabian on 13.11.15
  */
 
-public class ClientDispatcherThread extends AbstractDispatcherThread {
+public class ClientDispatcherThread implements Runnable {
 
     private ClientKeepAliveThread keepAliveThread;
     private Thread clientDispatcher;
@@ -49,7 +49,7 @@ public class ClientDispatcherThread extends AbstractDispatcherThread {
     @Override
     public void run() {
 
-        // check keepaliveThread
+        // TODO: check keepaliveThread
 
         try {
             Message readMessage = (Message) inputStream.readObject();

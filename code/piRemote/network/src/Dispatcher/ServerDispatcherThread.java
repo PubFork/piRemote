@@ -1,15 +1,13 @@
 package Dispatcher;
 
 import KeepAlive.ServerKeepAliveThread;
-
-import java.io.IOException;
 import java.net.ServerSocket;
 
 /**
  * created by fabian on 13.11.15
  */
 
-public class ServerDispatcherThread extends AbstractDispatcherThread {
+public class ServerDispatcherThread implements Runnable {
 
     private ServerKeepAliveThread keepAliveThread;
     private Thread serverDispatcher;
@@ -22,4 +20,8 @@ public class ServerDispatcherThread extends AbstractDispatcherThread {
         serverSocket = socket;
     }
 
+    @Override
+    public void run() {
+
+    }
 }
