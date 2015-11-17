@@ -1,8 +1,7 @@
-package Application;
+package application;
 
-import Core.AbstractApplication;
 import SharedConstants.ApplicationCsts;
-
+import core.AbstractApplication;
 import java.io.File;
 
 /**

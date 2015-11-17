@@ -1,4 +1,4 @@
-package Core;
+package core;
 
 import MessageObject.Message;
 import MessageObject.PayloadObject.ApplicationStateChange;

@@ -1,6 +1,6 @@
-package Core;
+package core;
 
-import Application.TrafficLight;
+import application.TrafficLight;
 import SharedConstants.CoreCsts;
 
 /**

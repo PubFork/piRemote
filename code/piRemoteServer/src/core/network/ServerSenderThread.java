@@ -16,7 +16,7 @@ public class ServerSenderThread implements Runnable {
     public final static BlockingQueue<Message> sendingQueue = new LinkedBlockingQueue<>();
     private ServerSocket socket;
     private Thread senderThread;
-    private HashMap<UUID, Object> sessionTable;     // i want NetworkInfo instead of Object!
+    private HashMap<UUID, NetworkInfo> sessionTable;
 
     public ServerSenderThread(ServerSocket socket, HashMap sTable){
         this.socket = socket;
