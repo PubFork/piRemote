@@ -1,0 +1,11 @@
+How to create the .jar file:
+
+Do this once:
+File -> Project Structure -> Artifacts -> '+' -> JAR -> From modules with dependencies... -> OK -> Apply -> OK
+
+Everytime an update is required
+Build -> Build Artifacts... -> Build
+
+The .jar can be found in "./out/artifacts/piRemoteShared_jar/piRemoteShared.jar"
+This file needs to be included then in the two projects.
+The file will not be synced, please create it locally when an update has been done.
