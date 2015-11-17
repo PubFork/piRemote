@@ -1,6 +1,4 @@
-import Dispatcher.ServerDispatcherThread;
-import KeepAlive.ServerKeepAliveThread;
-import Sender.ClientSenderThread;
+package core.network;
 
 import java.net.ServerSocket;
 import java.util.HashMap;
@@ -13,7 +11,6 @@ public class ServerNetwork {
 
     ServerDispatcherThread dispatcherThread;
     ServerKeepAliveThread keepAliveThread;
-    ClientSenderThread senderThread;
     static HashMap<UUID, NetworkInfo> sessionTable = new HashMap<>();
 
     ServerSocket socket;

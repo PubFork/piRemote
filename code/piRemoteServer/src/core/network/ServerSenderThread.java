@@ -1,4 +1,4 @@
-package Sender;
+package core.network;
 
 import MessageObject.Message;
 

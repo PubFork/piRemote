@@ -1,6 +1,5 @@
-package Dispatcher;
+package core.network;
 
-import KeepAlive.ServerKeepAliveThread;
 import java.net.ServerSocket;
 
 /**

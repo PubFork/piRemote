@@ -1,4 +1,4 @@
-package KeepAlive;
+package core.network;
 
 import java.lang.Thread;
 

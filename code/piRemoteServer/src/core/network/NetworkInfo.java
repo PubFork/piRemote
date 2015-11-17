@@ -1,3 +1,4 @@
+package core.network;
 
 /**
  * Created by Fabian on 13.11.15.
