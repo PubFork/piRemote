@@ -6,6 +6,8 @@ import MessageObject.Message;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.Socket;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * created by fabian on 13.11.15
@@ -17,13 +19,16 @@ public class ClientDispatcherThread extends AbstractDispatcherThread {
     private Thread clientDispatcher;
     private Socket socket;
     private ObjectInputStream inputStream;
-    // private ClientCore clientCore needed for the mainQueue;
+    private BlockingQueue coreMainQueue;
 
     // constructor
-    public ClientDispatcherThread(Socket socket, ClientKeepAliveThread keepAlive){
+    public ClientDispatcherThread(Socket socket, ClientKeepAliveThread keepAlive, LinkedBlockingQueue queue){
 
         // set keep-alive thread
         keepAliveThread = keepAlive;
+
+        // set mainQueue from the core
+        coreMainQueue = queue;
 
         // set the socket for the client/server connection
         this.socket = socket;
@@ -48,11 +53,12 @@ public class ClientDispatcherThread extends AbstractDispatcherThread {
 
         try {
             Message readMessage = (Message) inputStream.readObject();
-
-            // put message on clientcore mainQueue
+            coreMainQueue.put(readMessage);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }

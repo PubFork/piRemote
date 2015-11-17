@@ -5,6 +5,8 @@ import Sender.ClientSenderThread;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Created by Fabian on 13.11.15.
@@ -21,7 +23,7 @@ public class ClientNetwork {
     /**
      * create a ClientNetwork object that has several threads
      */
-    public ClientNetwork(InetAddress address, int port) {
+    public ClientNetwork(InetAddress address, int port, LinkedBlockingQueue mainQueue) {
         /**
          * create the socket -> TODO: where get the ip and port of the server?
          */
@@ -33,7 +35,7 @@ public class ClientNetwork {
 
         clientSenderThread = new ClientSenderThread(socket);
         keepAliveThread = new ClientKeepAliveThread(clientSenderThread);
-        dispatcherThread = new ClientDispatcherThread(socket, keepAliveThread);
+        dispatcherThread = new ClientDispatcherThread(socket, keepAliveThread, mainQueue);
     }
 
 }
