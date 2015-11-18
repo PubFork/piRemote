@@ -8,6 +8,7 @@ import MessageObject.PayloadObject.ServerStateChange;
 import SharedConstants.CoreCsts;
 import StateObject.State;
 import core.network.ServerSenderThread;
+import core.test.ServerCoreTester;
 
 import java.io.File;
 import java.util.UUID;
@@ -36,10 +37,24 @@ public class ServerCore{
         // Create and start other threads
         // TODO!
 
+        // TEST ONLY
+        ServerCoreTester st = new ServerCoreTester(mainQueue);
+        st.phase1();
+        // END TEST
+
         // Main loop
         while(running){
+
             // Blocking wait for messages to arrive:
             Message msg = mainQueue.take();
+
+            // TEST ONLY
+            if(mainQueue.isEmpty()){
+                running = false;
+                st.phase2();
+            }
+            // END TEST
+
             if(!checkServerState(msg)){
                 // Server State mismatch! Send ss to whoever sent this to us
                 sendMessage(makeMessage(msg.getUuid()));
@@ -106,7 +121,10 @@ public class ServerCore{
 
     protected static void sendMessage(Message msg){
         try {
-            ServerSenderThread.sendingQueue.put(msg);
+            //ServerSenderThread.sendingQueue.put(msg);
+            // TEST
+            ServerCoreTester.sendingQueue.put(msg);
+            // END TEST
         } catch (InterruptedException e) {
             System.out.println("Failed to enqueue message for sending!");
             e.printStackTrace();
