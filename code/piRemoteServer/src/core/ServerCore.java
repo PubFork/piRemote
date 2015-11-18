@@ -7,6 +7,7 @@ import MessageObject.PayloadObject.Pick;
 import MessageObject.PayloadObject.ServerStateChange;
 import SharedConstants.CoreCsts;
 import StateObject.State;
+import core.network.ServerSenderThread;
 
 import java.io.File;
 import java.util.UUID;
@@ -53,7 +54,7 @@ public class ServerCore{
                         // Application shall start
                         application = ApplicationFactory.makeApplication(newServerState);
                         if(application != null) {
-                            application.onApplicationStart(msg.getApplicationState());
+                            application.onApplicationStart();
                         }// otherwise no application was running, do nothing
                     }else{
                         // Application shall change or stop
@@ -61,7 +62,7 @@ public class ServerCore{
                             application.onApplicationStop();
                             application = ApplicationFactory.makeApplication(newServerState);
                             if(application != null) {
-                                application.onApplicationStart(msg.getApplicationState());
+                                application.onApplicationStart();
                             }// otherwise no application to be run, do nothing
                         }// otherwise we are already in the correct state, do nothing
                     }
@@ -104,7 +105,12 @@ public class ServerCore{
     }
 
     protected static void sendMessage(Message msg){
-        // TODO!
+        try {
+            ServerSenderThread.sendingQueue.put(msg);
+        } catch (InterruptedException e) {
+            System.out.println("Failed to enqueue message for sending!");
+            e.printStackTrace();
+        }
     }
 
     protected static Message makeOffer(UUID recipient, File dir){

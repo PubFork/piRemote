@@ -9,8 +9,9 @@ import java.io.File;
  */
 public class TrafficLight extends AbstractApplication {
     @Override
-    public void onApplicationStart(ApplicationCsts.ApplicationState initialState) {
-
+    public void onApplicationStart() {
+        System.out.println("TrafficLight: Starting up.");
+        changeApplicationState(ApplicationCsts.TrafficLightApplicationState.GREEN);
     }
 
     @Override
@@ -20,7 +21,12 @@ public class TrafficLight extends AbstractApplication {
 
     @Override
     public void onApplicationStateChange(ApplicationCsts.ApplicationState newState) {
-
+        String str;
+        if(newState.equals(ApplicationCsts.TrafficLightApplicationState.GREEN)) str = "Green";
+        else if(newState.equals(ApplicationCsts.TrafficLightApplicationState.ORANGE)) str = "Orange";
+        else if(newState.equals(ApplicationCsts.TrafficLightApplicationState.RED)) str = "Red";
+        else throw new RuntimeException("TrafficApplication read unknown state!" + newState.toString());
+        System.out.println("TrafficLight: New state is: "+str);
     }
 
     @Override
@@ -29,8 +35,23 @@ public class TrafficLight extends AbstractApplication {
     }
 
     @Override
-    public void onReceiveInt(int i) {
-
+    public void onReceiveInt(int cst) {
+        ApplicationCsts.ApplicationState newState;
+        switch (cst){
+            case ApplicationCsts.GO_GREEN:
+                newState = ApplicationCsts.TrafficLightApplicationState.GREEN;
+                break;
+            case ApplicationCsts.GO_ORANGE:
+                newState = ApplicationCsts.TrafficLightApplicationState.ORANGE;
+                break;
+            case ApplicationCsts.GO_RED:
+                newState = ApplicationCsts.TrafficLightApplicationState.RED;
+                break;
+            default:
+                return;
+        }
+        System.out.println("TrafficLight: Shall change state.");
+        changeApplicationState(newState);
     }
 
     @Override

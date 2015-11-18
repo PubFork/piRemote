@@ -14,4 +14,9 @@ public class ApplicationCsts {
         ORANGE,
         GREEN
     }
+
+    // TrafficLightApplication
+    public static final int GO_GREEN = 0;
+    public static final int GO_ORANGE = 1;
+    public static final int GO_RED = 2;
 }

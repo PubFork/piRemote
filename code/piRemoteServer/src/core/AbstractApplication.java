@@ -1,7 +1,6 @@
 package core;
 
 import MessageObject.Message;
-import MessageObject.PayloadObject.ApplicationStateChange;
 import MessageObject.PayloadObject.DoubleMessage;
 import MessageObject.PayloadObject.IntMessage;
 import MessageObject.PayloadObject.StringMessage;
@@ -30,13 +29,7 @@ public abstract class AbstractApplication {
 
         // Application State is consistent. Look at the payload
         if(msg.hasPayload()){
-            if(msg.getPayload() instanceof ApplicationStateChange){
-                ApplicationCsts.ApplicationState newApplicationState = ((ApplicationStateChange) msg.getPayload()).newApplicationState;
-                if(!newApplicationState.equals(applicationState)){
-                    onApplicationStateChange(newApplicationState);
-                    applicationState = newApplicationState;
-                }// Otherwise we are already in the right application state, do nothing
-            }else if(msg.getPayload() instanceof IntMessage){
+            if(msg.getPayload() instanceof IntMessage){
                 onReceiveInt(((IntMessage) msg.getPayload()).i);
             }else if(msg.getPayload() instanceof DoubleMessage){
                 onReceiveDouble(((DoubleMessage) msg.getPayload()).d);
@@ -49,10 +42,17 @@ public abstract class AbstractApplication {
     }
 
     protected boolean checkApplicationState(Message msg) {
+        if(applicationState == null) return false;
         return msg.getApplicationState().equals(applicationState);
     }
 
-    public abstract void onApplicationStart(ApplicationCsts.ApplicationState initialState);   // Called right after creation of the application
+    protected void changeApplicationState(ApplicationCsts.ApplicationState newState){
+        applicationState = newState; // Change the applicationState
+        ServerCore.sendMessage(ServerCore.makeMessage()); // Inform clients about it
+        onApplicationStateChange(applicationState); // Get back to the application
+    }
+
+    public abstract void onApplicationStart();                                                // Called right after creation of the application
     public abstract void onApplicationStop();                                                 // Called right before the destruction of the application
     public abstract void onApplicationStateChange(ApplicationCsts.ApplicationState newState); // Called right BEFORE application switches to another state
     public abstract void onFilePicked(File file);                                             // Called when the FilePicker on the client sent a file pick message
