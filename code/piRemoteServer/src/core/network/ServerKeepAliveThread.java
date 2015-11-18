@@ -8,6 +8,11 @@ import java.lang.Thread;
 
 public class ServerKeepAliveThread implements Runnable {
 
+    private ServerDispatcherThread dispatcherThread;
+
+    public ServerKeepAliveThread(ServerDispatcherThread dispatcherThread) {
+        this.dispatcherThread = dispatcherThread;
+    }
 
     @Override
     public void run() {

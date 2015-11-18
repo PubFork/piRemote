@@ -6,9 +6,12 @@ package core.network;
 public class NetworkInfo {
     int ip;
     int port;
+    long lastSeen;
 
-    public NetworkInfo(int ip, int port){
+
+    public NetworkInfo(int ip, int port, long lastSeen){
         this.ip = ip;
         this.port = port;
+        this.lastSeen = lastSeen;
     }
 }

@@ -28,8 +28,9 @@ public class ServerNetwork {
             e.printStackTrace();
         }
 
-        keepAliveThread = new ServerKeepAliveThread();
-        dispatcherThread = new ServerDispatcherThread(socket, keepAliveThread, sessionTable);
+        dispatcherThread = new ServerDispatcherThread(socket, sessionTable);
+        keepAliveThread = new ServerKeepAliveThread(dispatcherThread);
+
     }
 
 }
