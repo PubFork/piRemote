@@ -1,0 +1,2 @@
+Do this once:
+-> File -> Project Structure -> Modules -> PiRemoteServer -> Dependencies -> + -> Jar or directories -> (pick jar) -> ok -> ok
