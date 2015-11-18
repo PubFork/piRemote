@@ -9,9 +9,13 @@ import java.lang.Thread;
 public class ServerKeepAliveThread implements Runnable {
 
     private ServerDispatcherThread dispatcherThread;
+    private Thread keepAliveThread;
 
     public ServerKeepAliveThread(ServerDispatcherThread dispatcherThread) {
         this.dispatcherThread = dispatcherThread;
+
+        keepAliveThread = new Thread(this);
+        keepAliveThread.start();
     }
 
     @Override
