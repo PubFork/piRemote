@@ -97,12 +97,14 @@ public class ServerCore{
                     if(f.exists()){
                         if(f.isDirectory()){
                             // Directory picked
-                            makeOffer(msg.getUuid(), f);
+                            sendMessage(makeOffer(msg.getUuid(), f));
                         }else{
                             // File picked
-                            if(application != null) application.onFilePicked(f);
+                            if(application != null) application.onFilePicked(f,msg.getUuid());
                         }
-                    }// Else the specified path doesn't exist and we can ignore the request
+                    }else{
+                        System.out.println("WARNING: Picked path <"+path+"> is not valid!");
+                    }
                     continue;
                 }
             }// otherwise it was an ss.

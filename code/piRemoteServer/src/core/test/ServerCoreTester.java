@@ -3,6 +3,7 @@ package core.test;
 import MessageObject.Message;
 import MessageObject.PayloadObject.IntMessage;
 import MessageObject.PayloadObject.Payload;
+import MessageObject.PayloadObject.Pick;
 import MessageObject.PayloadObject.ServerStateChange;
 import SharedConstants.ApplicationCsts;
 import SharedConstants.CoreCsts;
@@ -32,6 +33,7 @@ public class ServerCoreTester {
 
         ServerStateChange ssc;
         IntMessage im;
+        Pick pick;
 
         // Start TrafficLightApplication
         ssc = new ServerStateChange();
@@ -133,6 +135,36 @@ public class ServerCoreTester {
                 im
         ));
 
+        // Initiate File Pick
+        im = new IntMessage();
+        im.i = ApplicationCsts.TL_PICK_FILE;
+        mainQueue.put(new Message(
+                uuid,
+                CoreCsts.ServerState.TRAFFIC_LIGHT,
+                ApplicationCsts.TrafficLightApplicationState.GREEN,
+                im
+        ));
+
+        // Pick a directory
+        pick = new Pick();
+        pick.path="/home/sandro/Downloads";
+        mainQueue.put(new Message(
+                uuid,
+                CoreCsts.ServerState.TRAFFIC_LIGHT,
+                ApplicationCsts.TrafficLightApplicationState.GREEN,
+                pick
+        ));
+
+        // Pick a file in that directory
+        pick = new Pick();
+        pick.path="/home/sandro/Downloads/test.txt";
+        mainQueue.put(new Message(
+                uuid,
+                CoreCsts.ServerState.TRAFFIC_LIGHT,
+                ApplicationCsts.TrafficLightApplicationState.GREEN,
+                pick
+        ));
+
         // Stop TrafficLightApplication thinking it is orange (actually it's green, but this should work anyway)
         ssc = new ServerStateChange();
         ssc.newServerState = CoreCsts.ServerState.NONE;
@@ -142,6 +174,17 @@ public class ServerCoreTester {
                 ApplicationCsts.TrafficLightApplicationState.ORANGE,
                 ssc
         ));
+
+        // Consistency check: Trying to pick a file once the application is closed
+        pick = new Pick();
+        pick.path="/home/sandro/Downloads/test.txt";
+        mainQueue.put(new Message(
+                uuid,
+                CoreCsts.ServerState.NONE,
+                ApplicationCsts.TrafficLightApplicationState.GREEN,
+                pick
+        ));
+
     }
 
     public void phase2() throws InterruptedException {

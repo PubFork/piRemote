@@ -3,6 +3,7 @@ package application;
 import SharedConstants.ApplicationCsts;
 import core.AbstractApplication;
 import java.io.File;
+import java.util.UUID;
 
 /**
  * Created by sandro on 11.11.15.
@@ -30,12 +31,19 @@ public class TrafficLight extends AbstractApplication {
     }
 
     @Override
-    public void onFilePicked(File file) {
-
+    public void onFilePicked(File file, UUID senderUUID) {
+        System.out.println("TrafficLight: Picked file: "+file.getName()+". Requesting close.");
+        closeFilePicker(senderUUID);
     }
 
     @Override
-    public void onReceiveInt(int cst) {
+    public void onReceiveInt(int cst, UUID senderUUID) {
+        if(cst == ApplicationCsts.TL_PICK_FILE){
+            System.out.println("TrafficLight: Initializing file pick.");
+            pickFile("/home/sandro",senderUUID);
+            return;
+        }
+
         ApplicationCsts.ApplicationState newState;
         switch (cst){
             case ApplicationCsts.GO_GREEN:
@@ -55,12 +63,12 @@ public class TrafficLight extends AbstractApplication {
     }
 
     @Override
-    public void onReceiveDouble(double d) {
+    public void onReceiveDouble(double d, UUID senderUUID) {
 
     }
 
     @Override
-    public void onReceiveString(String str) {
+    public void onReceiveString(String str, UUID senderUUID) {
 
     }
 }

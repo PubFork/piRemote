@@ -19,4 +19,5 @@ public class ApplicationCsts {
     public static final int GO_GREEN = 0;
     public static final int GO_ORANGE = 1;
     public static final int GO_RED = 2;
+    public static final int TL_PICK_FILE = 3;
 }
