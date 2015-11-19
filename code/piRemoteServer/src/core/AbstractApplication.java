@@ -6,6 +6,7 @@ import MessageObject.PayloadObject.DoubleMessage;
 import MessageObject.PayloadObject.IntMessage;
 import MessageObject.PayloadObject.StringMessage;
 import SharedConstants.ApplicationCsts;
+import com.sun.istack.internal.NotNull;
 
 import java.io.File;
 import java.util.UUID;
@@ -19,10 +20,14 @@ public abstract class AbstractApplication {
     protected static ApplicationCsts.ApplicationState applicationState;
 
     public ApplicationCsts.ApplicationState getApplicationState(){
+        // This returns the current ApplicationState. To be invoked by ServerCore only.
+        // To retrieve the state from outside, use ServerCore.getState()
         return applicationState;
     }
 
-    public void processMessage(Message msg){
+    public void processMessage(@NotNull Message msg){
+        // This takes a message, looks at it and reacts to it (can reply to the sender, call application functions etc.).
+
         if(!checkApplicationState(msg)){
             // Application State mismatch! Send ss to whoever sent this to us
             ServerCore.sendMessage(ServerCore.makeMessage(msg.getUuid()));
@@ -44,23 +49,29 @@ public abstract class AbstractApplication {
     }
 
     protected boolean checkApplicationState(Message msg) {
+        // This returns whether or not the ApplicationState in the message corresponds to the actual ApplicationState.
         if(applicationState == null || msg.getApplicationState() == null) return false;
         return msg.getApplicationState().equals(applicationState);
     }
 
     protected void changeApplicationState(ApplicationCsts.ApplicationState newState){
+        // This shall be called by the server application to request an ApplicationState change)
         applicationState = newState; // Change the applicationState
         ServerCore.sendMessage(ServerCore.makeMessage()); // Inform clients about it
         onApplicationStateChange(applicationState); // Get back to the application
     }
 
-    protected void pickFile(String path, UUID destination){
+    protected void pickFile(@NotNull String path, @NotNull UUID destination){
+        // This shall be called by the server application to initiate a FilePick scenario.
+        // path: Root path (must be directory!) to start file pick with
+        // destination: UUID of the client to send the offer to
         File f = new File(path);
         if(f.exists() && f.isDirectory()) ServerCore.sendMessage(ServerCore.makeOffer(destination,f));
         else System.out.println("WARNING: <"+path+"> is not a valid directory on this machine!");
     }
 
     protected void closeFilePicker(UUID destination){
+        // This shall be called by the server application to make the file pick overlay disappear in the client's UI
         ServerCore.sendMessage(ServerCore.makeMessage(destination, new Close()));
     }
 

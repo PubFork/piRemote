@@ -7,6 +7,7 @@ import MessageObject.PayloadObject.Pick;
 import MessageObject.PayloadObject.ServerStateChange;
 import SharedConstants.CoreCsts;
 import StateObject.State;
+import com.sun.istack.internal.NotNull;
 import core.network.ServerSenderThread;
 import core.test.ServerCoreTester;
 
@@ -22,6 +23,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class ServerCore{
 
+    // The networking component shall deliver incoming messages to the server by putting them into the following queue:
     public static final BlockingQueue<Message> mainQueue = new LinkedBlockingQueue<>();
 
     protected static CoreCsts.ServerState serverState;
@@ -129,6 +131,7 @@ public class ServerCore{
     }
 
     public static State getState(){
+        // Use this to read the current state (including server and application state) from the server.
         if(application != null) {
             return new State(serverState, application.getApplicationState());
         }else{
@@ -138,10 +141,14 @@ public class ServerCore{
     }
 
     protected static boolean checkServerState(Message msg){
+        // This returns whether or not the ServerState in the message corresponds to the actual ServerState.
+        if(msg==null || msg.getServerState() == null) return false;
         return msg.getServerState().equals(serverState);
     }
 
-    protected static void sendMessage(Message msg){
+    protected static void sendMessage(@NotNull Message msg){
+        // This will deliver msg to the networking component
+        if(msg== null) return;
         try {
             //ServerSenderThread.sendingQueue.put(msg);
             // TEST ONLY
@@ -155,8 +162,11 @@ public class ServerCore{
         }
     }
 
-    protected static Message makeOffer(UUID recipient, File dir){
+    protected static Message makeOffer(@NotNull UUID recipient, @NotNull File dir){
+        // This takes a recipient and a File (must be a directory!) and returns a message with an Offer Payload
+        //    containing a list of the contents in the specified directory.
         Offer offerPayload = new Offer();
+        if(dir == null || !dir.isDirectory()) return null;
         File[] contents = dir.listFiles();
         if(contents != null) {
             for (File path : contents) {
@@ -170,18 +180,25 @@ public class ServerCore{
     }
 
     protected static Message makeMessage(){
+        // Convenience function for building an ss broadcast
         return new Message(getState());
     }
 
-    protected static Message makeMessage(Payload payload){
+    protected static Message makeMessage(@NotNull Payload payload){
+        // Convenience function for building a broadcast message with given payload
+        if(payload==null) return null;
         return new Message(getState(), payload);
     }
 
-    protected static Message makeMessage(UUID recipient){
+    protected static Message makeMessage(@NotNull UUID recipient){
+        // Convenience function for building an ss message for a specific recipient
+        if(recipient==null) return null;
         return new Message(recipient, getState());
     }
 
-    protected static Message makeMessage(UUID recipient, Payload payload){
+    protected static Message makeMessage(@NotNull UUID recipient, @NotNull Payload payload){
+        // Convenience function for building a message with given payload for a specific recipient
+        if(recipient==null || payload==null) return null;
         return new Message(recipient, getState(), payload);
     }
 }
