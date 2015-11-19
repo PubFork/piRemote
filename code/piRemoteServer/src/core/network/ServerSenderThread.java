@@ -16,7 +16,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class ServerSenderThread implements Runnable {
 
-    public final static BlockingQueue<Message> sendingQueue = new LinkedBlockingQueue<>();
+    private final static BlockingQueue<Message> sendingQueue = new LinkedBlockingQueue<>();
     private ServerSocket serverSocket;
     private Thread senderThread;
     private HashMap<UUID, NetworkInfo> sessionTable;
@@ -41,5 +41,9 @@ public class ServerSenderThread implements Runnable {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public BlockingQueue<Message> getSendingQueue() {
+        return sendingQueue;
     }
 }

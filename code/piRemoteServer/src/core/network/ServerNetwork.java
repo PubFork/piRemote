@@ -10,11 +10,12 @@ import java.util.UUID;
  */
 public class ServerNetwork {
 
-    ServerDispatcherThread dispatcherThread;
-    ServerKeepAliveThread keepAliveThread;
-    HashMap<UUID, NetworkInfo> sessionTable = new HashMap<>();
+    private ServerDispatcherThread dispatcherThread;
+    private ServerKeepAliveThread keepAliveThread;
+    private ServerSenderThread senderThread;
+    private HashMap<UUID, NetworkInfo> sessionTable = new HashMap<>();
 
-    ServerSocket socket;
+    private ServerSocket socket;
 
     /**
      * Need to be called by the ServerCore to create the network part
@@ -28,9 +29,26 @@ public class ServerNetwork {
             e.printStackTrace();
         }
 
-        dispatcherThread = new ServerDispatcherThread(socket, sessionTable);
-        keepAliveThread = new ServerKeepAliveThread(dispatcherThread);
-
+        senderThread = new ServerSenderThread(socket, sessionTable);
+        dispatcherThread = new ServerDispatcherThread(socket, sessionTable, senderThread);
+        keepAliveThread = new ServerKeepAliveThread(dispatcherThread, sessionTable);
     }
 
+
+
+    /**
+     * use these getter-functions to get the fields you need.
+     */
+
+    public ServerSenderThread getSenderThread() {
+        return senderThread;
+    }
+
+    public HashMap<UUID, NetworkInfo> getSessionTable() {
+        return sessionTable;
+    }
+
+    public ServerKeepAliveThread getKeepAliveThread() {
+        return keepAliveThread;
+    }
 }

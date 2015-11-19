@@ -9,6 +9,7 @@ import core.ServerCore;
 
 import java.net.ServerSocket;
 import java.util.*;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * created by fabian on 13.11.15
@@ -21,11 +22,13 @@ public class ServerDispatcherThread implements Runnable {
     private Thread serverDispatcher;
     private ServerSocket serverSocket;
     private HashMap<UUID, NetworkInfo> sessionTable;
+    private BlockingQueue<Message> sendingQueue;
 
-    public ServerDispatcherThread(ServerSocket socket, HashMap sTable) {
+    public ServerDispatcherThread(ServerSocket socket, HashMap sTable, ServerSenderThread senderThread) {
 
         serverSocket = socket;
         sessionTable = sTable;
+        sendingQueue = senderThread.getSendingQueue();
 
         serverDispatcher = new Thread(this);
         serverDispatcher.start();
