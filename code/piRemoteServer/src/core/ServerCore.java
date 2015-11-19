@@ -27,6 +27,7 @@ public class ServerCore{
     protected static CoreCsts.ServerState serverState;
     protected static AbstractApplication application;
     protected static boolean running;
+    public static int round=0; // TEST ONLY
 
     public static void main(String [ ] args) throws InterruptedException {
         // Initialize state
@@ -49,9 +50,11 @@ public class ServerCore{
             Message msg = mainQueue.take();
 
             // TEST ONLY
+            round++;
+            System.out.println("\n("+round+") Incoming:");
+            System.out.println(msg);
             if(mainQueue.isEmpty()){
                 running = false;
-                st.phase2();
             }
             // END TEST
 
@@ -69,6 +72,7 @@ public class ServerCore{
                         // Application shall start
                         application = ApplicationFactory.makeApplication(newServerState);
                         if(application != null) {
+                            serverState = newServerState;
                             application.onApplicationStart();
                         }// otherwise no application was running, do nothing
                     }else{
@@ -77,8 +81,13 @@ public class ServerCore{
                             application.onApplicationStop();
                             application = ApplicationFactory.makeApplication(newServerState);
                             if(application != null) {
+                                serverState = newServerState;
                                 application.onApplicationStart();
-                            }// otherwise no application to be run, do nothing
+                            }else{
+                                // Failed to run the new application => this is an application stop
+                                serverState = CoreCsts.ServerState.NONE;
+                                sendMessage(makeMessage());
+                            }
                         }// otherwise we are already in the correct state, do nothing
                     }
                     continue;
@@ -102,8 +111,15 @@ public class ServerCore{
             // Forward the message to the application anyway so that it can check the state.
             if(application != null) {
                 application.processMessage(msg);
+            }else{
+                assert serverState== CoreCsts.ServerState.NONE;
+                System.out.println("OMG what is this client doin'??? It knows I have no app running and asks me to talk to it?!");
             }
         }
+        // TEST ONLY
+        System.out.println("\n\n--- Results ---");
+        st.phase2();
+        // END TEST
     }
 
     public static State getState(){
@@ -123,6 +139,8 @@ public class ServerCore{
         try {
             //ServerSenderThread.sendingQueue.put(msg);
             // TEST
+            System.out.println("Outgoing:");
+            System.out.println(msg);
             ServerCoreTester.sendingQueue.put(msg);
             // END TEST
         } catch (InterruptedException e) {

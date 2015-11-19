@@ -30,10 +30,11 @@ public class ServerCoreTester {
     public void phase1() throws InterruptedException {
         ///////// Phase 1: Generate events and feed them into main queue /////////
 
-        ServerStateChange ssc = new ServerStateChange();
-        IntMessage im = new IntMessage();
+        ServerStateChange ssc;
+        IntMessage im;
 
         // Start TrafficLightApplication
+        ssc = new ServerStateChange();
         ssc.newServerState = CoreCsts.ServerState.TRAFFIC_LIGHT;
         mainQueue.put(new Message(
                 uuid,
@@ -43,6 +44,7 @@ public class ServerCoreTester {
         ));
 
         // Switch to red
+        im = new IntMessage();
         im.i = ApplicationCsts.GO_RED;
         mainQueue.put(new Message(
                 uuid,
@@ -52,6 +54,7 @@ public class ServerCoreTester {
         ));
 
         // Switch to orange
+        im = new IntMessage();
         im.i = ApplicationCsts.GO_ORANGE;
         mainQueue.put(new Message(
                 uuid,
@@ -61,6 +64,7 @@ public class ServerCoreTester {
         ));
 
         // Stop TrafficLightApplication
+        ssc = new ServerStateChange();
         ssc.newServerState = CoreCsts.ServerState.NONE;
         mainQueue.put(new Message(
                 uuid,
@@ -70,6 +74,7 @@ public class ServerCoreTester {
         ));
 
         // Consistency check: Switch to orange as above
+        im = new IntMessage();
         im.i = ApplicationCsts.GO_ORANGE;
         mainQueue.put(new Message(
                 uuid,
@@ -79,6 +84,7 @@ public class ServerCoreTester {
         ));
 
         // Consistency check: Switch to orange with correct ServerState (NullPointerException if forgot to handle this)
+        im = new IntMessage();
         im.i = ApplicationCsts.GO_ORANGE;
         mainQueue.put(new Message(
                 uuid,
@@ -88,6 +94,7 @@ public class ServerCoreTester {
         ));
 
         // Start TrafficLightApplication
+        ssc = new ServerStateChange();
         ssc.newServerState = CoreCsts.ServerState.TRAFFIC_LIGHT;
         mainQueue.put(new Message(
                 uuid,
@@ -97,6 +104,7 @@ public class ServerCoreTester {
         ));
 
         // Consistency check: Try to start it again ("replay-attack" ;-)
+        ssc = new ServerStateChange();
         ssc.newServerState = CoreCsts.ServerState.TRAFFIC_LIGHT;
         mainQueue.put(new Message(
                 uuid,
@@ -106,6 +114,7 @@ public class ServerCoreTester {
         ));
 
         // Consistency check: Try to stop TrafficLightApplication with invalid ServerState
+        ssc = new ServerStateChange();
         ssc.newServerState = CoreCsts.ServerState.NONE;
         mainQueue.put(new Message(
                 uuid,
@@ -115,7 +124,7 @@ public class ServerCoreTester {
         ));
 
         // Consistency check: Try to switch to red thinking it is orange (actually it is green)
-        // Switch to orange
+        im = new IntMessage();
         im.i = ApplicationCsts.GO_RED;
         mainQueue.put(new Message(
                 uuid,
@@ -125,6 +134,7 @@ public class ServerCoreTester {
         ));
 
         // Stop TrafficLightApplication thinking it is orange (actually it's green, but this should work anyway)
+        ssc = new ServerStateChange();
         ssc.newServerState = CoreCsts.ServerState.NONE;
         mainQueue.put(new Message(
                 uuid,

@@ -94,8 +94,8 @@ public class Message {
 
     public String toString(){
         String str = "Message ";
-        if(!isBroadcast()) str+="to "+uuid.toString()+".\n";
-        else str+="to all known clients.\n";
+        if(!isBroadcast()) str+="ass. w. client "+uuid.toString()+".\n";
+        else str+="(broadcast type).\n";
         str+="-> ServerState: "+serverState+"\n";
         str+="-> ApplicationState: "+applicationState+"\n";
         if(hasPayload()){

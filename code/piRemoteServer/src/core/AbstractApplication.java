@@ -42,7 +42,7 @@ public abstract class AbstractApplication {
     }
 
     protected boolean checkApplicationState(Message msg) {
-        if(applicationState == null) return false;
+        if(applicationState == null || msg.getApplicationState() == null) return false;
         return msg.getApplicationState().equals(applicationState);
     }
 
