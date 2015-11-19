@@ -1,9 +1,12 @@
 package core.network;
 
+import MessageObject.Message;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * Created by Fabian on 13.11.15.
@@ -50,5 +53,10 @@ public class ServerNetwork {
 
     public ServerKeepAliveThread getKeepAliveThread() {
         return keepAliveThread;
+    }
+
+    public BlockingQueue<Message> getSendingQueue(){
+        if(senderThread==null) return null;
+        return senderThread.getSendingQueue();
     }
 }

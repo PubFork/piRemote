@@ -8,7 +8,7 @@ import MessageObject.PayloadObject.ServerStateChange;
 import SharedConstants.CoreCsts;
 import StateObject.State;
 import com.sun.istack.internal.NotNull;
-import core.network.ServerSenderThread;
+import core.network.ServerNetwork;
 import core.test.ServerCoreTester;
 
 import java.io.File;
@@ -26,10 +26,11 @@ public class ServerCore{
     // The networking component shall deliver incoming messages to the server by putting them into the following queue:
     public static final BlockingQueue<Message> mainQueue = new LinkedBlockingQueue<>();
 
+    protected static ServerNetwork serverNetwork;
     protected static CoreCsts.ServerState serverState;
     protected static AbstractApplication application;
     protected static boolean running;
-    public static int round=0; // TEST ONLY
+    //public static int round=0; // TEST ONLY
 
     public static void main(String [ ] args) throws InterruptedException {
         // Initialize state
@@ -37,12 +38,12 @@ public class ServerCore{
         application = null;
         running = true;
 
-        // Create and start other threads
-        // TODO!
+        // Init Network component
+        serverNetwork = new ServerNetwork(8015);
 
         // TEST ONLY
-        ServerCoreTester st = new ServerCoreTester(mainQueue);
-        st.phase1();
+        //ServerCoreTester st = new ServerCoreTester(mainQueue);
+        //st.phase1();
         // END TEST
 
         // Main loop
@@ -52,12 +53,12 @@ public class ServerCore{
             Message msg = mainQueue.take();
 
             // TEST ONLY
-            round++;
+            /*round++;
             System.out.println("\n("+round+") Incoming:");
             System.out.println(msg);
             if(mainQueue.isEmpty()){
                 running = false;
-            }
+            }*/
             // END TEST
 
             if(!checkServerState(msg)){
@@ -125,8 +126,8 @@ public class ServerCore{
             }
         }
         // TEST ONLY
-        System.out.println("\n\n--- Results ---");
-        st.phase2();
+        /*System.out.println("\n\n--- Results ---");
+        st.phase2();*/
         // END TEST
     }
 
@@ -152,10 +153,11 @@ public class ServerCore{
         try {
             //ServerSenderThread.sendingQueue.put(msg);
             // TEST ONLY
-            System.out.println("Outgoing:");
+            /*System.out.println("Outgoing:");
             System.out.println(msg);
-            ServerCoreTester.sendingQueue.put(msg);
+            ServerCoreTester.sendingQueue.put(msg);*/
             // END TEST
+            if(serverNetwork.getSendingQueue() != null) serverNetwork.getSendingQueue().put(msg);
         } catch (InterruptedException e) {
             System.out.println("Failed to enqueue message for sending!");
             e.printStackTrace();
