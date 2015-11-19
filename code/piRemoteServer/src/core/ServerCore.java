@@ -74,7 +74,9 @@ public class ServerCore{
                         if(application != null) {
                             serverState = newServerState;
                             application.onApplicationStart();
-                        }// otherwise no application was running, do nothing
+                        }else{
+                            System.out.println("OMG - a client that new that no application is running asked for stopping it, what is this client doing??");
+                        }
                     }else{
                         // Application shall change or stop
                         if(!newServerState.equals(serverState)){
@@ -88,7 +90,9 @@ public class ServerCore{
                                 serverState = CoreCsts.ServerState.NONE;
                                 sendMessage(makeMessage());
                             }
-                        }// otherwise we are already in the correct state, do nothing
+                        }else{
+                            System.out.println("OMG - client asked to go into the state everybody is already in, what is this client doing??");
+                        }
                     }
                     continue;
                 }else if(msg.getPayload() instanceof Pick){
@@ -107,7 +111,7 @@ public class ServerCore{
                     }
                     continue;
                 }
-            }// otherwise it was an ss.
+            }// otherwise it was just an ss, do nothing
 
             // If we land here, core is not responsible for handling this message.
             // Forward the message to the application anyway so that it can check the state.
@@ -140,7 +144,7 @@ public class ServerCore{
     protected static void sendMessage(Message msg){
         try {
             //ServerSenderThread.sendingQueue.put(msg);
-            // TEST
+            // TEST ONLY
             System.out.println("Outgoing:");
             System.out.println(msg);
             ServerCoreTester.sendingQueue.put(msg);
