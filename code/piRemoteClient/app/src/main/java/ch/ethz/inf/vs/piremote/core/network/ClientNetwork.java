@@ -14,9 +14,9 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class ClientNetwork {
 
-    ClientDispatcherThread dispatcherThread;
-    ClientKeepAliveThread keepAliveThread;
-    ClientSenderThread clientSenderThread;
+    private ClientDispatcherThread dispatcherThread;
+    private ClientKeepAliveThread keepAliveThread;
+    private ClientSenderThread clientSenderThread;
 
     public static Socket socket;
 
@@ -37,8 +37,16 @@ public class ClientNetwork {
         }
 
         clientSenderThread = new ClientSenderThread(socket);
-        keepAliveThread = new ClientKeepAliveThread(clientSenderThread);
+        keepAliveThread = new ClientKeepAliveThread(clientSenderThread, mainQueue);
         dispatcherThread = new ClientDispatcherThread(socket, keepAliveThread, mainQueue);
     }
 
+
+    /**
+     * use this getter-function to get the senderthread
+     * @return
+     */
+    public ClientSenderThread getClientSenderThread() {
+        return clientSenderThread;
+    }
 }
