@@ -1,6 +1,6 @@
 package MessageObject;
 
-import MessageObject.PayloadObject.Payload;
+import MessageObject.PayloadObject.*;
 import SharedConstants.ApplicationCsts;
 import SharedConstants.CoreCsts;
 import StateObject.State;
@@ -90,6 +90,32 @@ public class Message {
         this.serverState = state.getServerState();
         this.applicationState = state.getApplicationState();
         this.payload = payload;
+    }
+
+    public String toString(){
+        String str = "Message ";
+        if(!isBroadcast()) str+="to "+uuid.toString()+".\n";
+        else str+="to all known clients.\n";
+        str+="-> ServerState: "+serverState+"\n";
+        str+="-> ApplicationState: "+applicationState+"\n";
+        if(hasPayload()){
+            str+="-> Payload of type "+payload.getClass().toString()+":\n";
+            if(payload instanceof ServerStateChange)
+                str+="--> newServerState: "+((ServerStateChange) payload).newServerState;
+            if(payload instanceof IntMessage)
+                str+="--> i: "+((IntMessage) payload).i;
+            if(payload instanceof DoubleMessage)
+                str+="--> d: "+((DoubleMessage) payload).d;
+            if(payload instanceof StringMessage)
+                str+="--> str: "+((StringMessage) payload).str;
+            if(payload instanceof Pick)
+                str+="--> path: "+((Pick) payload).path;
+            if(payload instanceof Offer)
+                str+="--> paths: "+((Offer) payload).paths;
+        }else{
+            str+="-> (no payload)";
+        }
+        return str;
     }
 
 
