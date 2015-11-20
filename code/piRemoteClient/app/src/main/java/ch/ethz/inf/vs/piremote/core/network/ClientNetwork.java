@@ -1,5 +1,6 @@
 package ch.ethz.inf.vs.piremote.core.network;
 
+import ConnectionManagement.Connection;
 import MessageObject.Message;
 import SharedConstants.CoreCsts;
 import ch.ethz.inf.vs.piremote.core.network.ClientDispatcherThread;
@@ -44,6 +45,8 @@ public class ClientNetwork {
 
         running = true;
         uuid = null;
+
+        // initialize the threads
         clientSenderThread = new ClientSenderThread(socket);
         keepAliveThread = new ClientKeepAliveThread(clientSenderThread, mainQueue);
         dispatcherThread = new ClientDispatcherThread(socket, keepAliveThread, mainQueue);
@@ -58,16 +61,28 @@ public class ClientNetwork {
         return clientSenderThread;
     }
 
-    public BlockingQueue<Message> getSendingQueue() {
+    public BlockingQueue<Object> getSendingQueue() {
         return getClientSenderThread().getSendingQueue();
     }
 
 
     /**
      * call this function to connect to the server
+     * this function also starts the threads!
      */
     public void connect() {
 
+        // start threads
+        clientSenderThread.getThread().start();
+        dispatcherThread.getThread().start();
+        keepAliveThread.getThread().start();
+
+
+        Connection request = new Connection();
+        request.requestConnection();
+
+        // put connection request on sendingQueue
+        getSendingQueue().add(request);
 
     }
 
@@ -76,6 +91,13 @@ public class ClientNetwork {
      */
     public void disconnect() {
 
+        Connection disconnectRequest = new Connection();
+        disconnectRequest.disconnect();
+
+        // put disconnect on sendingQueue
+        getSendingQueue().add(disconnectRequest);
+
+        // TODO: proper handle disconnect
         running = false;
     }
 }

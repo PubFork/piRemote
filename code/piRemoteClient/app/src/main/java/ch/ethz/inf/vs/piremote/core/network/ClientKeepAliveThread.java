@@ -12,8 +12,8 @@ import java.util.concurrent.BlockingQueue;
 
 public class ClientKeepAliveThread implements Runnable {
 
-    private BlockingQueue<Message> sendingQueue;
-    private BlockingQueue<Message> mainQueue;
+    private BlockingQueue<Object> sendingQueue;
+    private BlockingQueue<Object> mainQueue;
     private Thread keepAliveThread;
     private long INTERVAL = 1000;
 
@@ -23,7 +23,8 @@ public class ClientKeepAliveThread implements Runnable {
         this.mainQueue = mainQueue;
 
         keepAliveThread = new Thread(this);
-        keepAliveThread.start();
+        // start it when connecting
+        // keepAliveThread.start();
     }
 
     @Override
@@ -39,13 +40,18 @@ public class ClientKeepAliveThread implements Runnable {
                     e.printStackTrace();
                 }
 
-                Message keepAlive = null; // new message with states from core
+                Message keepAlive = null; // TODO: new message with states from core
                 sendingQueue.add(keepAlive);
             } else {
                 // TODO: put some message in mainQueue
-                keepAliveThread.stop();
+
             }
 
         }
+
+    }
+
+    public Thread getThread() {
+        return keepAliveThread;
     }
 }

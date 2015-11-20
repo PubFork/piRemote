@@ -14,7 +14,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class ClientSenderThread implements Runnable {
 
-    private final static BlockingQueue<Message> sendingQueue = new LinkedBlockingQueue<Message>();
+    private final static BlockingQueue<Object> sendingQueue = new LinkedBlockingQueue<Object>();
     private Thread senderThread;
     private Socket socket;
     private ObjectOutputStream outputStream;
@@ -29,22 +29,23 @@ public class ClientSenderThread implements Runnable {
             e.printStackTrace();
         }
 
-        // create Thread and start it.
+        // create Thread
         senderThread = new Thread(this);
-        senderThread.start();
+        // start it when connecting
+        // senderThread.start();
     }
 
 
     @Override
     public void run() {
 
-        while (ClientNetwork.running) {
+        while (ClientNetwork.running || !sendingQueue.isEmpty()) {
             try {
                 /**
                  * take one message from the queue, put it on the outputstream
                  * and then flush (send via the socket)
                  */
-                Message messageToSend = sendingQueue.take(); // or poll?
+                Object messageToSend = sendingQueue.take(); // or poll?
                 outputStream.writeObject(messageToSend);
                 outputStream.flush(); // send messages in stream
 
@@ -54,6 +55,7 @@ public class ClientSenderThread implements Runnable {
                 e.printStackTrace();
             }
         }
+
     }
 
 
@@ -62,7 +64,11 @@ public class ClientSenderThread implements Runnable {
      * use this getter-function to get the sendingQueue
      * @return
      */
-    public BlockingQueue<Message> getSendingQueue() {
+    public BlockingQueue<Object> getSendingQueue() {
         return sendingQueue;
+    }
+
+    public Thread getThread() {
+        return senderThread;
     }
 }
