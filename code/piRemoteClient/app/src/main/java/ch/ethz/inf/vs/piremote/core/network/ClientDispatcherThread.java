@@ -50,22 +50,29 @@ public class ClientDispatcherThread implements Runnable {
     public void run() {
 
         // TODO: check keepaliveThread
-        // TODO: how long do we loop?
 
-        try {
+        while (ClientNetwork.running) {
+            try {
 
-            /**
-             * read a message from the inputstream an forward it to the
-             * main Queue of the ClientCore
-             */
-            Message readMessage = (Message) inputStream.readObject();
-            coreMainQueue.put(readMessage);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+                /**
+                 * read a message from the inputstream an forward it to the
+                 * main Queue of the ClientCore
+                 */
+                Message readMessage = (Message) inputStream.readObject();
+
+                if (ClientNetwork.uuid == null) {
+                    // set uuid when connected
+                    ClientNetwork.uuid = readMessage.getUuid();
+                }
+
+                coreMainQueue.put(readMessage);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

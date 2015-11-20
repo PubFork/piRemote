@@ -27,5 +27,10 @@ public class ClientKeepAliveThread implements Runnable {
     @Override
     public void run() {
 
+        while (ClientNetwork.running) {
+
+            // TODO: do stuff
+
+        }
     }
 }

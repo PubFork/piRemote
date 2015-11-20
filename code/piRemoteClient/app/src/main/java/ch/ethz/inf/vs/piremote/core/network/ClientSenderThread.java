@@ -38,21 +38,21 @@ public class ClientSenderThread implements Runnable {
     @Override
     public void run() {
 
-        // TODO: how long do we loop?
+        while (ClientNetwork.running) {
+            try {
+                /**
+                 * take one message from the queue, put it on the outputstream
+                 * and then flush (send via the socket)
+                 */
+                Message messageToSend = sendingQueue.take(); // or poll?
+                outputStream.writeObject(messageToSend);
+                outputStream.flush(); // send messages in stream
 
-        try {
-            /**
-             * take one message from the queue, put it on the outputstream
-             * and then flush (send via the socket)
-             */
-            Message messageToSend = sendingQueue.take(); // or poll?
-            outputStream.writeObject(messageToSend);
-            outputStream.flush(); // send messages in stream
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
