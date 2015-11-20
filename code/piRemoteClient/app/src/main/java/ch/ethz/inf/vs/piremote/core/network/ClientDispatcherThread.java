@@ -40,7 +40,7 @@ public class ClientDispatcherThread implements Runnable {
             e.printStackTrace();
         }
 
-        // set up the thread
+        // set up the thread and start it.
         clientDispatcher = new Thread(this);
         clientDispatcher.start();
     }
@@ -50,8 +50,14 @@ public class ClientDispatcherThread implements Runnable {
     public void run() {
 
         // TODO: check keepaliveThread
+        // TODO: how long do we loop?
 
         try {
+
+            /**
+             * read a message from the inputstream an forward it to the
+             * main Queue of the ClientCore
+             */
             Message readMessage = (Message) inputStream.readObject();
             coreMainQueue.put(readMessage);
         } catch (IOException e) {

@@ -29,6 +29,7 @@ public class ClientSenderThread implements Runnable {
             e.printStackTrace();
         }
 
+        // create Thread and start it.
         senderThread = new Thread(this);
         senderThread.start();
     }
@@ -37,7 +38,13 @@ public class ClientSenderThread implements Runnable {
     @Override
     public void run() {
 
+        // TODO: how long do we loop?
+
         try {
+            /**
+             * take one message from the queue, put it on the outputstream
+             * and then flush (send via the socket)
+             */
             Message messageToSend = sendingQueue.take(); // or poll?
             outputStream.writeObject(messageToSend);
             outputStream.flush(); // send messages in stream
