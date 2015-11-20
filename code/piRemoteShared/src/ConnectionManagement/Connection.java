@@ -9,12 +9,44 @@ package ConnectionManagement;
  */
 public class Connection {
 
+    // Field that is set by client and handled by server.
+    protected Connect connection;
+
     /*
     This enumeration allows us to decide what connection methods are handled
     by the server and client.
      */
-    public enum Connect {
+    private enum Connect {
         CONNECT,
         DISCONNECT
+    }
+
+    /**
+     * Default constructor, creates a connection-object with null content.
+     */
+    public Connection() {
+        connection = null;
+    }
+
+    /**
+     * Sets connection request.
+     */
+    public void requestConnection() {
+        connection = Connect.CONNECT;
+    }
+
+    /**
+     * Sets disconnection request.
+     */
+    public void disconnect() {
+        connection = Connect.DISCONNECT;
+    }
+
+    /**
+     * Returns the object's connection request.
+     * @return connection request to be handled.
+     */
+    public Connect getConnection() {
+        return connection;
     }
 }
