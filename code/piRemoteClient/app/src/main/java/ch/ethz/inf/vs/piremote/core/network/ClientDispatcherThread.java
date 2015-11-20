@@ -20,6 +20,7 @@ public class ClientDispatcherThread implements Runnable {
     private Socket socket;
     private ObjectInputStream inputStream;
     private BlockingQueue coreMainQueue;
+    private static long lastSeen;
 
     // constructor
     public ClientDispatcherThread(Socket socket, ClientKeepAliveThread keepAlive, LinkedBlockingQueue queue){
@@ -59,6 +60,7 @@ public class ClientDispatcherThread implements Runnable {
                  * main Queue of the ClientCore
                  */
                 Message readMessage = (Message) inputStream.readObject();
+                lastSeen = System.currentTimeMillis();
 
                 if (ClientNetwork.uuid == null) {
                     // set uuid when connected
@@ -74,5 +76,9 @@ public class ClientDispatcherThread implements Runnable {
                 e.printStackTrace();
             }
         }
+    }
+
+    public static long getLastSeen() {
+        return  lastSeen;
     }
 }

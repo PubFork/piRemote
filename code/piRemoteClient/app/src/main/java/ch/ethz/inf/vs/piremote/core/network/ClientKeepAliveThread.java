@@ -15,6 +15,8 @@ public class ClientKeepAliveThread implements Runnable {
     private BlockingQueue<Message> sendingQueue;
     private BlockingQueue<Message> mainQueue;
     private Thread keepAliveThread;
+    private long INTERVAL = 1000;
+
 
     public ClientKeepAliveThread(ClientSenderThread sender, BlockingQueue mainQueue) {
         sendingQueue = sender.getSendingQueue();
@@ -29,7 +31,20 @@ public class ClientKeepAliveThread implements Runnable {
 
         while (ClientNetwork.running) {
 
-            // TODO: do stuff
+
+            if (System.currentTimeMillis() - ClientDispatcherThread.getLastSeen() < 3*INTERVAL) {
+                try {
+                    wait(INTERVAL);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                Message keepAlive = null; // new message with states from core
+                sendingQueue.add(keepAlive);
+            } else {
+                // TODO: put some message in mainQueue
+                keepAliveThread.stop();
+            }
 
         }
     }
