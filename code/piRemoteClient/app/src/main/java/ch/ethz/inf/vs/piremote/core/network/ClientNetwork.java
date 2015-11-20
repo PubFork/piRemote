@@ -1,5 +1,7 @@
 package ch.ethz.inf.vs.piremote.core.network;
 
+import MessageObject.Message;
+import SharedConstants.CoreCsts;
 import ch.ethz.inf.vs.piremote.core.network.ClientDispatcherThread;
 import ch.ethz.inf.vs.piremote.core.network.ClientKeepAliveThread;
 import ch.ethz.inf.vs.piremote.core.network.ClientSenderThread;
@@ -7,6 +9,8 @@ import ch.ethz.inf.vs.piremote.core.network.ClientSenderThread;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.UUID;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -17,6 +21,7 @@ public class ClientNetwork {
     private ClientDispatcherThread dispatcherThread;
     private ClientKeepAliveThread keepAliveThread;
     private ClientSenderThread clientSenderThread;
+    private UUID uuid;
 
     public static Socket socket;
 
@@ -36,6 +41,7 @@ public class ClientNetwork {
             e.printStackTrace();
         }
 
+        uuid = null;
         clientSenderThread = new ClientSenderThread(socket);
         keepAliveThread = new ClientKeepAliveThread(clientSenderThread, mainQueue);
         dispatcherThread = new ClientDispatcherThread(socket, keepAliveThread, mainQueue);
@@ -48,5 +54,28 @@ public class ClientNetwork {
      */
     public ClientSenderThread getClientSenderThread() {
         return clientSenderThread;
+    }
+
+    public BlockingQueue<Message> getSendingQueue() {
+        return getClientSenderThread().getSendingQueue();
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    /**
+     * call this function to connect to the server
+     */
+    public void connect() {
+
+
+    }
+
+    /**
+     * call this function to disconnect from the server
+     */
+    public void disconnect() {
+
     }
 }
