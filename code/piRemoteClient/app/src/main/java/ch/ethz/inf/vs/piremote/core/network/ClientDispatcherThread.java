@@ -41,16 +41,15 @@ public class ClientDispatcherThread implements Runnable {
             e.printStackTrace();
         }
 
-        // set up the thread and start it.
+        // set up the thread
         clientDispatcher = new Thread(this);
-        clientDispatcher.start();
+        // start it when connecting
+        // clientDispatcher.start();
     }
 
 
     @Override
     public void run() {
-
-        // TODO: check keepaliveThread
 
         while (ClientNetwork.running) {
             try {
@@ -76,9 +75,14 @@ public class ClientDispatcherThread implements Runnable {
                 e.printStackTrace();
             }
         }
+
     }
 
     public static long getLastSeen() {
         return  lastSeen;
+    }
+
+    public Thread getThread() {
+        return clientDispatcher;
     }
 }
