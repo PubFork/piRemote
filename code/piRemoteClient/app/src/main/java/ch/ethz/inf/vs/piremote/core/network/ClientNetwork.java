@@ -21,8 +21,9 @@ public class ClientNetwork {
     private ClientDispatcherThread dispatcherThread;
     private ClientKeepAliveThread keepAliveThread;
     private ClientSenderThread clientSenderThread;
-    private UUID uuid;
 
+    public static UUID uuid;
+    public static boolean running;
     public static Socket socket;
 
 
@@ -41,6 +42,7 @@ public class ClientNetwork {
             e.printStackTrace();
         }
 
+        running = true;
         uuid = null;
         clientSenderThread = new ClientSenderThread(socket);
         keepAliveThread = new ClientKeepAliveThread(clientSenderThread, mainQueue);
@@ -60,9 +62,6 @@ public class ClientNetwork {
         return getClientSenderThread().getSendingQueue();
     }
 
-    public UUID getUuid() {
-        return uuid;
-    }
 
     /**
      * call this function to connect to the server
@@ -77,5 +76,6 @@ public class ClientNetwork {
      */
     public void disconnect() {
 
+        running = false;
     }
 }
