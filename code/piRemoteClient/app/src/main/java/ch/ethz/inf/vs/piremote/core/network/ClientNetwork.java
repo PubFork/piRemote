@@ -93,7 +93,8 @@ public class ClientNetwork {
         // put disconnect on sendingQueue
         getSendingQueue().add(disconnectRequest);
 
-        // TODO: proper handle disconnect
+        // notify ClientCore that server is down
+        ClientDispatcherThread.getcoreMainQueue().add(new Message(ClientNetwork.uuid, CoreCsts.ServerState.SERVER_DOWN, null));
         running = false;
     }
 }
