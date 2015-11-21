@@ -19,7 +19,7 @@ public class ClientDispatcherThread implements Runnable {
     private Thread clientDispatcher;
     private Socket socket;
     private ObjectInputStream inputStream;
-    private BlockingQueue coreMainQueue;
+    private static BlockingQueue coreMainQueue;
     private static long lastSeen;
 
     // constructor
@@ -80,6 +80,10 @@ public class ClientDispatcherThread implements Runnable {
 
     public static long getLastSeen() {
         return  lastSeen;
+    }
+
+    public static BlockingQueue getcoreMainQueue() {
+        return coreMainQueue;
     }
 
     public Thread getThread() {
