@@ -20,6 +20,8 @@ public class ServerNetwork {
 
     private ServerSocket socket;
 
+    private static boolean serverRunning;
+
     /**
      * Need to be called by the ServerCore to create the network part
      * @param port is needed to create the ServerSocket
@@ -32,6 +34,7 @@ public class ServerNetwork {
             e.printStackTrace();
         }
 
+        serverRunning = true;
         senderThread = new ServerSenderThread(socket, sessionTable);
         dispatcherThread = new ServerDispatcherThread(socket, sessionTable, senderThread);
         keepAliveThread = new ServerKeepAliveThread(dispatcherThread, sessionTable);
@@ -56,7 +59,13 @@ public class ServerNetwork {
     }
 
     public BlockingQueue<Message> getSendingQueue(){
-        if(senderThread==null) return null;
+        if(senderThread==null) {
+            return null;
+        }
         return senderThread.getSendingQueue();
+    }
+
+    public static boolean isRunning () {
+        return serverRunning;
     }
 }

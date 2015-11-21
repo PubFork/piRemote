@@ -1,6 +1,7 @@
 package ch.ethz.inf.vs.piremote.core.network;
 
 import MessageObject.Message;
+import ch.ethz.inf.vs.piremote.core.ClientCore;
 import ch.ethz.inf.vs.piremote.core.network.ClientSenderThread;
 
 import java.lang.Thread;
@@ -40,11 +41,10 @@ public class ClientKeepAliveThread implements Runnable {
                     e.printStackTrace();
                 }
 
-                Message keepAlive = null; // TODO: new message with states from core
+                Message keepAlive = new Message(ClientNetwork.uuid, ClientCore.getState());
                 sendingQueue.add(keepAlive);
             } else {
                 // TODO: put some message in mainQueue
-
             }
 
         }

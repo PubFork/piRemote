@@ -1,10 +1,12 @@
 package core.network;
 
+import ConnectionManagement.Connection;
 import MessageObject.Message;
 import MessageObject.PayloadObject.Payload;
 import SharedConstants.ApplicationCsts;
 import SharedConstants.CoreCsts;
 import com.sun.corba.se.spi.activation.Server;
+import core.AbstractApplication;
 import core.ServerCore;
 
 import java.io.IOException;
@@ -52,27 +54,42 @@ public class ServerDispatcherThread implements Runnable {
 
             ObjectInputStream input = new ObjectInputStream(clientSocket.getInputStream());
 
-            // TODO: what about first connection message? it is not of type Message! or yes?
-            Message receivedMessage = (Message) input.readObject();
-            UUID uuid = receivedMessage.getUuid();
-
             // TODO: check morgeQueue
 
-            // check the sessionTable
-            if (!sessionTable.containsKey(uuid)) {
-                NetworkInfo clientInfo = new NetworkInfo(ip, port, System.currentTimeMillis());
-                sessionTable.put(uuid, clientInfo);
-            } else {
-                // update lastSeen
-                sessionTable.get(uuid).lastSeen = System.currentTimeMillis();
+            while (!morgueQueue.isEmpty()) {
+                sessionTable.remove(morgueQueue.remove(0));
             }
 
+            if (input.readObject() instanceof Message) {
+                Message receivedMessage = (Message) input.readObject();
+                UUID uuid = receivedMessage.getUuid();
 
+                // check the sessionTable
+                if (!sessionTable.containsKey(uuid)) {
+                    NetworkInfo clientInfo = new NetworkInfo(ip, port, System.currentTimeMillis());
+                    sessionTable.put(uuid, clientInfo);
+                } else {
+                    // update lastSeen
+                    sessionTable.get(uuid).lastSeen = System.currentTimeMillis();
+                }
 
-            // TODO: first check if it is a FilePickerRequest
+                // (TODO: first check if it is a FilePickerRequest) is handled by ServerCore
 
-            // put message on mainQueue from Core
-            ServerCore.mainQueue.put(receivedMessage);
+                // put message on mainQueue from Core
+                ServerCore.mainQueue.put(receivedMessage);
+
+            } else if (input.readObject() instanceof Connection) {
+                Connection connection = (Connection) input.readObject();
+                UUID uuid = new UUID(1,1);
+                uuid = uuid.randomUUID();
+
+                NetworkInfo clientInfo = new NetworkInfo(ip, port, System.currentTimeMillis());
+                sessionTable.put(uuid, clientInfo);
+
+                sessionTable.put(uuid, clientInfo);
+
+                ServerSenderThread.getSendingQueue().add(new Message(uuid, ServerCore.getState().getServerState(), ServerCore.getState().getApplicationState()));
+            }
 
         } catch (IOException e) {
             e.printStackTrace();

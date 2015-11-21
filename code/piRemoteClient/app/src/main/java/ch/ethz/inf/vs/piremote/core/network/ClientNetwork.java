@@ -30,7 +30,7 @@ public class ClientNetwork {
 
     /**
      * create a ClientNetwork object that has several threads. This constructor is called
-     * from the ClientCore to build its network
+     * from the ClientCore to build its network. This constructor also starts the threads!
      * @param address core needs to provide the address of the server
      * @param port core also needs to provide the port of the server
      * @param mainQueue mainqueue on which the dispatcher will put the messages for the core
@@ -68,22 +68,13 @@ public class ClientNetwork {
 
     /**
      * call this function to connect to the server
-     * this function also starts the threads!
      */
     public void connect() {
-
-        // start threads
-        clientSenderThread.getThread().start();
-        dispatcherThread.getThread().start();
-        keepAliveThread.getThread().start();
-
-
         Connection request = new Connection();
         request.requestConnection();
 
         // put connection request on sendingQueue
         getSendingQueue().add(request);
-
     }
 
     /**

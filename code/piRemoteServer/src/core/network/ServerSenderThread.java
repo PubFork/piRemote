@@ -4,6 +4,8 @@ import MessageObject.Message;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
@@ -35,15 +37,24 @@ public class ServerSenderThread implements Runnable {
     @Override
     public void run() {
 
-        try {
-            Message toSend = sendingQueue.take();
-            // TODO: how to send on ServerSocket to a specific location/client?
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        Socket senderSocket = new Socket(); // unconnected Socket
+        while (ServerNetwork.isRunning()) {
+            try {
+                Message toSend = sendingQueue.take();
+
+                NetworkInfo networkInfo = sessionTable.get(toSend.getUuid());
+                InetSocketAddress destination = new InetSocketAddress(networkInfo.ip, networkInfo.port);
+                senderSocket.connect(destination);
+                outputStream = new ObjectOutputStream(senderSocket.getOutputStream());
+                outputStream.writeObject(toSend);
+                outputStream.flush();
+            } catch ( IOException | InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    public BlockingQueue<Message> getSendingQueue() {
+    public static BlockingQueue<Message> getSendingQueue() {
         return sendingQueue;
     }
 }
