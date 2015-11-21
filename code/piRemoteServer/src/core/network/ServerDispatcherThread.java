@@ -25,7 +25,7 @@ import java.util.concurrent.BlockingQueue;
 public class ServerDispatcherThread implements Runnable {
 
     // private ServerKeepAliveThread keepAliveThread;
-    private List<Session> morgueQueue = new ArrayList<>();
+    private static List<Session> morgueQueue = new ArrayList<>();
     private Thread serverDispatcher;
     private ServerSocket serverSocket;
     private Socket clientSocket;
@@ -96,15 +96,7 @@ public class ServerDispatcherThread implements Runnable {
         }
     }
 
-    class Session {
-        private UUID uuid;
-        private  NetworkInfo networkInfo;
-        public void Session (UUID uuid, NetworkInfo networkInfo) {
-            this.uuid = uuid;
-            this.networkInfo = networkInfo;
-        }
-
-        public UUID getUUID () { return uuid;}
-        public NetworkInfo getNetworkInfo () { return networkInfo;}
+    public static List<Session> getmorgueQueue() {
+        return morgueQueue;
     }
 }

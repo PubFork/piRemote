@@ -5,6 +5,7 @@ import MessageObject.Message;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 
@@ -65,7 +66,15 @@ public class ServerNetwork {
         return senderThread.getSendingQueue();
     }
 
-    public static boolean isRunning () {
+    public List<ServerDispatcherThread.Session> getmorgueQueue(){
+        if(dispatcherThread==null) {
+            return null;
+        }
+        return dispatcherThread.getmorgueQueue();
+    }
+
+
+        public static boolean isRunning () {
         return serverRunning;
     }
 }

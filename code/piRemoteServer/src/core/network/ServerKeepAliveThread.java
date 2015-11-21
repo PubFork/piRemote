@@ -31,11 +31,15 @@ public class ServerKeepAliveThread implements Runnable {
     @Override
     public void run() {
         while (ServerNetwork.isRunning()) {
+            for (Map.Entry<UUID, NetworkInfo> entry : sessionTable.entrySet()) {
+                if (System.currentTimeMillis() - entry.getValue().lastSeen < 3 * INTERVAL) {
+                    ServerSenderThread.getSendingQueue().add(new Message(entry.getKey(), ServerCore.getState().getServerState(), ServerCore.getState().getApplicationState()));
+                } else {
+                    ServerDispatcherThread.getmorgueQueue().add(new Session(entry.getKey(),entry.getValue()));
+                }
+            }
             try {
                 wait(INTERVAL);
-                for (Map.Entry<UUID, NetworkInfo> entry : sessionTable.entrySet()) {
-                    ServerSenderThread.getSendingQueue().add(new Message(entry.getKey(), ServerCore.getState().getServerState(), ServerCore.getState().getApplicationState()));
-                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
