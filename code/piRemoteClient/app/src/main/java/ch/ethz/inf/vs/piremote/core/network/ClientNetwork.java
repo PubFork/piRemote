@@ -50,6 +50,11 @@ public class ClientNetwork {
         clientSenderThread = new ClientSenderThread(socket);
         keepAliveThread = new ClientKeepAliveThread(clientSenderThread, mainQueue);
         dispatcherThread = new ClientDispatcherThread(socket, keepAliveThread, mainQueue);
+
+        // start threads
+        clientSenderThread.getThread().start();
+        dispatcherThread.getThread().start();
+        keepAliveThread.getThread().start();
     }
 
 
