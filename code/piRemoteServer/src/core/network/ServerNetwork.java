@@ -66,7 +66,7 @@ public class ServerNetwork {
         return senderThread.getSendingQueue();
     }
 
-    public List<ServerDispatcherThread.Session> getmorgueQueue(){
+    public List<Session> getmorgueQueue(){
         if(dispatcherThread==null) {
             return null;
         }
