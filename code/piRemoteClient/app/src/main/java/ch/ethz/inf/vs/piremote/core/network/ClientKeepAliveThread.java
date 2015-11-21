@@ -33,20 +33,18 @@ public class ClientKeepAliveThread implements Runnable {
 
         while (ClientNetwork.running) {
 
-
             if (System.currentTimeMillis() - ClientDispatcherThread.getLastSeen() < 3*INTERVAL) {
-                try {
-                    wait(INTERVAL);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
                 Message keepAlive = new Message(ClientNetwork.uuid, ClientCore.getState());
                 sendingQueue.add(keepAlive);
             } else {
                 // TODO: put some message in mainQueue
             }
 
+            try {
+                wait(INTERVAL);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
     }
