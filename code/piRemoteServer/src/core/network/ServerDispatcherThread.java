@@ -8,6 +8,7 @@ import SharedConstants.CoreCsts;
 import com.sun.corba.se.spi.activation.Server;
 import core.AbstractApplication;
 import core.ServerCore;
+import sun.nio.ch.Net;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -24,7 +25,7 @@ import java.util.concurrent.BlockingQueue;
 public class ServerDispatcherThread implements Runnable {
 
     // private ServerKeepAliveThread keepAliveThread;
-    private List<NetworkInfo> morgueQueue = new ArrayList<>();
+    private List<Session> morgueQueue = new ArrayList<>();
     private Thread serverDispatcher;
     private ServerSocket serverSocket;
     private Socket clientSocket;
@@ -44,60 +45,66 @@ public class ServerDispatcherThread implements Runnable {
     @Override
     public void run() {
 
-        // TODO: How to read from ServerSocket?
-        // Message receivedMessage = null; // need to be the received Message!
+        while (ServerNetwork.isRunning()) {
 
-        try {
-            clientSocket = serverSocket.accept();
-            InetAddress ip = clientSocket.getInetAddress();
-            int port = clientSocket.getPort();
+            try {
+                clientSocket = serverSocket.accept();
 
-            ObjectInputStream input = new ObjectInputStream(clientSocket.getInputStream());
+                InetAddress ip = clientSocket.getInetAddress();
+                int port = clientSocket.getPort();
 
-            // TODO: check morgeQueue
+                ObjectInputStream input = new ObjectInputStream(clientSocket.getInputStream());
 
-            while (!morgueQueue.isEmpty()) {
-                sessionTable.remove(morgueQueue.remove(0));
-            }
-
-            if (input.readObject() instanceof Message) {
-                Message receivedMessage = (Message) input.readObject();
-                UUID uuid = receivedMessage.getUuid();
-
-                // check the sessionTable
-                if (!sessionTable.containsKey(uuid)) {
-                    NetworkInfo clientInfo = new NetworkInfo(ip, port, System.currentTimeMillis());
-                    sessionTable.put(uuid, clientInfo);
-                } else {
-                    // update lastSeen
-                    sessionTable.get(uuid).lastSeen = System.currentTimeMillis();
+                while (!morgueQueue.isEmpty()) {
+                    sessionTable.remove(morgueQueue.remove(0).getUUID());
                 }
 
-                // (TODO: first check if it is a FilePickerRequest) is handled by ServerCore
+                if (input.readObject() instanceof Message) {
+                    Message receivedMessage = (Message) input.readObject();
+                    UUID uuid = receivedMessage.getUuid();
 
-                // put message on mainQueue from Core
-                ServerCore.mainQueue.put(receivedMessage);
+                    // check the sessionTable
+                    if (!sessionTable.containsKey(uuid)) {
+                        NetworkInfo clientInfo = new NetworkInfo(ip, port, System.currentTimeMillis());
+                        sessionTable.put(uuid, clientInfo);
+                    } else {
+                        // update lastSeen
+                        sessionTable.get(uuid).lastSeen = System.currentTimeMillis();
+                    }
 
-            } else if (input.readObject() instanceof Connection) {
-                Connection connection = (Connection) input.readObject();
-                UUID uuid = new UUID(1,1);
-                uuid = uuid.randomUUID();
+                    // (TODO: first check if it is a FilePickerRequest) is handled by ServerCore
 
-                NetworkInfo clientInfo = new NetworkInfo(ip, port, System.currentTimeMillis());
-                sessionTable.put(uuid, clientInfo);
+                    // put message on mainQueue from Core
+                    ServerCore.mainQueue.put(receivedMessage);
 
-                sessionTable.put(uuid, clientInfo);
+                } else if (input.readObject() instanceof Connection) {
+                    Connection connection = (Connection) input.readObject();
+                    UUID uuid = new UUID(1, 1);
+                    uuid = uuid.randomUUID();
 
-                ServerSenderThread.getSendingQueue().add(new Message(uuid, ServerCore.getState().getServerState(), ServerCore.getState().getApplicationState()));
+                    NetworkInfo clientInfo = new NetworkInfo(ip, port, System.currentTimeMillis());
+                    sessionTable.put(uuid, clientInfo);
+
+                    sessionTable.put(uuid, clientInfo);
+
+                    ServerSenderThread.getSendingQueue().add(new Message(uuid, ServerCore.getState().getServerState(), ServerCore.getState().getApplicationState()));
+                }
+
+            } catch (IOException | ClassNotFoundException | InterruptedException e) {
+                e.printStackTrace();
             }
+        }
+    }
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+    class Session {
+        private UUID uuid;
+        private  NetworkInfo networkInfo;
+        public void Session (UUID uuid, NetworkInfo networkInfo) {
+            this.uuid = uuid;
+            this.networkInfo = networkInfo;
         }
 
+        public UUID getUUID () { return uuid;}
+        public NetworkInfo getNetworkInfo () { return networkInfo;}
     }
 }
