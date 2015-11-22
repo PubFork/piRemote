@@ -88,7 +88,7 @@ public class ClientNetwork {
     public void disconnect() {
 
         Connection disconnectRequest = new Connection();
-        disconnectRequest.disconnect();
+        disconnectRequest.disconnect(uuid);
 
         // put disconnect on sendingQueue
         getSendingQueue().add(disconnectRequest);
