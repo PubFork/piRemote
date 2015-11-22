@@ -79,15 +79,20 @@ public class ServerDispatcherThread implements Runnable {
 
                 } else if (input.readObject() instanceof Connection) {
                     Connection connection = (Connection) input.readObject();
-                    UUID uuid = new UUID(1, 1);
-                    uuid = uuid.randomUUID();
 
-                    NetworkInfo clientInfo = new NetworkInfo(ip, port, System.currentTimeMillis());
-                    sessionTable.put(uuid, clientInfo);
+                    if (connection.getConnection() == Connection.Connect.CONNECT) {
+                        // I would only do that if it is a connectRequest
+                        UUID uuid = new UUID(1, 1);
+                        uuid = uuid.randomUUID();
 
-                    sessionTable.put(uuid, clientInfo);
+                        NetworkInfo clientInfo = new NetworkInfo(ip, port, System.currentTimeMillis());
+                        sessionTable.put(uuid, clientInfo);
 
-                    ServerSenderThread.getSendingQueue().add(new Message(uuid, ServerCore.getState().getServerState(), ServerCore.getState().getApplicationState()));
+                        sendingQueue.add(new Message(uuid, ServerCore.getState().getServerState(), ServerCore.getState().getApplicationState()));
+                    } else {
+                        // TODO: remove from sessionTable -> include UUID in diconnection?
+                    }
+
                 }
 
             } catch (IOException | ClassNotFoundException | InterruptedException e) {
