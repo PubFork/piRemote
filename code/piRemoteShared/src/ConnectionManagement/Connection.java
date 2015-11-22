@@ -16,7 +16,7 @@ public class Connection {
     This enumeration allows us to decide what connection methods are handled
     by the server and client.
      */
-    private enum Connect {
+    public enum Connect {
         CONNECT,
         DISCONNECT
     }
