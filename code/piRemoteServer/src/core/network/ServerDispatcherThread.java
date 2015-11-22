@@ -97,6 +97,9 @@ public class ServerDispatcherThread implements Runnable {
                         sendingQueue.add(new Message(uuid, ServerCore.getState().getServerState(), ServerCore.getState().getApplicationState()));
                     } else if (connection.getConnection() == Connection.Connect.DISCONNECT) {
                         // TODO: remove from sessionTable -> include UUID in diconnection?
+                        UUID uuid = connection.getUuid();
+                        Session session = new Session(uuid, sessionTable.get(uuid));
+                        morgueQueue.add(session);
                     }
 
                 }

@@ -1,5 +1,7 @@
 package ConnectionManagement;
 
+import java.util.UUID;
+
 /**
  * Created by mvaenskae on 20/11/15.
  * This class is used for managing connections within our project sent by
@@ -11,6 +13,7 @@ public class Connection {
 
     // Field that is set by client and handled by server.
     protected Connect connection;
+    protected UUID uuid;
 
     /*
     This enumeration allows us to decide what connection methods are handled
@@ -38,8 +41,9 @@ public class Connection {
     /**
      * Sets disconnection request.
      */
-    public void disconnect() {
+    public void disconnect(UUID uuid) {
         connection = Connect.DISCONNECT;
+        this.uuid = uuid;
     }
 
     /**
@@ -48,5 +52,13 @@ public class Connection {
      */
     public Connect getConnection() {
         return connection;
+    }
+
+    /**
+     * Returns the object's uuid
+     * @return
+     */
+    public UUID getUuid() {
+        return uuid;
     }
 }
