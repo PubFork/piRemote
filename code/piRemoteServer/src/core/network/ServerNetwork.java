@@ -36,7 +36,7 @@ public class ServerNetwork {
         }
 
         serverRunning = true;
-        senderThread = new ServerSenderThread(socket, sessionTable);
+        senderThread = new ServerSenderThread(sessionTable);
         dispatcherThread = new ServerDispatcherThread(socket, sessionTable, senderThread);
         keepAliveThread = new ServerKeepAliveThread(dispatcherThread, sessionTable);
     }

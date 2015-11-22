@@ -19,15 +19,12 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class ServerSenderThread implements Runnable {
 
     private final static BlockingQueue<Message> sendingQueue = new LinkedBlockingQueue<>();
-    private ServerSocket serverSocket;
     private Thread senderThread;
     private HashMap<UUID, NetworkInfo> sessionTable;
     private ObjectOutputStream outputStream;
 
-    public ServerSenderThread(ServerSocket socket, HashMap sTable){
-        serverSocket = socket;
+    public ServerSenderThread(HashMap sTable){
         sessionTable = sTable;
-
 
         senderThread = new Thread(this);
         senderThread.start();
