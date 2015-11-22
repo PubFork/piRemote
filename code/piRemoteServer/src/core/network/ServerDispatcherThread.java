@@ -2,20 +2,17 @@ package core.network;
 
 import ConnectionManagement.Connection;
 import MessageObject.Message;
-import MessageObject.PayloadObject.Payload;
-import SharedConstants.ApplicationCsts;
-import SharedConstants.CoreCsts;
-import com.sun.corba.se.spi.activation.Server;
-import core.AbstractApplication;
 import core.ServerCore;
-import sun.nio.ch.Net;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 
 /**
@@ -32,9 +29,18 @@ public class ServerDispatcherThread implements Runnable {
     private HashMap<UUID, NetworkInfo> sessionTable;
     private BlockingQueue<Message> sendingQueue;
 
-    public ServerDispatcherThread(ServerSocket socket, HashMap sTable, ServerSenderThread senderThread) {
+    /**
+     * The Dispatcher receives on the ServerSocket at
+     * @param port
+     */
+    public ServerDispatcherThread(int port, HashMap sTable, ServerSenderThread senderThread) {
 
-        serverSocket = socket;
+        try {
+            serverSocket = new ServerSocket(port);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         sessionTable = sTable;
         sendingQueue = senderThread.getSendingQueue();
 
@@ -89,7 +95,7 @@ public class ServerDispatcherThread implements Runnable {
                         sessionTable.put(uuid, clientInfo);
 
                         sendingQueue.add(new Message(uuid, ServerCore.getState().getServerState(), ServerCore.getState().getApplicationState()));
-                    } else {
+                    } else if (connection.getConnection() == Connection.Connect.DISCONNECT) {
                         // TODO: remove from sessionTable -> include UUID in diconnection?
                     }
 

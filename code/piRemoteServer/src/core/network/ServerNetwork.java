@@ -19,8 +19,6 @@ public class ServerNetwork {
     private ServerSenderThread senderThread;
     private HashMap<UUID, NetworkInfo> sessionTable = new HashMap<>();
 
-    private ServerSocket socket;
-
     private static boolean serverRunning;
 
     /**
@@ -28,16 +26,9 @@ public class ServerNetwork {
      * @param port is needed to create the ServerSocket
      */
     public ServerNetwork(int port) {
-
-        try {
-            socket = new ServerSocket(port);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         serverRunning = true;
+        dispatcherThread = new ServerDispatcherThread(port, sessionTable, senderThread);
         senderThread = new ServerSenderThread(sessionTable);
-        dispatcherThread = new ServerDispatcherThread(socket, sessionTable, senderThread);
         keepAliveThread = new ServerKeepAliveThread(dispatcherThread, sessionTable);
     }
 
@@ -74,7 +65,7 @@ public class ServerNetwork {
     }
 
 
-        public static boolean isRunning () {
+    public static boolean isRunning () {
         return serverRunning;
     }
 }
