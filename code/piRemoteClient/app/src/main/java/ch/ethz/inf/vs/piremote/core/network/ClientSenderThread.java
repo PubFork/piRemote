@@ -1,7 +1,5 @@
 package ch.ethz.inf.vs.piremote.core.network;
 
-import MessageObject.Message;
-
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
@@ -39,7 +37,7 @@ public class ClientSenderThread implements Runnable {
     @Override
     public void run() {
 
-        while (ClientNetwork.running || !sendingQueue.isEmpty()) {
+        while (ClientNetwork.running.get() || !sendingQueue.isEmpty()) {
             try {
                 /**
                  * take one message from the queue, put it on the outputstream

@@ -3,9 +3,6 @@ package ch.ethz.inf.vs.piremote.core.network;
 import ConnectionManagement.Connection;
 import MessageObject.Message;
 import SharedConstants.CoreCsts;
-import ch.ethz.inf.vs.piremote.core.network.ClientDispatcherThread;
-import ch.ethz.inf.vs.piremote.core.network.ClientKeepAliveThread;
-import ch.ethz.inf.vs.piremote.core.network.ClientSenderThread;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -13,6 +10,7 @@ import java.net.Socket;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * created by fabian on 13.11.15
@@ -24,7 +22,7 @@ public class ClientNetwork implements Runnable{
     private ClientSenderThread clientSenderThread;
 
     public static UUID uuid;
-    public static boolean running;
+    public static AtomicBoolean running;
     public static Socket socket;
 
     private Thread networkThread;
@@ -87,7 +85,7 @@ public class ClientNetwork implements Runnable{
 
         // notify ClientCore that server is down
         ClientDispatcherThread.getcoreMainQueue().add(new Message(ClientNetwork.uuid, CoreCsts.ServerState.SERVER_DOWN, null));
-        running = false;
+        running.set(false);
     }
 
     @Override
@@ -98,7 +96,7 @@ public class ClientNetwork implements Runnable{
             e.printStackTrace();
         }
 
-        running = true;
+        running.set(true);
         uuid = null;
 
         // initialize the threads

@@ -1,11 +1,8 @@
 package ch.ethz.inf.vs.piremote.core.network;
 
 import MessageObject.Message;
-import MessageObject.PayloadObject.ServerStateChange;
 import SharedConstants.CoreCsts;
-import android.net.NetworkInfo;
 import ch.ethz.inf.vs.piremote.core.ClientCore;
-import ch.ethz.inf.vs.piremote.core.network.ClientSenderThread;
 
 import java.lang.Thread;
 import java.util.concurrent.BlockingQueue;
@@ -34,7 +31,7 @@ public class ClientKeepAliveThread implements Runnable {
     @Override
     public void run() {
 
-        while (ClientNetwork.running) {
+        while (ClientNetwork.running.get()) {
 
             if (System.currentTimeMillis() - ClientDispatcherThread.getLastSeen() < 3*INTERVAL) {
                 Message keepAlive = new Message(ClientNetwork.uuid, ClientCore.getState());

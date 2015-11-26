@@ -1,6 +1,5 @@
 package ch.ethz.inf.vs.piremote.core.network;
 
-import ch.ethz.inf.vs.piremote.core.network.ClientKeepAliveThread;
 import MessageObject.Message;
 
 import java.io.IOException;
@@ -51,7 +50,7 @@ public class ClientDispatcherThread implements Runnable {
     @Override
     public void run() {
 
-        while (ClientNetwork.running) {
+        while (ClientNetwork.running.get()) {
             try {
 
                 /**
