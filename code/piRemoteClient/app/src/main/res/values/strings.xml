@@ -4,4 +4,8 @@
     <string name="title_activity_application_chooser">ApplicationChooserActivity</string>
     <string name="title_activity_abstract">AbstractActivity</string>
     <string name="title_activity_traffic_light">TrafficLightActivity</string>
+    <string name="connect_name">Connect</string>
+    <string name="IP_name">IP Address</string>
+    <string name="port_name">Port</string>
+    <string name="welcome">Enter IP and port of your Raspberry Pi</string>
 </resources>

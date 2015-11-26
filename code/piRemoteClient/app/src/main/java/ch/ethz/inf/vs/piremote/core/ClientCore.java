@@ -20,7 +20,7 @@ import ch.ethz.inf.vs.piremote.core.network.ClientNetwork;
  */
 public class ClientCore extends Service {
 
-    public static final BlockingQueue<Message> mainQueue = new LinkedBlockingQueue<>();
+    public static final LinkedBlockingQueue<Message> mainQueue = new LinkedBlockingQueue<>();
 
     protected static UUID uuid; // Store UUID assigned from the server
     protected static CoreCsts.ServerState serverState;
@@ -31,9 +31,6 @@ public class ClientCore extends Service {
     protected static int port;
     protected static ClientNetwork network;
 
-    public ClientCore() {
-    }
-
     public ClientCore(InetAddress mAddress, int mPort) {
         address = mAddress;
         port = mPort;
@@ -42,7 +39,9 @@ public class ClientCore extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        // Start all other threads by creating a ClientNetwork. Then block on the main queue and process messages using processMessage().
+        network = new ClientNetwork(address,port,mainQueue);
+
+        // Start all other threads by creating a ClientNetwork. Send Connection Request. Then block on the main queue and process messages using processMessage().
     }
 
     @Override
