@@ -17,7 +17,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 /**
  * created by fabian on 13.11.15
  */
-public class ClientNetwork {
+public class ClientNetwork implements Runnable{
 
     private ClientDispatcherThread dispatcherThread;
     private ClientKeepAliveThread keepAliveThread;
@@ -27,6 +27,10 @@ public class ClientNetwork {
     public static boolean running;
     public static Socket socket;
 
+    private Thread networkThread;
+    private InetAddress address;
+    private int port;
+    private LinkedBlockingQueue mainQueue;
 
     /**
      * create a ClientNetwork object that has several threads. This constructor is called
@@ -37,24 +41,12 @@ public class ClientNetwork {
      */
     public ClientNetwork(InetAddress address, int port, LinkedBlockingQueue mainQueue) {
 
-        try {
-            socket = new Socket(address, port);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        this.address = address;
+        this.port = port;
+        this.mainQueue = mainQueue;
 
-        running = true;
-        uuid = null;
-
-        // initialize the threads
-        clientSenderThread = new ClientSenderThread(socket);
-        keepAliveThread = new ClientKeepAliveThread(clientSenderThread, mainQueue);
-        dispatcherThread = new ClientDispatcherThread(socket, keepAliveThread, mainQueue);
-
-        // start threads
-        clientSenderThread.getThread().start();
-        dispatcherThread.getThread().start();
-        keepAliveThread.getThread().start();
+        networkThread = new Thread(this);
+        networkThread.start();
     }
 
 
@@ -96,5 +88,27 @@ public class ClientNetwork {
         // notify ClientCore that server is down
         ClientDispatcherThread.getcoreMainQueue().add(new Message(ClientNetwork.uuid, CoreCsts.ServerState.SERVER_DOWN, null));
         running = false;
+    }
+
+    @Override
+    public void run() {
+        try {
+            socket = new Socket(address, port);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        running = true;
+        uuid = null;
+
+        // initialize the threads
+        clientSenderThread = new ClientSenderThread(socket);
+        keepAliveThread = new ClientKeepAliveThread(clientSenderThread, mainQueue);
+        dispatcherThread = new ClientDispatcherThread(socket, keepAliveThread, mainQueue);
+
+        // start threads
+        clientSenderThread.getThread().start();
+        dispatcherThread.getThread().start();
+        keepAliveThread.getThread().start();
     }
 }
