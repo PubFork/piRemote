@@ -1,5 +1,7 @@
 package ch.ethz.inf.vs.piremote.core.network;
 
+import android.util.Log;
+
 import MessageObject.Message;
 import SharedConstants.CoreCsts;
 import ch.ethz.inf.vs.piremote.core.ClientCore;
@@ -14,14 +16,14 @@ import java.util.concurrent.BlockingQueue;
 public class ClientKeepAliveThread implements Runnable {
 
     private BlockingQueue<Object> sendingQueue;
-    private BlockingQueue<Object> mainQueue;
     private Thread keepAliveThread;
-    private long INTERVAL = 1000;
+    private final long INTERVAL = 1000;
+    private final long ALLOWED_DROPS = 3;
+    private final long TIMEOUT = ALLOWED_DROPS * INTERVAL;
 
 
-    public ClientKeepAliveThread(ClientSenderThread sender, BlockingQueue mainQueue) {
+    public ClientKeepAliveThread(ClientSenderThread sender) {
         sendingQueue = sender.getSendingQueue();
-        this.mainQueue = mainQueue;
 
         keepAliveThread = new Thread(this);
         // start it when connecting
@@ -30,23 +32,33 @@ public class ClientKeepAliveThread implements Runnable {
 
     @Override
     public void run() {
-
         while (ClientNetwork.running.get()) {
-
-            if (System.currentTimeMillis() - ClientDispatcherThread.getLastSeen() < 3*INTERVAL) {
+            long stillAlive = System.currentTimeMillis() - ClientDispatcherThread.getLastSeen();
+            if (stillAlive < TIMEOUT) {
+                /*
+                If the server<->client link hasn't timed out yet, place a keep alive message on the
+                sending queue.
+                 */
                 Message keepAlive = new Message(ClientNetwork.uuid, ClientCore.getState());
                 sendingQueue.add(keepAlive);
+                Log.d("## KeepAlive ##", "Sending keep alive to server");
             } else {
+                /*
+                Else let us reset our application's state.
+                 */
                 ClientDispatcherThread.getcoreMainQueue().add(new Message(ClientNetwork.uuid, CoreCsts.ServerState.SERVER_DOWN, null));
+                Log.d("## KeepAlive ##", "Server didn't answer, resetting application state.");
             }
 
+            /*
+            wait INTERVAL time before checking for a need to resend a keep-alive.
+             */
             try {
-                wait(INTERVAL);
+                Thread.sleep(INTERVAL);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-
     }
 
     public Thread getThread() {

@@ -4,7 +4,7 @@ import MessageObject.Message;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.net.Socket;
+import java.net.DatagramSocket;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -16,13 +16,13 @@ public class ClientDispatcherThread implements Runnable {
 
     private ClientKeepAliveThread keepAliveThread;
     private Thread clientDispatcher;
-    private Socket socket;
+    private DatagramSocket socket;
     private ObjectInputStream inputStream;
     private static BlockingQueue coreMainQueue;
     private static long lastSeen;
 
     // constructor
-    public ClientDispatcherThread(Socket socket, ClientKeepAliveThread keepAlive, LinkedBlockingQueue queue){
+    public ClientDispatcherThread(DatagramSocket socket, ClientKeepAliveThread keepAlive, LinkedBlockingQueue queue){
 
         // set keep-alive thread
         keepAliveThread = keepAlive;
@@ -78,7 +78,7 @@ public class ClientDispatcherThread implements Runnable {
     }
 
     public static long getLastSeen() {
-        return  lastSeen;
+        return lastSeen;
     }
 
     public static BlockingQueue getcoreMainQueue() {

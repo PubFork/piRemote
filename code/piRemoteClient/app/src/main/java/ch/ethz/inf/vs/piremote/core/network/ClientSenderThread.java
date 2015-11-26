@@ -2,7 +2,7 @@ package ch.ethz.inf.vs.piremote.core.network;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.net.Socket;
+import java.net.DatagramSocket;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -14,10 +14,10 @@ public class ClientSenderThread implements Runnable {
 
     private final static BlockingQueue<Object> sendingQueue = new LinkedBlockingQueue<Object>();
     private Thread senderThread;
-    private Socket socket;
+    private DatagramSocket socket;
     private ObjectOutputStream outputStream;
 
-    public ClientSenderThread(Socket socket) {
+    public ClientSenderThread(DatagramSocket socket) {
         this.socket = socket;
 
         try {

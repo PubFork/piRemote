@@ -5,8 +5,8 @@ import MessageObject.Message;
 import SharedConstants.CoreCsts;
 
 import java.io.IOException;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.Socket;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -23,7 +23,7 @@ public class ClientNetwork implements Runnable{
 
     public static UUID uuid;
     public static AtomicBoolean running;
-    public static Socket socket;
+    public static DatagramSocket socket;
 
     private Thread networkThread;
     private InetAddress address;
@@ -91,7 +91,7 @@ public class ClientNetwork implements Runnable{
     @Override
     public void run() {
         try {
-            socket = new Socket(address, port);
+            socket = new DatagramSocket(port);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -101,7 +101,7 @@ public class ClientNetwork implements Runnable{
 
         // initialize the threads
         clientSenderThread = new ClientSenderThread(socket);
-        keepAliveThread = new ClientKeepAliveThread(clientSenderThread, mainQueue);
+        keepAliveThread = new ClientKeepAliveThread(clientSenderThread);
         dispatcherThread = new ClientDispatcherThread(socket, keepAliveThread, mainQueue);
 
         // start threads
