@@ -110,5 +110,7 @@ public class ClientNetwork implements Runnable{
         clientSenderThread.getThread().start();
         dispatcherThread.getThread().start();
         keepAliveThread.getThread().start();
+
+        connect();
     }
 }
