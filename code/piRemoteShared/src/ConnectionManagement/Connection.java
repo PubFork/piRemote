@@ -1,5 +1,6 @@
 package ConnectionManagement;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 /**
@@ -9,7 +10,7 @@ import java.util.UUID;
  * or not at all. The server is not using this class for direct communication
  * with the client.
  */
-public class Connection {
+public class Connection implements Serializable {
 
     // Field that is set by client and handled by server.
     protected Connect connection;

@@ -3,11 +3,13 @@ package StateObject;
 import SharedConstants.ApplicationCsts;
 import SharedConstants.CoreCsts;
 
+import java.io.Serializable;
+
 /**
  * Created by sandro on 10.11.15.
  * Contains ServerState and ApplicationState.
  */
-public class State {
+public class State implements Serializable {
 
     protected CoreCsts.ServerState serverState;
     protected ApplicationCsts.ApplicationState applicationState;
