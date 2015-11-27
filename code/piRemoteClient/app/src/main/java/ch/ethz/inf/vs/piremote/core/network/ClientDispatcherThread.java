@@ -1,8 +1,14 @@
 package ch.ethz.inf.vs.piremote.core.network;
 
+import ConnectionManagement.Connection;
 import MessageObject.Message;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.OptionalDataException;
+import java.io.StreamCorruptedException;
+import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.concurrent.BlockingQueue;
@@ -14,6 +20,7 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 
 public class ClientDispatcherThread implements Runnable {
+    //TODO(Mickey) Add proper Android logging
 
     private Thread clientDispatcher;
     private final DatagramSocket socket; // DatagramSocket used for communication.
@@ -42,32 +49,77 @@ public class ClientDispatcherThread implements Runnable {
     }
 
 
+    /**
+     * Receive a message from the server and manage the connection and input accordingly.
+     */
     @Override
     public void run() {
+        // Allocation of variable to minimise overhead of recreating them every iteration.
+        byte[] receiveBuffer = new byte[8000];
+        DatagramPacket packet = new DatagramPacket(receiveBuffer, receiveBuffer.length);
+        ByteArrayInputStream byteStream = new ByteArrayInputStream(receiveBuffer);
+        ObjectInputStream objectStream = null;
+        Object input;
 
-        while (ClientNetwork.running.get()) {
+        try {
+            objectStream = new ObjectInputStream(byteStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        // Allocation end
+
+        while(ClientNetwork.running.get()) {
+            // Receive packets while ClientNetwork is running.
             try {
-
-                /**
-                 * read a message from the inputstream an forward it to the
-                 * main Queue of the ClientCore
-                 */
-                Message readMessage = (Message) inputStream.readObject();
+                // Receive an input and update the lastSeen value
+                socket.receive(packet);
                 lastSeen.set(System.currentTimeMillis());
 
-                if (ClientNetwork.uuid == null) {
-                    // set uuid when connected
-                    ClientNetwork.uuid = readMessage.getUuid();
-                }
+                // Marshalling of the DatagramPacket back to an object
+                //byteStream = new ByteArrayInputStream(receiveBuffer);
+                //receiveBuffer = packet.getData();
+                //objectStream = new ObjectInputStream(byteStream);
+                input = objectStream.readObject();
 
-                coreMainQueue.put(readMessage);
-            } catch (IOException e) {
-                e.printStackTrace();
+                // Handle the object received.
+                if (input instanceof Message) {
+                    // Message object received
+                    if (ClientNetwork.uuid == null) {
+                        // The client doesn't have a UUID yet, usually first response from server.
+                        ClientNetwork.uuid = ((Message) input).getUuid();
+                    }
+                    coreMainQueue.put(input);
+                } else if (input instanceof Connection) {
+                    // Connection object received, this shouldn't happen
+                } else {
+                    // Something unknown has been received. This is really bad! Abort!
+                    throw new RuntimeException("Unknown input received from network!");
+                }
             } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            } catch (OptionalDataException e) {
+                e.printStackTrace();
+            } catch (StreamCorruptedException e) {
                 e.printStackTrace();
             } catch (InterruptedException e) {
                 e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+        }
+
+        // Close streams, thread has been closed.
+        try {
+            objectStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            byteStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
     }

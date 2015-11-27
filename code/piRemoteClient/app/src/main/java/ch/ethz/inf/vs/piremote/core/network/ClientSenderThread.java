@@ -49,30 +49,27 @@ public class ClientSenderThread implements Runnable {
     public void run() {
         // Allocate variables for thread to have less overhead creating them anew.
         ByteArrayOutputStream byteStream = new ByteArrayOutputStream(8000);
-        ObjectOutputStream outputStream = null;
-        Object messageToSend = null;
+        ObjectOutputStream objectStream = null;
+        Object messageToSend;
         DatagramPacket packet;
 
         try {
-            outputStream = new ObjectOutputStream(byteStream);
-            outputStream.flush();
+            objectStream = new ObjectOutputStream(byteStream);
+            objectStream.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
         // End of allocating memory and objects.
 
-        while (ClientNetwork.running.get()) {
+        while(ClientNetwork.running.get() || !sendingQueue.isEmpty()) {
             // Try sending a message while ClientNetwork is running.
             //TODO(Mickey) Proper documentation on the program logic
             try{
-                while (!sendingQueue.isEmpty()) {
-                    // Block on an empty queue.
-                    messageToSend = sendingQueue.take();
-                }
+                messageToSend = sendingQueue.take();
 
                 // Serialise the message to send
-                outputStream.writeObject(messageToSend);
-                outputStream.flush();
+                objectStream.writeObject(messageToSend);
+                objectStream.flush();
 
                 // Create a buffer and the corresponding packet to be sent to inetAddress/port.
                 byte[] sendBuffer = byteStream.toByteArray();
@@ -94,7 +91,7 @@ public class ClientSenderThread implements Runnable {
             e.printStackTrace();
         }
         try {
-            outputStream.close();
+            objectStream.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -107,17 +104,6 @@ public class ClientSenderThread implements Runnable {
      */
     public BlockingQueue<Object> getSendingQueue() {
         return sendingQueue;
-    }
-
-    /**
-     * Method returns if the sendingQueue is empty (packet should be sent) or the sendingQueue does
-     * not have an object connection inside it.
-     * @param connection Object to check for.
-     */
-    public void connectionChangeToServerisSent(Connection connection) {
-        while(sendingQueue.contains(connection) || !sendingQueue.isEmpty()) {
-        }
-        return;
     }
 
     public Thread getThread() {

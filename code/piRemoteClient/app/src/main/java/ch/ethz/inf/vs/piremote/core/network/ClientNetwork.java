@@ -16,6 +16,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * created by fabian on 13.11.15
  */
 public class ClientNetwork implements Runnable{
+    //TODO(Mickey) Add proper Android logging
 
     private ClientDispatcherThread dispatcherThread;
     private ClientKeepAliveThread keepAliveThread;
@@ -46,9 +47,8 @@ public class ClientNetwork implements Runnable{
         networkThread.start();
     }
 
-
     /**
-     * Returns SenderThread
+     * Returns SenderThread.
      * @return Instantiated object of ClientSenderThread.
      */
     public ClientSenderThread getClientSenderThread() {
@@ -59,11 +59,8 @@ public class ClientNetwork implements Runnable{
         return getClientSenderThread().getSendingQueue();
     }
 
-    //TODO(Mickey) Fix the connection/disconnection, give them the same behaviour, best would be a
-    //             guarantee to have them only return once they successfully executed.
-
     /**
-     * Connect to server. This method might block.
+     * Connect to server.
      */
     public void connectToServer() {
         Connection request = new Connection();
@@ -71,25 +68,24 @@ public class ClientNetwork implements Runnable{
 
         // put connection request on sendingQueue
         getSendingQueue().add(request);
-        clientSenderThread.connectionChangeToServerisSent(request);
     }
 
     /**
-     * Disconnect from server. This method might block.
+     * Disconnect from server.
      */
     public void disconnectFromServer() {
         Connection disconnectRequest = new Connection();
         disconnectRequest.disconnect(uuid);
 
-        // Send disconnection request to the server and wait until is has been sent there.
+        // Send disconnection request to the server.
         getSendingQueue().add(disconnectRequest);
-        clientSenderThread.connectionChangeToServerisSent(disconnectRequest);
 
         // Notify ClientCore that the connection to the server has been terminated. Set the status
         // of the client appropriately.
         Message disconnectServer = new Message(ClientNetwork.uuid, CoreCsts.ServerState.SERVER_DOWN, null);
         ClientDispatcherThread.getCoreMainQueue().add(disconnectServer);
         running.set(false);
+        this.uuid = null;
     }
 
     @Override
