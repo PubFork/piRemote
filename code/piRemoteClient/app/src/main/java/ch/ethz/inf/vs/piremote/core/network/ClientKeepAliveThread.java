@@ -23,7 +23,7 @@ public class ClientKeepAliveThread implements Runnable {
 
 
     public ClientKeepAliveThread(ClientSenderThread sender) {
-        sendingQueue = sender.getSendingQueue();
+        this.sendingQueue = sender.getSendingQueue();
 
         keepAliveThread = new Thread(this);
         // start it when connecting
@@ -42,8 +42,8 @@ public class ClientKeepAliveThread implements Runnable {
                 Log.d("## KeepAlive ##", "Sending keep alive to server");
             } else {
                 // Else let us reset our application's state.
-                Message missingKeepAlive = new Message(ClientNetwork.uuid, CoreCsts.ServerState.SERVER_DOWN, null);
-                ClientDispatcherThread.getcoreMainQueue().add(missingKeepAlive);
+                Message disconnectServer = new Message(ClientNetwork.uuid, CoreCsts.ServerState.SERVER_DOWN, null);
+                ClientDispatcherThread.getCoreMainQueue().add(disconnectServer);
                 Log.d("## KeepAlive ##", "Server didn't answer, resetting application state.");
             }
 

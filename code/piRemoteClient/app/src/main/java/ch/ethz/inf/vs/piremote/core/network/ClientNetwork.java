@@ -26,9 +26,9 @@ public class ClientNetwork implements Runnable{
     public static DatagramSocket socket;
 
     private Thread networkThread;
-    private InetAddress address;
-    private int port;
-    private LinkedBlockingQueue mainQueue;
+    private final InetAddress address;
+    private final int port;
+    private final LinkedBlockingQueue mainQueue;
 
     /**
      * create a ClientNetwork object that has several threads. This constructor is called
@@ -38,7 +38,6 @@ public class ClientNetwork implements Runnable{
      * @param mainQueue mainqueue on which the dispatcher will put the messages for the core
      */
     public ClientNetwork(InetAddress address, int port, LinkedBlockingQueue mainQueue) {
-
         this.address = address;
         this.port = port;
         this.mainQueue = mainQueue;
@@ -49,8 +48,8 @@ public class ClientNetwork implements Runnable{
 
 
     /**
-     * use this getter-function to get the senderthread
-     * @return
+     * Returns SenderThread
+     * @return Instantiated object of ClientSenderThread.
      */
     public ClientSenderThread getClientSenderThread() {
         return clientSenderThread;
@@ -60,31 +59,36 @@ public class ClientNetwork implements Runnable{
         return getClientSenderThread().getSendingQueue();
     }
 
+    //TODO(Mickey) Fix the connection/disconnection, give them the same behaviour, best would be a
+    //             guarantee to have them only return once they successfully executed.
 
     /**
-     * call this function to connect to the server
+     * Connect to server. This method might block.
      */
-    public void connect() {
+    public void connectToServer() {
         Connection request = new Connection();
         request.requestConnection();
 
         // put connection request on sendingQueue
         getSendingQueue().add(request);
+        clientSenderThread.connectionChangeToServerisSent(request);
     }
 
     /**
-     * call this function to disconnect from the server
+     * Disconnect from server. This method might block.
      */
-    public void disconnect() {
-
+    public void disconnectFromServer() {
         Connection disconnectRequest = new Connection();
         disconnectRequest.disconnect(uuid);
 
-        // put disconnect on sendingQueue
+        // Send disconnection request to the server and wait until is has been sent there.
         getSendingQueue().add(disconnectRequest);
+        clientSenderThread.connectionChangeToServerisSent(disconnectRequest);
 
-        // notify ClientCore that server is down
-        ClientDispatcherThread.getcoreMainQueue().add(new Message(ClientNetwork.uuid, CoreCsts.ServerState.SERVER_DOWN, null));
+        // Notify ClientCore that the connection to the server has been terminated. Set the status
+        // of the client appropriately.
+        Message disconnectServer = new Message(ClientNetwork.uuid, CoreCsts.ServerState.SERVER_DOWN, null);
+        ClientDispatcherThread.getCoreMainQueue().add(disconnectServer);
         running.set(false);
     }
 

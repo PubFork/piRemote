@@ -9,6 +9,8 @@ import java.net.InetAddress;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import ConnectionManagement.Connection;
+
 /**
  * created by fabian on 13.11.15
  */
@@ -105,6 +107,17 @@ public class ClientSenderThread implements Runnable {
      */
     public BlockingQueue<Object> getSendingQueue() {
         return sendingQueue;
+    }
+
+    /**
+     * Method returns if the sendingQueue is empty (packet should be sent) or the sendingQueue does
+     * not have an object connection inside it.
+     * @param connection Object to check for.
+     */
+    public void connectionChangeToServerisSent(Connection connection) {
+        while(sendingQueue.contains(connection) || !sendingQueue.isEmpty()) {
+        }
+        return;
     }
 
     public Thread getThread() {

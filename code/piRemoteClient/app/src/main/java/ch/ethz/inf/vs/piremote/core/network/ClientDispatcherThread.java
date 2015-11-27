@@ -18,7 +18,7 @@ public class ClientDispatcherThread implements Runnable {
     private Thread clientDispatcher;
     private final DatagramSocket socket; // DatagramSocket used for communication.
     private static BlockingQueue coreMainQueue; // Queue which the DispatchetThread puts received messages in.
-    private AtomicLong lastSeen = null; // Timestamp of last received message from the server.
+    private static AtomicLong lastSeen; // Timestamp of last received message from the server.
 
     private final InetAddress inetAddress; // Address of server.
     private final int port; // Port on which is being listened/sent by the client.
@@ -44,7 +44,7 @@ public class ClientDispatcherThread implements Runnable {
 
     @Override
     public void run() {
-        
+
         while (ClientNetwork.running.get()) {
             try {
 
@@ -76,7 +76,7 @@ public class ClientDispatcherThread implements Runnable {
      * Returns the last timestamp a message has been received.
      * @return lastSeen-value of successful incoming communication if any happened, else return -1;
      */
-    public long getLastSeen() {
+    public static long getLastSeen() {
         if (null != lastSeen) {
             return lastSeen.get();
         } else {
@@ -84,7 +84,7 @@ public class ClientDispatcherThread implements Runnable {
         }
     }
 
-    public static BlockingQueue getcoreMainQueue() {
+    public static BlockingQueue getCoreMainQueue() {
         return coreMainQueue;
     }
 
