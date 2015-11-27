@@ -102,7 +102,7 @@ public class ClientNetwork implements Runnable{
         // initialize the threads
         clientSenderThread = new ClientSenderThread(socket, address);
         keepAliveThread = new ClientKeepAliveThread(clientSenderThread);
-        dispatcherThread = new ClientDispatcherThread(socket, keepAliveThread, mainQueue);
+        dispatcherThread = new ClientDispatcherThread(socket, address, mainQueue);
 
         // start threads
         clientSenderThread.getThread().start();

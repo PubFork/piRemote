@@ -3,10 +3,11 @@ package ch.ethz.inf.vs.piremote.core.network;
 import MessageObject.Message;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * created by fabian on 13.11.15
@@ -14,31 +15,25 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class ClientDispatcherThread implements Runnable {
 
-    private ClientKeepAliveThread keepAliveThread;
     private Thread clientDispatcher;
-    private DatagramSocket socket;
-    private ObjectInputStream inputStream;
-    private static BlockingQueue coreMainQueue;
-    private static long lastSeen;
+    private final DatagramSocket socket; // DatagramSocket used for communication.
+    private static BlockingQueue coreMainQueue; // Queue which the DispatchetThread puts received messages in.
+    private AtomicLong lastSeen = null; // Timestamp of last received message from the server.
 
-    // constructor
-    public ClientDispatcherThread(DatagramSocket socket, ClientKeepAliveThread keepAlive, LinkedBlockingQueue queue){
+    private final InetAddress inetAddress; // Address of server.
+    private final int port; // Port on which is being listened/sent by the client.
 
-        // set keep-alive thread
-        keepAliveThread = keepAlive;
-
-        // set mainQueue from the core
-        coreMainQueue = queue;
-
-        // set the socket for the client/server connection
+    /**
+     * Default constructor for the DispatcherThread.
+     * @param socket Socket used for receiving.
+     * @param inetAddress Address to communicate with.
+     * @param queue Queue to put received messages on.
+     */
+    public ClientDispatcherThread(DatagramSocket socket, InetAddress inetAddress, LinkedBlockingQueue queue){
         this.socket = socket;
-
-        try {
-            // set the inputstream of the socket.
-            inputStream = new ObjectInputStream(this.socket.getInputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        this.port = socket.getPort();
+        this.inetAddress = inetAddress;
+        this.coreMainQueue = queue;
 
         // set up the thread
         clientDispatcher = new Thread(this);
@@ -49,7 +44,7 @@ public class ClientDispatcherThread implements Runnable {
 
     @Override
     public void run() {
-
+        
         while (ClientNetwork.running.get()) {
             try {
 
@@ -58,7 +53,7 @@ public class ClientDispatcherThread implements Runnable {
                  * main Queue of the ClientCore
                  */
                 Message readMessage = (Message) inputStream.readObject();
-                lastSeen = System.currentTimeMillis();
+                lastSeen.set(System.currentTimeMillis());
 
                 if (ClientNetwork.uuid == null) {
                     // set uuid when connected
@@ -77,8 +72,16 @@ public class ClientDispatcherThread implements Runnable {
 
     }
 
-    public static long getLastSeen() {
-        return lastSeen;
+    /**
+     * Returns the last timestamp a message has been received.
+     * @return lastSeen-value of successful incoming communication if any happened, else return -1;
+     */
+    public long getLastSeen() {
+        if (null != lastSeen) {
+            return lastSeen.get();
+        } else {
+            return -1;
+        }
     }
 
     public static BlockingQueue getcoreMainQueue() {
