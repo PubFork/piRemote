@@ -15,8 +15,9 @@ import java.util.concurrent.BlockingQueue;
 
 public class ClientKeepAliveThread implements Runnable {
 
-    private BlockingQueue<Object> sendingQueue;
-    private Thread keepAliveThread;
+    private final BlockingQueue<Object> sendingQueue;
+    private final Thread keepAliveThread;
+
     private final long INTERVAL = 1000;
     private final long ALLOWED_DROPS = 3;
     private final long TIMEOUT = ALLOWED_DROPS * INTERVAL;
@@ -32,7 +33,7 @@ public class ClientKeepAliveThread implements Runnable {
 
     @Override
     public void run() {
-        while (ClientNetwork.running.get()) {
+        while (ClientNetwork.isRunning()) {
             long stillAlive = System.currentTimeMillis() - ClientDispatcherThread.getLastSeen();
             if (stillAlive < TIMEOUT) {
                 // If the server<->client link hasn't timed out yet, place a keep alive message on
@@ -56,6 +57,10 @@ public class ClientKeepAliveThread implements Runnable {
         }
     }
 
+    /**
+     * Returns direct reference to the keepAliveThread.
+     * @return Direct reference to keepAliveThread.
+     */
     public Thread getThread() {
         return keepAliveThread;
     }

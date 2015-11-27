@@ -4,9 +4,9 @@ import ConnectionManagement.Connection;
 import MessageObject.Message;
 import SharedConstants.CoreCsts;
 
-import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketException;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -20,13 +20,13 @@ public class ClientNetwork implements Runnable{
 
     private ClientDispatcherThread dispatcherThread;
     private ClientKeepAliveThread keepAliveThread;
-    private ClientSenderThread clientSenderThread;
+    private ClientSenderThread senderThread;
 
     public static UUID uuid;
     public static AtomicBoolean running;
     public static DatagramSocket socket;
 
-    private Thread networkThread;
+    private final Thread networkThread;
     private final InetAddress address;
     private final int port;
     private final LinkedBlockingQueue mainQueue;
@@ -43,20 +43,59 @@ public class ClientNetwork implements Runnable{
         this.port = port;
         this.mainQueue = mainQueue;
 
-        networkThread = new Thread(this);
-        networkThread.start();
+        this.running = new AtomicBoolean(false);
+        this.networkThread = new Thread(this);
+        this.networkThread.start();
+    }
+
+    @Override
+    public void run() {
+        try {
+            socket = new DatagramSocket(port);
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+
+        running.set(true);
+        uuid = null;
+
+        // initialize the threads
+        senderThread = new ClientSenderThread(socket, address);
+        keepAliveThread = new ClientKeepAliveThread(senderThread);
+        dispatcherThread = new ClientDispatcherThread(socket, address, mainQueue);
+
+        // start threads
+        senderThread.getThread().start();
+        dispatcherThread.getThread().start();
+        keepAliveThread.getThread().start();
     }
 
     /**
-     * Returns SenderThread.
-     * @return Instantiated object of ClientSenderThread.
+     * Returns direct reference of the SenderThread.
+     * @return Direct reference of SenderThread.
      */
-    public ClientSenderThread getClientSenderThread() {
-        return clientSenderThread;
+    public ClientSenderThread getSenderThread() {
+        return senderThread;
     }
 
+    /**
+     * Returns direct reference of the SendingQueue if the SenderThread is running.
+     * @return SendingQueue if SenderThread exists, else null.
+     */
     public BlockingQueue<Object> getSendingQueue() {
-        return getClientSenderThread().getSendingQueue();
+        if (senderThread == null) {
+            return null;
+        } else {
+            return senderThread.getSendingQueue();
+        }
+    }
+
+    /**
+     * Return whether ClientNetwork is running or not.
+     * @return Returns true if the ClientNetwork is running, else false.
+     */
+    public static boolean isRunning() {
+        return running.get();
     }
 
     /**
@@ -84,29 +123,8 @@ public class ClientNetwork implements Runnable{
         // of the client appropriately.
         Message disconnectServer = new Message(ClientNetwork.uuid, CoreCsts.ServerState.SERVER_DOWN, null);
         ClientDispatcherThread.getCoreMainQueue().add(disconnectServer);
+
         running.set(false);
         this.uuid = null;
-    }
-
-    @Override
-    public void run() {
-        try {
-            socket = new DatagramSocket(port);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        running.set(true);
-        uuid = null;
-
-        // initialize the threads
-        clientSenderThread = new ClientSenderThread(socket, address);
-        keepAliveThread = new ClientKeepAliveThread(clientSenderThread);
-        dispatcherThread = new ClientDispatcherThread(socket, address, mainQueue);
-
-        // start threads
-        clientSenderThread.getThread().start();
-        dispatcherThread.getThread().start();
-        keepAliveThread.getThread().start();
     }
 }

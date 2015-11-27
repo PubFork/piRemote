@@ -85,8 +85,8 @@ public class ClientDispatcherThread implements Runnable {
                 // Handle the object received.
                 if (input instanceof Message) {
                     // Message object received
-                    if (ClientNetwork.uuid == null) {
-                        // The client doesn't have a UUID yet, usually first response from server.
+                    if (ClientNetwork.uuid == null || ClientNetwork.uuid != ((Message) input).getUuid()) {
+                        // The client doesn't have a UUID yet or it has an invalid UUID.
                         ClientNetwork.uuid = ((Message) input).getUuid();
                     }
                     coreMainQueue.put(input);
