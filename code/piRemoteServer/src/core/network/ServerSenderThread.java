@@ -19,15 +19,16 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class ServerSenderThread implements Runnable {
 
     private final static BlockingQueue<Message> sendingQueue = new LinkedBlockingQueue<>();
-    private Thread senderThread;
     private HashMap<UUID, NetworkInfo> sessionTable;
     private ObjectOutputStream outputStream;
+
+    private final Thread senderThread;
 
     public ServerSenderThread(HashMap sTable){
         sessionTable = sTable;
 
-        senderThread = new Thread(this);
-        senderThread.start();
+        this.senderThread = new Thread(this);
+        // senderThread.start();
     }
 
 
@@ -40,7 +41,7 @@ public class ServerSenderThread implements Runnable {
                 Message toSend = sendingQueue.take();
 
                 NetworkInfo networkInfo = sessionTable.get(toSend.getUuid());
-                InetSocketAddress destination = new InetSocketAddress(networkInfo.ip, networkInfo.port);
+                InetSocketAddress destination = new InetSocketAddress(networkInfo.getIp(), networkInfo.getPort());
                 senderSocket.connect(destination);
                 outputStream = new ObjectOutputStream(senderSocket.getOutputStream());
                 outputStream.writeObject(toSend);
@@ -51,7 +52,20 @@ public class ServerSenderThread implements Runnable {
         }
     }
 
-    public static BlockingQueue<Message> getSendingQueue() {
+    /**
+     * Returns direct reference to the sendingQueue.
+     * @return Dirent reference to sendingQueue.
+     */
+    public BlockingQueue<Message> getQueue() {
         return sendingQueue;
     }
+
+    /**
+     * Returns direct reference to the senderThread.
+     * @return Direct reference to senderThread.
+     */
+    public Thread getThread() {
+        return senderThread;
+    }
+
 }
