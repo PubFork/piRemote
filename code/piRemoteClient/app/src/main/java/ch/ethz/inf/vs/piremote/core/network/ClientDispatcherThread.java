@@ -42,6 +42,7 @@ public class ClientDispatcherThread implements Runnable {
         this.inetAddress = inetAddress;
         this.coreMainQueue = queue;
 
+        this.lastSeen = new AtomicLong(0l);
         // set up the thread
         clientDispatcher = new Thread(this);
         // start it when connecting
@@ -66,8 +67,6 @@ public class ClientDispatcherThread implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
         // Allocation end
 
         while(ClientNetwork.running.get()) {
@@ -126,14 +125,10 @@ public class ClientDispatcherThread implements Runnable {
 
     /**
      * Returns the last timestamp a message has been received.
-     * @return lastSeen-value of successful incoming communication if any happened, else return -1;
+     * @return lastSeen-value of successful incoming communication if any happened, else return 0;
      */
     public static long getLastSeen() {
-        if (null != lastSeen) {
-            return lastSeen.get();
-        } else {
-            return -1;
-        }
+        return lastSeen.get();
     }
 
     public static BlockingQueue getCoreMainQueue() {
