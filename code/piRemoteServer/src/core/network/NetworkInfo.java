@@ -23,4 +23,36 @@ public class NetworkInfo {
         this.port = port;
         this.lastSeen = new AtomicLong(lastSeen.get());
     }
+
+    /**
+     * Returns the IP of the active session.
+     * @return IP of session.
+     */
+    public InetAddress getIp() {
+        return this.ip;
+    }
+
+    /**
+     * Returns the port of the active session.
+     * @return Port of session.
+     */
+    public int getPort() {
+        return this.port;
+    }
+
+    /**
+     * Returns lastSeen info of the active session.
+     * @return LastSeen of client communication.
+     */
+    public long getLastSeen() {
+        return this.lastSeen.get();
+    }
+
+    /**
+     * Updates the active session's lastSeen value with newSeen's value.
+     * @param newSeen AtomicLong with new lastSeen value to be set on old lastSeen.
+     */
+    public void updateLastSeen(AtomicLong newSeen) {
+        this.lastSeen.set(newSeen.get());
+    }
 }
