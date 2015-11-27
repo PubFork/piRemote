@@ -35,24 +35,19 @@ public class ClientKeepAliveThread implements Runnable {
         while (ClientNetwork.running.get()) {
             long stillAlive = System.currentTimeMillis() - ClientDispatcherThread.getLastSeen();
             if (stillAlive < TIMEOUT) {
-                /*
-                If the server<->client link hasn't timed out yet, place a keep alive message on the
-                sending queue.
-                 */
+                // If the server<->client link hasn't timed out yet, place a keep alive message on
+                // the sending queue.
                 Message keepAlive = new Message(ClientNetwork.uuid, ClientCore.getState());
                 sendingQueue.add(keepAlive);
                 Log.d("## KeepAlive ##", "Sending keep alive to server");
             } else {
-                /*
-                Else let us reset our application's state.
-                 */
-                ClientDispatcherThread.getcoreMainQueue().add(new Message(ClientNetwork.uuid, CoreCsts.ServerState.SERVER_DOWN, null));
+                // Else let us reset our application's state.
+                Message missingKeepAlive = new Message(ClientNetwork.uuid, CoreCsts.ServerState.SERVER_DOWN, null);
+                ClientDispatcherThread.getcoreMainQueue().add(missingKeepAlive);
                 Log.d("## KeepAlive ##", "Server didn't answer, resetting application state.");
             }
 
-            /*
-            wait INTERVAL time before checking for a need to resend a keep-alive.
-             */
+            // Wait INTERVAL time before checking for a need to resend a keep-alive.
             try {
                 Thread.sleep(INTERVAL);
             } catch (InterruptedException e) {

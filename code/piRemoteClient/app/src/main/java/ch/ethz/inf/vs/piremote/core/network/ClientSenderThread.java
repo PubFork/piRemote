@@ -1,8 +1,11 @@
 package ch.ethz.inf.vs.piremote.core.network;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -11,21 +14,24 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 
 public class ClientSenderThread implements Runnable {
+    //TODO(Mickey) Add proper Android logging
 
-    private final static BlockingQueue<Object> sendingQueue = new LinkedBlockingQueue<Object>();
-    private Thread senderThread;
-    private DatagramSocket socket;
-    private ObjectOutputStream outputStream;
+    private final static BlockingQueue<Object> sendingQueue = new LinkedBlockingQueue<>();
+    private final Thread senderThread;
+    private final DatagramSocket socket; // DatagramSocket used for communication.
 
-    public ClientSenderThread(DatagramSocket socket) {
+    private final InetAddress inetAddress; // Address of server.
+    private final int port; // Port on which is being listened/sent by the client.
+
+    /**
+     * Default constructor for the SenderThread.
+     * @param socket Socket used for sending.
+     * @param inetAddress Address to communicate with.
+     */
+    public ClientSenderThread(DatagramSocket socket, InetAddress inetAddress) {
         this.socket = socket;
-
-        try {
-            // get the output stream of the socket
-            outputStream = new ObjectOutputStream(this.socket.getOutputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        this.inetAddress = inetAddress;
+        this.port = socket.getPort();
 
         // create Thread
         senderThread = new Thread(this);
@@ -34,19 +40,44 @@ public class ClientSenderThread implements Runnable {
     }
 
 
+    /**
+     * Take a message from the queue and send it using marshalling.
+     */
     @Override
     public void run() {
+        // Allocate variables for thread to have less overhead creating them anew.
+        ByteArrayOutputStream byteStream = new ByteArrayOutputStream(8000);
+        ObjectOutputStream outputStream = null;
+        Object messageToSend = null;
+        DatagramPacket packet;
 
-        while (ClientNetwork.running.get() || !sendingQueue.isEmpty()) {
-            try {
-                /**
-                 * take one message from the queue, put it on the outputstream
-                 * and then flush (send via the socket)
-                 */
-                Object messageToSend = sendingQueue.take(); // or poll?
+        try {
+            outputStream = new ObjectOutputStream(byteStream);
+            outputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // End of allocating memory and objects.
+
+        while (ClientNetwork.running.get()) {
+            // Try sending a message while ClientNetwork is running.
+            //TODO(Mickey) Proper documentation on the program logic
+            try{
+                while (!sendingQueue.isEmpty()) {
+                    // Block on an empty queue.
+                    messageToSend = sendingQueue.take();
+                }
+
+                // Serialise the message to send
                 outputStream.writeObject(messageToSend);
-                outputStream.flush(); // send messages in stream
+                outputStream.flush();
 
+                // Create a buffer and the corresponding packet to be sent to inetAddress/port.
+                byte[] sendBuffer = byteStream.toByteArray();
+                packet = new DatagramPacket(sendBuffer, sendBuffer.length, inetAddress, port);
+
+                // Send the packet.
+                socket.send(packet);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -54,8 +85,18 @@ public class ClientSenderThread implements Runnable {
             }
         }
 
+        // Close streams, thread has been closed.
+        try {
+            byteStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            outputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
-
 
 
     /**

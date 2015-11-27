@@ -100,7 +100,7 @@ public class ClientNetwork implements Runnable{
         uuid = null;
 
         // initialize the threads
-        clientSenderThread = new ClientSenderThread(socket);
+        clientSenderThread = new ClientSenderThread(socket, address);
         keepAliveThread = new ClientKeepAliveThread(clientSenderThread);
         dispatcherThread = new ClientDispatcherThread(socket, keepAliveThread, mainQueue);
 
