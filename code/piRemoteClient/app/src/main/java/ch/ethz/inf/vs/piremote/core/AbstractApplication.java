@@ -1,11 +1,10 @@
 package ch.ethz.inf.vs.piremote.core;
 
 import java.io.File;
-import java.util.List;
-import java.util.UUID;
 
 import MessageObject.Message;
-import SharedConstants.ApplicationCsts;
+import MessageObject.PayloadObject.*;
+import SharedConstants.ApplicationCsts.ApplicationState;
 
 /**
  * Created by andrina on 19/11/15.
@@ -14,36 +13,109 @@ import SharedConstants.ApplicationCsts;
  */
 public abstract class AbstractApplication {
 
-    protected static ApplicationCsts.ApplicationState applicationState;
+    protected static ApplicationState applicationState;
 
-    public ApplicationCsts.ApplicationState getApplicationState() {
+    /**
+     * Inspect the received message and react to it. We can be sure that the application is still running on the server.
+     * @param msg Message the ClientCore forwarded
+     */
+    public void processMessage(Message msg) {
+
+        // First, we need to check the ApplicationState.
+        if(!checkApplicationState(msg)){
+            // Inconsistent state: Change the applicationState before looking at the payload.
+            applicationState = msg.getApplicationState();
+            onApplicationStateChange(applicationState); // Update UI.
+        }
+
+        // ApplicationState is consistent. Look at the payload for additional information.
+        if (msg.hasPayload()) {
+            Payload receivedPayload = msg.getPayload();
+
+            if (receivedPayload instanceof IntMessage) {
+                onReceiveInt(((IntMessage) receivedPayload).i);
+            } else if (receivedPayload instanceof DoubleMessage) {
+                onReceiveDouble(((DoubleMessage) receivedPayload).d);
+            } else if (receivedPayload instanceof StringMessage) {
+                onReceiveString(((StringMessage) receivedPayload).str);
+            }
+        }
+    }
+
+    /**
+     * Use this to read the current application state.
+     * Should be invoked by ClientCore only.
+     */
+    public ApplicationState getApplicationState() {
         return applicationState;
     }
 
-    public void processMessage(Message msg) {
+    /**
+     * Test whether the actual ApplicationState in the Message corresponds to the expected ApplicationState stored in the AbstractApplication.
+     * @param msg Message object for which we have to check the server state
+     */
+    private boolean checkApplicationState(Message msg) {
+        return applicationState != null
+                && msg != null
+                && msg.getApplicationState() != null
+                && msg.getApplicationState().equals(applicationState);
     }
 
-    protected boolean checkApplicationState(Message msg) {
-        if (applicationState == null || msg.getApplicationState() == null) {
-            return false;
-        }
-        return msg.getApplicationState().equals(applicationState);
+    /**
+     * Is called by a client application to request an ApplicationState change.
+     * @param newState the ApplicationState the application wants to change to
+     */
+    protected void changeApplicationState(ApplicationState newState) {
+        // Do not yet change the applicationState locally, but rather wait for a state update (confirmation) from the server.
+        ClientCore.sendMessage(ClientCore.makeMessage(new ApplicationStateChange(newState))); // Send request to the server
     }
 
-    protected void changeApplicationState(ApplicationCsts.ApplicationState newState) {
+    /**
+     * The client application picks a file, which we forward to the server.
+     * @param path represents the picked path, may be either a directory or a file
+     */
+    protected void pickFile(String path) {
+        ClientCore.sendMessage(ClientCore.makeMessage(new Pick(path))); // Send request to the server
     }
 
-    protected void pickFile(List<String> paths) {
-    }
+    /**
+     * Called when a new application is created.
+     * @param startState initial ApplicationState
+     */
+    public abstract void onApplicationStart(ApplicationState startState);
 
-    protected void closeFilePicker() {
-    }
+    /**
+     * Called when an application is destroyed.
+     */
+    public abstract void onApplicationStop();
 
-    public abstract void onApplicationStart();                                                // Called right after creation of the application
-    public abstract void onApplicationStop();                                                 // Called right before the destruction of the application
-    public abstract void onApplicationStateChange(ApplicationCsts.ApplicationState newState); // Called right BEFORE application switches to another state
-    public abstract void onFilePicked(File file);                                             // Called when the FilePicker on the server sent a file pick close
-    public abstract void onReceiveInt(int i);                                                 // Called when an int    message arrived
-    public abstract void onReceiveDouble(double d);                                           // Called when a  double message arrived
-    public abstract void onReceiveString(String str);                                         // Called when a  string message arrived
+    /**
+     * Called when an application switches to another state. Update UI.
+     * @param newState ApplicationState we change to
+     */
+    public abstract void onApplicationStateChange(ApplicationState newState);
+
+    /**
+     * Called when the FilePicker on the server sends a picked file.
+     * @param file File which was requested by the application
+     */
+    public abstract void onFilePicked(File file);
+
+    /**
+     * Called when an int message arrives.
+     * @param i Message Payload
+     */
+    public abstract void onReceiveInt(int i);
+
+    /**
+     * Called when a double message arrives.
+     * @param d Message Payload
+     */
+    public abstract void onReceiveDouble(double d);
+
+    /**
+     * Called when a string message arrives.
+     * @param str Message Payload
+     */
+    public abstract void onReceiveString(String str);
 }

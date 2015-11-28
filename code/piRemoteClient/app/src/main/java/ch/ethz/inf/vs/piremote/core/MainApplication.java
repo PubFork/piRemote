@@ -1,17 +1,16 @@
-package ch.ethz.inf.vs.piremote.application;
+package ch.ethz.inf.vs.piremote.core;
 
 import java.io.File;
 
 import SharedConstants.ApplicationCsts;
 import SharedConstants.ApplicationCsts.ApplicationState;
-import ch.ethz.inf.vs.piremote.core.AbstractApplication;
 
 /**
- * Created by andrina on 19/11/15.
+ * Created by andrina on 28/11/15.
  *
- * Application for demonstration purposes.
+ * The MainActivity is also represented by an application.
  */
-public class TrafficLightApplication extends AbstractApplication {
+public class MainApplication extends AbstractApplication {
 
     @Override
     public void onApplicationStart(ApplicationState startState) {

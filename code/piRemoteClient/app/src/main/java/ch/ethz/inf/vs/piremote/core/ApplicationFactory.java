@@ -14,12 +14,11 @@ public class ApplicationFactory {
         switch (applicationToStart) {
             case TRAFFIC_LIGHT:
                 return new TrafficLightApplication();
-            case SERVER_DOWN:
-                return new MainApplication(); // Server timed out: Disconnect and switch back to the MainActivity.
             case NONE:
                 return new AppChooserApplication(); // No application is running: The client may choose an application to run.
+            case SERVER_DOWN:
             default:
-                return null;
+                return new MainApplication(); // Server timed out: Disconnect and switch back to the MainActivity.
         }
     }
 }

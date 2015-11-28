@@ -19,4 +19,9 @@ public abstract class AbstractActivity extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
 }
