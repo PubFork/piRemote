@@ -21,7 +21,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".core.ApplicationChooserActivity"
+            android:name=".core.AppChooserActivity"
             android:label="@string/title_activity_application_chooser"
             android:parentActivityName=".core.MainActivity"
             android:theme="@style/AppTheme.NoActionBar" >
@@ -32,11 +32,11 @@
         <activity
             android:name=".application.TrafficLightActivity"
             android:label="@string/title_activity_traffic_light"
-            android:parentActivityName=".core.ApplicationChooserActivity"
+            android:parentActivityName=".core.AppChooserActivity"
             android:theme="@style/AppTheme.NoActionBar" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="ch.ethz.inf.vs.piremote.core.ApplicationChooserActivity" />
+                android:value=".core.AppChooserActivity" />
         </activity>
 
         <service

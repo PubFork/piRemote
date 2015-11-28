@@ -94,6 +94,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Disconnect from the Raspberry Pi and terminate all running threads.
+     */
     void disconnetFromPi() {
         // TODO: stopService();
         clientCore.onDestroy();

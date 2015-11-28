@@ -2,7 +2,7 @@ package ch.ethz.inf.vs.piremote.core;
 
 import android.os.Bundle;
 
-public class ApplicationChooserActivity extends AbstractActivity {
+public class AppChooserActivity extends AbstractActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
