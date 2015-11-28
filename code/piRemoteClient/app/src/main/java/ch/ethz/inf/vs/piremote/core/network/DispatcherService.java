@@ -11,6 +11,7 @@ import java.io.StreamCorruptedException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicLong;
@@ -22,30 +23,32 @@ import java.util.concurrent.atomic.AtomicLong;
 public class DispatcherService implements Runnable {
     //TODO(Mickey) Add proper Android logging
 
-    private Thread clientDispatcher;
+    private final ClientNetwork clientNetwork;
+
     private final DatagramSocket socket; // DatagramSocket used for communication.
-    private static BlockingQueue coreMainQueue; // Queue which the DispatchetThread puts received messages in.
-    private static AtomicLong lastSeen; // Timestamp of last received message from the server.
+    private BlockingQueue coreMainQueue; // Queue which the DispatcherService puts received messages in.
+    private AtomicLong lastSeen; // Timestamp of last received message from the server.
 
     private final InetAddress inetAddress; // Address of server.
     private final int port; // Port on which is being listened/sent by the client.
 
+    private Thread clientDispatcher;
+
     /**
-     * Default constructor for the DispatcherThread.
-     * @param socket Socket used for receiving.
-     * @param inetAddress Address to communicate with.
+     * Default constructor for the DispatcherService.
+     * @param clientNetwork The Network starting this service.
      * @param queue Queue to put received messages on.
      */
-    public DispatcherService(DatagramSocket socket, InetAddress inetAddress, LinkedBlockingQueue queue){
-        this.socket = socket;
-        this.port = socket.getPort();
-        this.inetAddress = inetAddress;
+    public DispatcherService(ClientNetwork clientNetwork, LinkedBlockingQueue queue){
+        this.clientNetwork = clientNetwork;
         this.coreMainQueue = queue;
 
+        this.socket = clientNetwork.getSocket();
+        this.inetAddress = clientNetwork.getInetAddress();
+        this.port = clientNetwork.getPort();
+
         this.lastSeen = new AtomicLong(0l);
-        // set up the thread
         clientDispatcher = new Thread(this);
-        // start it when connecting
         // clientDispatcher.start();
     }
 
@@ -69,7 +72,7 @@ public class DispatcherService implements Runnable {
         }
         // Allocation end
 
-        while(ClientNetwork.running.get()) {
+        while(clientNetwork.isRunning()) {
             // Receive packets while ClientNetwork is running.
             try {
                 // Receive an input and update the lastSeen value
@@ -85,9 +88,10 @@ public class DispatcherService implements Runnable {
                 // Handle the object received.
                 if (input instanceof Message) {
                     // Message object received
-                    if (ClientNetwork.uuid == null || ClientNetwork.uuid != ((Message) input).getUuid()) {
+                    UUID clientUUID = clientNetwork.getUuid();
+                    if (clientUUID == null || clientUUID != ((Message) input).getUuid()) {
                         // The client doesn't have a UUID yet or it has an invalid UUID.
-                        ClientNetwork.uuid = ((Message) input).getUuid();
+                        clientNetwork.setUuid(((Message) input).getUuid());
                     }
                     coreMainQueue.put(input);
                 } else if (input instanceof Connection) {
@@ -127,11 +131,11 @@ public class DispatcherService implements Runnable {
      * Returns the last timestamp a message has been received.
      * @return lastSeen-value of successful incoming communication if any happened, else return 0;
      */
-    public static long getLastSeen() {
+    public long getLastSeen() {
         return lastSeen.get();
     }
 
-    public static BlockingQueue getCoreMainQueue() {
+    public BlockingQueue getCoreMainQueue() {
         return coreMainQueue;
     }
 

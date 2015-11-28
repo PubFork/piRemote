@@ -22,9 +22,9 @@ public class ClientNetwork implements Runnable{
     private KeepAliveService keepAliveService;
     private SenderService senderService;
 
-    public static UUID uuid;
-    public static AtomicBoolean running;
-    public static DatagramSocket socket;
+    private UUID uuid;
+    private final AtomicBoolean running;
+    private DatagramSocket socket;
 
     private final Thread networkThread;
     private final InetAddress address;
@@ -56,7 +56,7 @@ public class ClientNetwork implements Runnable{
 
         // initialize the threads
         senderService = new SenderService(this);
-        dispatcherService = new DispatcherService(socket, address, mainQueue);
+        dispatcherService = new DispatcherService(this, mainQueue);
         keepAliveService = new KeepAliveService(this, dispatcherService, senderService);
 
         // start threads
@@ -140,7 +140,7 @@ public class ClientNetwork implements Runnable{
 
         // Notify ClientCore that the connection to the server has been terminated. Set the status
         // of the client appropriately.
-        Message disconnectServer = new Message(ClientNetwork.uuid, CoreCsts.ServerState.SERVER_DOWN, null, null);
+        Message disconnectServer = new Message(uuid, CoreCsts.ServerState.SERVER_DOWN, null, null);
         dispatcherService.getCoreMainQueue().add(disconnectServer);
 
         running.set(false);
@@ -177,5 +177,13 @@ public class ClientNetwork implements Runnable{
      */
     public DatagramSocket getSocket() {
         return this.socket;
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 }

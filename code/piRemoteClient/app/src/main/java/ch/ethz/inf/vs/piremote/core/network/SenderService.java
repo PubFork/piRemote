@@ -60,7 +60,7 @@ public class SenderService implements Runnable {
         }
         // End of allocating memory and objects.
 
-        while(clientNetwork.running.get() || !sendingQueue.isEmpty()) {
+        while(clientNetwork.isRunning() || !sendingQueue.isEmpty()) {
             // Try sending a message while ClientNetwork is running.
             //TODO(Mickey) Proper documentation on the program logic
             try{
