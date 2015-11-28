@@ -4,7 +4,6 @@ import MessageObject.Message;
 import core.ServerCore;
 
 import java.lang.Thread;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -16,46 +15,44 @@ import java.util.UUID;
 public class KeepAliveService implements Runnable {
 
     private final ServerNetwork serverNetwork;
-    private final DispatcherService dispatcherThread;
-    private final ServerSenderThread senderThread;
-    private final HashMap<UUID, NetworkInfo> sessionTable;
+    private final DispatcherService dispatcherService;
+    private final SenderService senderService;
     private final Thread keepAliveThread;
 
-    private final long INTERVAL = 1000;
-    private final long ALLOWED_DROPS = 3;
+    private final long INTERVAL = 1500;
+    private final long ALLOWED_DROPS = 4;
     private final long TIMEOUT = ALLOWED_DROPS * INTERVAL;
 
     /**
-     *      * Default constructor for the KeepAliveThread on the Server.
+     * Default constructor for the KeepAliveThread on the Server.
      * @param serverNetwork Reference to the main network.
-     * @param dispatcherThread Reference to the network's dispatcher.
-     * @param senderThread Reference to the network's sender.
+     * @param dispatcherService Reference to the network's dispatcher.
+     * @param senderService Reference to the network's sender.
      */
-    public KeepAliveService(ServerNetwork serverNetwork, DispatcherService dispatcherThread, ServerSenderThread senderThread) {
-        this.dispatcherThread = dispatcherThread;
-        this.senderThread = senderThread;
+    public KeepAliveService(ServerNetwork serverNetwork, DispatcherService dispatcherService, SenderService senderService) {
         this.serverNetwork = serverNetwork;
-        this.sessionTable = serverNetwork.getSessionTable();
+        this.dispatcherService = dispatcherService;
+        this.senderService = senderService;
 
-        keepAliveThread = new Thread(this);
+        this.keepAliveThread = new Thread(this);
         //keepAliveThread.start();
     }
 
     @Override
     public void run() {
-        while (ServerNetwork.isRunning()) {
-            for (Map.Entry<UUID, NetworkInfo> entry : sessionTable.entrySet()) {
+        while (serverNetwork.isRunning()) {
+            for (Map.Entry<UUID, NetworkInfo> entry : serverNetwork.getSessionTable().entrySet()) {
                 // Iterate over all elements of the sessionTable
                 long stillAlive = System.currentTimeMillis() - entry.getValue().getLastSeen();
                 if (stillAlive < TIMEOUT) {
                     // If the server<->client link hasn't timed out yet, place a keep alive message on
                     // the sending queue.
-                    Message keepAlive = new Message(entry.getKey(), ServerCore.getState().getServerState(), ServerCore.getState().getApplicationState());
-                    senderThread.getQueue().add(keepAlive);
+                    Message keepAlive = new Message(entry.getKey(), ServerCore.getState());
+                    senderService.getQueue().add(keepAlive);
                 } else {
                     // Else set the session to be trashed.
                     Session deadSession = new Session(entry.getKey(), entry.getValue());
-                    dispatcherThread.getQueue().add(deadSession);
+                    dispatcherService.getQueue().add(deadSession);
                 }
             }
 

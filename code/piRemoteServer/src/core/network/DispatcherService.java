@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class DispatcherService implements Runnable {
 
-    // private ServerKeepAliveThread keepAliveThread;
+    // private KeepAliveService keepAliveThread;
     private static BlockingQueue<Session> morgueQueue;
     private ServerSocket serverSocket;
     private Socket clientSocket;
@@ -34,7 +34,7 @@ public class DispatcherService implements Runnable {
      * The Dispatcher receives on the ServerSocket at
      * @param port
      */
-    public DispatcherService(int port, HashMap sTable, ServerSenderThread senderThread) {
+    public DispatcherService(int port, HashMap sTable, SenderService senderThread) {
         this.morgueQueue = new LinkedBlockingQueue<>();
 
         try {

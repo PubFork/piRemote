@@ -14,15 +14,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class ServerNetwork implements Runnable {
 
-    private ServerDispatcherThread dispatcherThread;
-    private ServerKeepAliveThread keepAliveThread;
-    private ServerSenderThread senderThread;
+    private DispatcherService dispatcherService;
+    private KeepAliveService keepAliveService;
+    private SenderService senderService;
 
-    private static AtomicBoolean running;
+    private AtomicBoolean running;
     private DatagramSocket socket;
 
     private final Thread networkThread;
-    private final int port;
+    private final int defaultPort;
     private final HashMap<UUID, NetworkInfo> sessionTable;
 
     /**
@@ -30,43 +30,69 @@ public class ServerNetwork implements Runnable {
      * @param port Port on which the server communicates.
      */
     public ServerNetwork(int port) {
-        this.port = port;
+        this.defaultPort = port;
 
         this.sessionTable = new HashMap<>();
         this.running = new AtomicBoolean(false);
         this.networkThread = new Thread(this);
-        this.networkThread.start();
+        // this.networkThread.start();
     }
 
 
     @Override
     public void run() {
-        try {
-            socket = new DatagramSocket(port);
-        } catch (SocketException e) {
-            e.printStackTrace();
-        }
-
+        startSocket(defaultPort);
         running.set(true);
 
-        // Initialise the threads of the network.
-        senderThread = new ServerSenderThread(sessionTable);
-        dispatcherThread = new ServerDispatcherThread(port, sessionTable, senderThread);
-        keepAliveThread = new ServerKeepAliveThread(dispatcherThread, senderThread, sessionTable);
+        // Initialise the services of the network.
+        senderService = new SenderService(this);
+        dispatcherService = new DispatcherService(getPort(), sessionTable, senderService);
+        keepAliveService = new KeepAliveService(this, dispatcherService, senderService);
 
-        // Start the threads of the network.
-        senderThread.getThread().start();
-        dispatcherThread.getThread().start();
-        keepAliveThread.getThread().start();
+        // Start the services of the network.
+        senderService.getThread().start();
+        keepAliveService.getThread().start();
+        dispatcherService.getThread().start();
     }
 
+    /**
+     * Creates a socket bound to port 'number' if possible, else gets any open port.
+     * @param number Port on which the socket should bind to.
+     */
+    private void startSocket(int number) {
+        try {
+            socket = new DatagramSocket(number);
+        } catch (SocketException e) {
+            try {
+                socket = new DatagramSocket();
+            } catch (SocketException e1) {
+                e1.printStackTrace();
+            }
+        }
+    }
 
     /**
-     * Returns direct reference of the SenderThread.
-     * @return Direct reference of SenderThread.
+     * Returns direct reference of the dispatcher object.
+     * @return Direct reference of dispatcher object.
      */
-    public ServerSenderThread getSenderThread() {
-        return senderThread;
+    public DispatcherService getDispatcher() {
+        return dispatcherService;
+    }
+
+    /**
+     * Returns direct reference of the sender object.
+     * @return Direct reference of sender object.
+     */
+    public SenderService getSender() {
+        return senderService;
+    }
+
+    /**
+     * Returns direct reference of the keep alive object.
+     * @return Direct reference of keep alive object.
+     */
+    public KeepAliveService getKeepAlive() {
+        return keepAliveService;
     }
 
     /**
@@ -74,10 +100,10 @@ public class ServerNetwork implements Runnable {
      * @return SendingQueue if SenderThread exists, else null.
      */
     public BlockingQueue<Message> getSendingQueue(){
-        if(senderThread == null) {
+        if(senderService == null) {
             return null;
         }
-        return senderThread.getQueue();
+        return senderService.getQueue();
     }
 
     /**
@@ -93,25 +119,25 @@ public class ServerNetwork implements Runnable {
      * @return MorgueQueue if DispatcherThread exists, else null.
      */
     public BlockingQueue<Session> getMorgueQueue(){
-        if(dispatcherThread == null) {
+        if(dispatcherService == null) {
             return null;
         }
-        return dispatcherThread.getQueue();
+        return dispatcherService.getQueue();
     }
 
     /**
-     * Returns direct reference of the KeepAliveThread.
-     * @return Direct reference of KeepAliveThread.
-     */
-    public ServerKeepAliveThread getKeepAliveThread() {
-        return keepAliveThread;
-    }
-
-    /**
-     * Return whether ServerNetwork is running or not.
+     * Return ServerNetwork's running status.
      * @return Returns true if the ServerNetwork is running, else false.
      */
-    public static boolean isRunning () {
+    public boolean isRunning () {
         return running.get();
+    }
+
+    /**
+     * Returns the port the network is receiving from.
+     * @return Port the network is receiving from.
+     */
+    public int getPort() {
+        return socket.getPort();
     }
 }
