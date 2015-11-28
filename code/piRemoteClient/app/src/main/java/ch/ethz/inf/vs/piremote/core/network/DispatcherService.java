@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * created by fabian on 13.11.15
  */
 
-public class ClientDispatcherThread implements Runnable {
+public class DispatcherService implements Runnable {
     //TODO(Mickey) Add proper Android logging
 
     private Thread clientDispatcher;
@@ -36,7 +36,7 @@ public class ClientDispatcherThread implements Runnable {
      * @param inetAddress Address to communicate with.
      * @param queue Queue to put received messages on.
      */
-    public ClientDispatcherThread(DatagramSocket socket, InetAddress inetAddress, LinkedBlockingQueue queue){
+    public DispatcherService(DatagramSocket socket, InetAddress inetAddress, LinkedBlockingQueue queue){
         this.socket = socket;
         this.port = socket.getPort();
         this.inetAddress = inetAddress;

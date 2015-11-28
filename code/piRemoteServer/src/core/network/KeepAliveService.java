@@ -13,9 +13,10 @@ import java.util.UUID;
  * created by fabian on 13.11.15
  */
 
-public class ServerKeepAliveThread implements Runnable {
+public class KeepAliveService implements Runnable {
 
-    private final ServerDispatcherThread dispatcherThread;
+    private final ServerNetwork serverNetwork;
+    private final DispatcherService dispatcherThread;
     private final ServerSenderThread senderThread;
     private final HashMap<UUID, NetworkInfo> sessionTable;
     private final Thread keepAliveThread;
@@ -25,14 +26,16 @@ public class ServerKeepAliveThread implements Runnable {
     private final long TIMEOUT = ALLOWED_DROPS * INTERVAL;
 
     /**
-     * Default constructor for the KeepAliveThread on the Server.
-     * @param dispatcherThread DispatcherThread of the server, required for accessing the morgueQueue
-     * @param sessionTable
+     *      * Default constructor for the KeepAliveThread on the Server.
+     * @param serverNetwork Reference to the main network.
+     * @param dispatcherThread Reference to the network's dispatcher.
+     * @param senderThread Reference to the network's sender.
      */
-    public ServerKeepAliveThread(ServerDispatcherThread dispatcherThread, ServerSenderThread senderThread, HashMap<UUID, NetworkInfo> sessionTable) {
+    public KeepAliveService(ServerNetwork serverNetwork, DispatcherService dispatcherThread, ServerSenderThread senderThread) {
         this.dispatcherThread = dispatcherThread;
         this.senderThread = senderThread;
-        this.sessionTable = sessionTable;
+        this.serverNetwork = serverNetwork;
+        this.sessionTable = serverNetwork.getSessionTable();
 
         keepAliveThread = new Thread(this);
         //keepAliveThread.start();

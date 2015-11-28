@@ -9,35 +9,34 @@ import java.net.InetAddress;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import ConnectionManagement.Connection;
-
 /**
  * created by fabian on 13.11.15
  */
 
-public class ClientSenderThread implements Runnable {
+public class SenderService implements Runnable {
     //TODO(Mickey) Add proper Android logging
 
-    private final static BlockingQueue<Object> sendingQueue = new LinkedBlockingQueue<>();
-    private final Thread senderThread;
-    private final DatagramSocket socket; // DatagramSocket used for communication.
-
+    private final ClientNetwork clientNetwork;
     private final InetAddress inetAddress; // Address of server.
     private final int port; // Port on which is being listened/sent by the client.
 
-    /**
-     * Default constructor for the SenderThread.
-     * @param socket Socket used for sending.
-     * @param inetAddress Address to communicate with.
-     */
-    public ClientSenderThread(DatagramSocket socket, InetAddress inetAddress) {
-        this.socket = socket;
-        this.inetAddress = inetAddress;
-        this.port = socket.getPort();
+    private final BlockingQueue<Object> sendingQueue;
+    private final DatagramSocket socket; // DatagramSocket used for communication.
 
-        // create Thread
-        senderThread = new Thread(this);
-        // start it when connecting
+    private final Thread senderThread;
+
+    /**
+     * Default constructor for the SenderService. The service has to be started explicitly.
+     * @param clientNetwork The Network starting this service.
+     */
+    public SenderService(ClientNetwork clientNetwork) {
+        this.clientNetwork = clientNetwork;
+        this.inetAddress = clientNetwork.getInetAddress();
+        this.socket = clientNetwork.getSocket();
+        this.port = clientNetwork.getPort();
+
+        this.sendingQueue = new LinkedBlockingQueue<>();
+        this.senderThread = new Thread(this);
         // senderThread.start();
     }
 
@@ -61,10 +60,11 @@ public class ClientSenderThread implements Runnable {
         }
         // End of allocating memory and objects.
 
-        while(ClientNetwork.running.get() || !sendingQueue.isEmpty()) {
+        while(clientNetwork.running.get() || !sendingQueue.isEmpty()) {
             // Try sending a message while ClientNetwork is running.
             //TODO(Mickey) Proper documentation on the program logic
             try{
+                // Take an Object from the Queue.
                 messageToSend = sendingQueue.take();
 
                 // Serialise the message to send
@@ -99,13 +99,17 @@ public class ClientSenderThread implements Runnable {
 
 
     /**
-     * use this getter-function to get the sendingQueue
-     * @return
+     * Returns direct reference to the sendingQueue.
+     * @return Direct reference to sendingQueue.
      */
-    public BlockingQueue<Object> getSendingQueue() {
+    public BlockingQueue<Object> getQueue() {
         return sendingQueue;
     }
 
+    /**
+     * Returns direct reference to the senderThread.
+     * @return Direct reference to senderThread.
+     */
     public Thread getThread() {
         return senderThread;
     }

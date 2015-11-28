@@ -16,7 +16,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 /**
  * Created by Fabian on 13.11.15.
  */
-public class ServerSenderThread implements Runnable {
+public class SenderService implements Runnable {
 
     private final static BlockingQueue<Message> sendingQueue = new LinkedBlockingQueue<>();
     private HashMap<UUID, NetworkInfo> sessionTable;
@@ -24,7 +24,7 @@ public class ServerSenderThread implements Runnable {
 
     private final Thread senderThread;
 
-    public ServerSenderThread(HashMap sTable){
+    public SenderService(HashMap sTable){
         sessionTable = sTable;
 
         this.senderThread = new Thread(this);

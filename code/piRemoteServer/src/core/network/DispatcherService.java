@@ -19,11 +19,10 @@ import java.util.concurrent.atomic.AtomicLong;
  * created by fabian on 13.11.15
  */
 
-public class ServerDispatcherThread implements Runnable {
+public class DispatcherService implements Runnable {
 
     // private ServerKeepAliveThread keepAliveThread;
     private static BlockingQueue<Session> morgueQueue;
-    private Thread serverDispatcher;
     private ServerSocket serverSocket;
     private Socket clientSocket;
     private HashMap<UUID, NetworkInfo> sessionTable;
@@ -35,7 +34,7 @@ public class ServerDispatcherThread implements Runnable {
      * The Dispatcher receives on the ServerSocket at
      * @param port
      */
-    public ServerDispatcherThread(int port, HashMap sTable, ServerSenderThread senderThread) {
+    public DispatcherService(int port, HashMap sTable, ServerSenderThread senderThread) {
         this.morgueQueue = new LinkedBlockingQueue<>();
 
         try {

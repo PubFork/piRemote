@@ -18,9 +18,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ClientNetwork implements Runnable{
     //TODO(Mickey) Add proper Android logging
 
-    private ClientDispatcherThread dispatcherThread;
-    private ClientKeepAliveThread keepAliveThread;
-    private ClientSenderThread senderThread;
+    private DispatcherService dispatcherService;
+    private KeepAliveService keepAliveService;
+    private SenderService senderService;
 
     public static UUID uuid;
     public static AtomicBoolean running;
@@ -28,7 +28,7 @@ public class ClientNetwork implements Runnable{
 
     private final Thread networkThread;
     private final InetAddress address;
-    private final int port;
+    private final int defaultPort;
     private final LinkedBlockingQueue mainQueue;
 
     /**
@@ -36,46 +36,73 @@ public class ClientNetwork implements Runnable{
      * from the ClientCore to build its network. This constructor also starts the threads!
      * @param address core needs to provide the address of the server
      * @param port core also needs to provide the port of the server
-     * @param mainQueue mainqueue on which the dispatcher will put the messages for the core
+     * @param mainQueue Queue on which the dispatcher will put the messages for the core
      */
     public ClientNetwork(InetAddress address, int port, LinkedBlockingQueue mainQueue) {
         this.address = address;
-        this.port = port;
+        this.defaultPort = port;
         this.mainQueue = mainQueue;
 
+        this.uuid = null;
         this.running = new AtomicBoolean(false);
         this.networkThread = new Thread(this);
-        this.networkThread.start();
+        //this.networkThread.start();
     }
 
     @Override
     public void run() {
-        try {
-            socket = new DatagramSocket(port);
-        } catch (SocketException e) {
-            e.printStackTrace();
-        }
-
+        startSocket(defaultPort);
         running.set(true);
-        uuid = null;
 
         // initialize the threads
-        senderThread = new ClientSenderThread(socket, address);
-        keepAliveThread = new ClientKeepAliveThread(senderThread);
-        dispatcherThread = new ClientDispatcherThread(socket, address, mainQueue);
+        senderService = new SenderService(this);
+        dispatcherService = new DispatcherService(socket, address, mainQueue);
+        keepAliveService = new KeepAliveService(this, dispatcherService, senderService);
 
         // start threads
-        senderThread.getThread().start();
-        dispatcherThread.getThread().start();
-        keepAliveThread.getThread().start();
+        senderService.getThread().start();
+        keepAliveService.getThread().start();
+        dispatcherService.getThread().start();
     }
 
     /**
-     * Returns direct reference of the SenderThread.
-     * @return Direct reference of SenderThread.
+     * Creates a socket bound to port 'number' if possible, else gets any open port.
+     * @param number Port on which the socket should bind to.
      */
-    public ClientSenderThread getSenderThread() {
-        return senderThread;
+    private void startSocket(int number) {
+        try {
+            socket = new DatagramSocket(number);
+        } catch (SocketException e) {
+            try {
+                socket = new DatagramSocket();
+            } catch (SocketException e1) {
+                e1.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Returns direct reference of the dispatcher object.
+     * @return Direct reference of dispatcher object.
+     */
+    public DispatcherService getDispatcher() {
+        return dispatcherService;
+    }
+
+    /**
+     * Returns direct reference of the sender object.
+     * @return Direct reference of sender object.
+     */
+    public SenderService getSender() {
+        return senderService;
+    }
+
+    /**
+     * Returns direct reference of the keep alive object.
+     * @return Direct reference of keep alive object.
+     */
+    public KeepAliveService getKeepAlive() {
+        return keepAliveService;
     }
 
     /**
@@ -83,19 +110,11 @@ public class ClientNetwork implements Runnable{
      * @return SendingQueue if SenderThread exists, else null.
      */
     public BlockingQueue<Object> getSendingQueue() {
-        if (senderThread == null) {
+        if (senderService == null) {
             return null;
         } else {
-            return senderThread.getSendingQueue();
+            return senderService.getQueue();
         }
-    }
-
-    /**
-     * Return whether ClientNetwork is running or not.
-     * @return Returns true if the ClientNetwork is running, else false.
-     */
-    public static boolean isRunning() {
-        return running.get();
     }
 
     /**
@@ -121,10 +140,42 @@ public class ClientNetwork implements Runnable{
 
         // Notify ClientCore that the connection to the server has been terminated. Set the status
         // of the client appropriately.
-        Message disconnectServer = new Message(ClientNetwork.uuid, CoreCsts.ServerState.SERVER_DOWN, null);
-        ClientDispatcherThread.getCoreMainQueue().add(disconnectServer);
+        Message disconnectServer = new Message(ClientNetwork.uuid, CoreCsts.ServerState.SERVER_DOWN, null, null);
+        dispatcherService.getCoreMainQueue().add(disconnectServer);
 
         running.set(false);
         this.uuid = null;
+    }
+
+    /**
+     * Return whether ClientNetwork is running or not.
+     * @return Returns true if the ClientNetwork is running, else false.
+     */
+    public boolean isRunning() {
+        return running.get();
+    }
+
+    /**
+     * Returns the port the network is attached to.
+     * @return Port the network is attached to.
+     */
+    public int getPort() {
+        return socket.getPort();
+    }
+
+    /**
+     * Returns the server's address.
+     * @return InetAddress of the server the client is attached to.
+     */
+    public InetAddress getInetAddress() {
+        return this.address;
+    }
+
+    /**
+     * Returns the socket of the Network.
+     * @return Socket the Network is attached to.
+     */
+    public DatagramSocket getSocket() {
+        return this.socket;
     }
 }

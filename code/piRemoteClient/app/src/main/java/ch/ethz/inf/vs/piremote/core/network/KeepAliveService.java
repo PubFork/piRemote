@@ -3,48 +3,53 @@ package ch.ethz.inf.vs.piremote.core.network;
 import android.util.Log;
 
 import MessageObject.Message;
-import SharedConstants.CoreCsts;
 import ch.ethz.inf.vs.piremote.core.ClientCore;
 
 import java.lang.Thread;
-import java.util.concurrent.BlockingQueue;
 
 /**
  * created by fabian on 13.11.15
  */
 
-public class ClientKeepAliveThread implements Runnable {
+public class KeepAliveService implements Runnable {
 
-    private final BlockingQueue<Object> sendingQueue;
+    private final ClientNetwork clientNetwork;
+    private final DispatcherService dispatcherService;
+    private final SenderService senderService;
     private final Thread keepAliveThread;
 
-    private final long INTERVAL = 1000;
-    private final long ALLOWED_DROPS = 3;
+    private final long INTERVAL = 1500;
+    private final long ALLOWED_DROPS = 4;
     private final long TIMEOUT = ALLOWED_DROPS * INTERVAL;
 
+    /**
+     * Default constructor for the KeepAliveThread on the Client.
+     * @param clientNetwork Reference to the main network.
+     * @param dispatcherService Reference to the network's dispatcher.
+     * @param senderService Reference to the network's sender.
+     */
+    public KeepAliveService(ClientNetwork clientNetwork, DispatcherService dispatcherService, SenderService senderService) {
+        this.clientNetwork = clientNetwork;
+        this.dispatcherService = dispatcherService;
+        this.senderService = senderService;
 
-    public ClientKeepAliveThread(ClientSenderThread sender) {
-        this.sendingQueue = sender.getSendingQueue();
-
-        keepAliveThread = new Thread(this);
-        // start it when connecting
+        this.keepAliveThread = new Thread(this);
         // keepAliveThread.start();
     }
 
     @Override
     public void run() {
-        while (ClientNetwork.isRunning()) {
-            long stillAlive = System.currentTimeMillis() - ClientDispatcherThread.getLastSeen();
+        while (clientNetwork.isRunning()) {
+            long stillAlive = System.currentTimeMillis() - dispatcherService.getLastSeen();
             if (stillAlive < TIMEOUT) {
                 // If the server<->client link hasn't timed out yet, place a keep alive message on
                 // the sending queue.
-                Message keepAlive = new Message(ClientNetwork.uuid, ClientCore.getState());
-                sendingQueue.add(keepAlive);
+                Message keepAlive = new Message(clientNetwork.uuid, ClientCore.getState());
+                senderService.getQueue().add(keepAlive);
                 Log.d("## KeepAlive ##", "Sending keep alive to server");
             } else {
                 // Else let us reset our application's state.
-                Message disconnectServer = new Message(ClientNetwork.uuid, CoreCsts.ServerState.SERVER_DOWN, null);
-                ClientDispatcherThread.getCoreMainQueue().add(disconnectServer);
+                clientNetwork.disconnectFromServer();
                 Log.d("## KeepAlive ##", "Server didn't answer, resetting application state.");
             }
 
