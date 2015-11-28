@@ -5,4 +5,8 @@ package MessageObject.PayloadObject;
  */
 public class DoubleMessage extends Payload{
     public double d;
+
+    public DoubleMessage(double d) {
+        this.d = d;
+    }
 }

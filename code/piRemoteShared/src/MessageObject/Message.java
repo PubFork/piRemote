@@ -1,8 +1,8 @@
 package MessageObject;
 
 import MessageObject.PayloadObject.*;
-import SharedConstants.ApplicationCsts;
-import SharedConstants.CoreCsts;
+import SharedConstants.ApplicationCsts.ApplicationState;
+import SharedConstants.CoreCsts.ServerState;
 import StateObject.State;
 
 import java.util.UUID;
@@ -18,14 +18,14 @@ import java.util.UUID;
 public class Message {
 
     protected UUID uuid;
-    protected CoreCsts.ServerState serverState;
-    protected ApplicationCsts.ApplicationState applicationState;
+    protected ServerState serverState;
+    protected ApplicationState applicationState;
     protected Payload payload;
 
 
     // Constructors for a specific recipient
 
-    public Message(UUID uuid, CoreCsts.ServerState serverState, ApplicationCsts.ApplicationState applicationState){
+    public Message(UUID uuid, ServerState serverState, ApplicationState applicationState){
         // Constructor for building a message to without payload to a recipient
         this.uuid = uuid;
         this.serverState = serverState;
@@ -41,7 +41,7 @@ public class Message {
         this.payload = null;
     }
 
-    public Message(UUID uuid, CoreCsts.ServerState serverState, ApplicationCsts.ApplicationState applicationState, Payload payload){
+    public Message(UUID uuid, ServerState serverState, ApplicationState applicationState, Payload payload){
         // Constructor for building a message to with payload to a recipient
         this.uuid = uuid;
         this.serverState = serverState;
@@ -60,7 +60,7 @@ public class Message {
 
     // Broadcast Message constructors
 
-    public Message(CoreCsts.ServerState serverState, ApplicationCsts.ApplicationState applicationState){
+    public Message(ServerState serverState, ApplicationState applicationState){
         // Constructor for building a broadcast message to without payload
         this.uuid = null;
         this.serverState = serverState;
@@ -76,7 +76,7 @@ public class Message {
         this.payload = null;
     }
 
-    public Message(CoreCsts.ServerState serverState, ApplicationCsts.ApplicationState applicationState, Payload payload){
+    public Message(ServerState serverState, ApplicationState applicationState, Payload payload){
         // Constructor for building a broadcast message to with payload
         this.uuid = null;
         this.serverState = serverState;
@@ -100,6 +100,8 @@ public class Message {
         str+="-> ApplicationState: "+applicationState+"\n";
         if(hasPayload()){
             str+="-> Payload of type "+payload.getClass().toString()+":\n";
+            if(payload instanceof ApplicationStateChange)
+                str+="--> newApplicationState: "+((ApplicationStateChange) payload).newApplicationState;
             if(payload instanceof ServerStateChange)
                 str+="--> newServerState: "+((ServerStateChange) payload).newServerState;
             if(payload instanceof IntMessage)
@@ -125,11 +127,11 @@ public class Message {
         return uuid;
     }
 
-    public CoreCsts.ServerState getServerState(){
+    public ServerState getServerState(){
         return serverState;
     }
 
-    public ApplicationCsts.ApplicationState getApplicationState(){
+    public ApplicationState getApplicationState(){
         return applicationState;
     }
 
@@ -149,7 +151,7 @@ public class Message {
     }
 
     public boolean hasApplicationState(){
-        return (serverState != CoreCsts.ServerState.NONE);
+        return (serverState != ServerState.NONE);
     }
 
     public boolean isBroadcast(){

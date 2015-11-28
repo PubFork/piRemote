@@ -1,7 +1,7 @@
 package StateObject;
 
-import SharedConstants.ApplicationCsts;
-import SharedConstants.CoreCsts;
+import SharedConstants.ApplicationCsts.ApplicationState;
+import SharedConstants.CoreCsts.ServerState;
 
 /**
  * Created by sandro on 10.11.15.
@@ -9,24 +9,24 @@ import SharedConstants.CoreCsts;
  */
 public class State {
 
-    protected CoreCsts.ServerState serverState;
-    protected ApplicationCsts.ApplicationState applicationState;
+    protected ServerState serverState;
+    protected ApplicationState applicationState;
 
-    public State(CoreCsts.ServerState serverState, ApplicationCsts.ApplicationState applicationState){
+    public State(ServerState serverState, ApplicationState applicationState){
         this.serverState = serverState;
         this.applicationState = applicationState;
     }
 
-    public CoreCsts.ServerState getServerState(){
+    public ServerState getServerState(){
         return serverState;
     }
 
-    public ApplicationCsts.ApplicationState getApplicationState(){
+    public ApplicationState getApplicationState(){
         return applicationState;
     }
 
     public boolean hasApplicationState(){
-        return (serverState != CoreCsts.ServerState.NONE);
+        return (serverState != ServerState.NONE);
     }
 
     // TODO: If setters are required, place them here

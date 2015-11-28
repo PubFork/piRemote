@@ -5,4 +5,8 @@ package MessageObject.PayloadObject;
  */
 public class IntMessage extends Payload {
     public int i;
+
+    public IntMessage(int i) {
+        this.i = i;
+    }
 }

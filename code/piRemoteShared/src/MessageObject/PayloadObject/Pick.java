@@ -5,4 +5,8 @@ package MessageObject.PayloadObject;
  */
 public class Pick extends Payload{
     public String path;
+
+    public Pick(String path) {
+        this.path = path;
+    }
 }
