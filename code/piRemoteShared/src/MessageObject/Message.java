@@ -4,7 +4,9 @@ import MessageObject.PayloadObject.*;
 import SharedConstants.ApplicationCsts.ApplicationState;
 import SharedConstants.CoreCsts.ServerState;
 import StateObject.State;
+import sun.plugin2.message.Serializer;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 /**
@@ -15,7 +17,7 @@ import java.util.UUID;
  *   the state,
  *   and an optional field of type Payload.
  */
-public class Message {
+public class Message implements Serializable {
 
     protected UUID uuid;
     protected ServerState serverState;

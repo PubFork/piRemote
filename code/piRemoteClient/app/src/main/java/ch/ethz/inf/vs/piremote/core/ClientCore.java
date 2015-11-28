@@ -51,7 +51,7 @@ public class ClientCore extends Service {
         super.onDestroy();
 
         // Destroy the ClientNetwork object and all threads running in the background.
-        network.disconnect(); // TODO: NETWORK ?
+        network.disconnectFromServer(); // TODO: NETWORK ?
     }
 
     @Override
@@ -77,7 +77,7 @@ public class ClientCore extends Service {
     }
 
     protected static void sendMessage(Message msg){
-        // put msg in sendingQueue of ClientSenderThread
+        // put msg in sendingQueue of SenderService
     }
 
     protected static Message makeMessage(){
