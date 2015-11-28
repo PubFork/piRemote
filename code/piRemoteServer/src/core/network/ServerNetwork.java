@@ -2,8 +2,6 @@ package core.network;
 
 import MessageObject.Message;
 
-import java.net.DatagramSocket;
-import java.net.SocketException;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
@@ -12,6 +10,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Created by Fabian on 13.11.15.
  */
+
 public class ServerNetwork implements Runnable {
 
     private DispatcherService dispatcherService;
@@ -19,7 +18,6 @@ public class ServerNetwork implements Runnable {
     private SenderService senderService;
 
     private AtomicBoolean running;
-    private DatagramSocket socket;
 
     private final Thread networkThread;
     private final int defaultPort;
@@ -41,34 +39,17 @@ public class ServerNetwork implements Runnable {
 
     @Override
     public void run() {
-        startSocket(defaultPort);
         running.set(true);
 
         // Initialise the services of the network.
         senderService = new SenderService(this);
-        dispatcherService = new DispatcherService(getPort(), sessionTable, senderService);
+        dispatcherService = new DispatcherService(defaultPort, this, senderService);
         keepAliveService = new KeepAliveService(this, dispatcherService, senderService);
 
         // Start the services of the network.
         senderService.getThread().start();
         keepAliveService.getThread().start();
         dispatcherService.getThread().start();
-    }
-
-    /**
-     * Creates a socket bound to port 'number' if possible, else gets any open port.
-     * @param number Port on which the socket should bind to.
-     */
-    private void startSocket(int number) {
-        try {
-            socket = new DatagramSocket(number);
-        } catch (SocketException e) {
-            try {
-                socket = new DatagramSocket();
-            } catch (SocketException e1) {
-                e1.printStackTrace();
-            }
-        }
     }
 
     /**
@@ -115,7 +96,7 @@ public class ServerNetwork implements Runnable {
     }
 
     /**
-     * Return direct reference to queue of sessions to be terminated by the server.
+     * Returns direct reference to queue of sessions to be terminated by the server.
      * @return MorgueQueue if DispatcherThread exists, else null.
      */
     public BlockingQueue<Session> getMorgueQueue(){
@@ -126,7 +107,7 @@ public class ServerNetwork implements Runnable {
     }
 
     /**
-     * Return ServerNetwork's running status.
+     * Returns ServerNetwork's running status.
      * @return Returns true if the ServerNetwork is running, else false.
      */
     public boolean isRunning () {
@@ -135,9 +116,9 @@ public class ServerNetwork implements Runnable {
 
     /**
      * Returns the port the network is receiving from.
-     * @return Port the network is receiving from.
+     * @return Returns the port the network is receiving from.
      */
     public int getPort() {
-        return socket.getPort();
+        return dispatcherService.getPort();
     }
 }

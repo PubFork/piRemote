@@ -18,10 +18,10 @@ public class NetworkInfo {
      * @param port Port with which the client communicates.
      * @param lastSeen AtomicLong of last communication by the client to the server.
      */
-    public NetworkInfo(InetAddress ip, int port, AtomicLong lastSeen){
+    public NetworkInfo(InetAddress ip, int port, long lastSeen){
         this.ip = ip;
         this.port = port;
-        this.lastSeen = new AtomicLong(lastSeen.get());
+        this.lastSeen = new AtomicLong(lastSeen);
     }
 
     /**
@@ -50,9 +50,9 @@ public class NetworkInfo {
 
     /**
      * Updates the active session's lastSeen value with newSeen's value.
-     * @param newSeen AtomicLong with new lastSeen value to be set on old lastSeen.
+     * @param newSeen long with new lastSeen value to be set on old lastSeen.
      */
-    public void updateLastSeen(AtomicLong newSeen) {
-        this.lastSeen.set(newSeen.get());
+    public void updateLastSeen(long newSeen) {
+        this.lastSeen.set(newSeen);
     }
 }

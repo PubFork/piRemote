@@ -14,6 +14,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 /**
  * Created by Fabian on 13.11.15.
  */
+
 public class SenderService implements Runnable {
 
     private final ServerNetwork serverNetwork;
