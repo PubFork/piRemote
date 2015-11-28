@@ -1,6 +1,6 @@
 package ch.ethz.inf.vs.piremote.core;
 
-import SharedConstants.CoreCsts;
+import SharedConstants.CoreCsts.ServerState;
 import ch.ethz.inf.vs.piremote.application.TrafficLightApplication;
 
 /**
@@ -10,10 +10,16 @@ import ch.ethz.inf.vs.piremote.application.TrafficLightApplication;
  */
 public class ApplicationFactory {
 
-    public static AbstractApplication makeApplication(CoreCsts.ServerState applicationToStart) {
-        if(applicationToStart.equals(CoreCsts.ServerState.TRAFFIC_LIGHT)) {
-            return new TrafficLightApplication();
+    public static AbstractApplication makeApplication(ServerState applicationToStart) {
+        switch (applicationToStart) {
+            case TRAFFIC_LIGHT:
+                return new TrafficLightApplication();
+            case SERVER_DOWN:
+                // Server timed out: Disconnect and switch back to the MainActivity.
+            case NONE:
+                // No application is running: The client may choose an application to run.
+            default:
+                return null;
         }
-        return null;
     }
 }

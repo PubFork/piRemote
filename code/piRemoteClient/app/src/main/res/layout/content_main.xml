@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-    android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
@@ -25,12 +25,12 @@
         android:layout_marginTop="50dp">
 
         <EditText
-            android:id="@+id/IP"
-            android:hint="@string/IP_name"
+            android:id="@+id/server_address"
+            android:hint="@string/server_address"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:maxLines="1"
-            android:singleLine="true"/>
+            android:singleLine="true" />
 
     </android.support.design.widget.TextInputLayout>
 
@@ -40,20 +40,19 @@
         android:layout_marginTop="50dp">
 
         <EditText
-            android:id="@+id/port"
-            android:hint="@string/port_name"
+            android:id="@+id/server_port"
+            android:hint="@string/server_port"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:maxLines="1"
-            android:singleLine="true"/>
+            android:singleLine="true" />
 
     </android.support.design.widget.TextInputLayout>
 
     <Button
-        android:clickable="true"
-        android:id="@+id/connect"
+        android:id="@+id/button_connect"
+        android:text="@string/button_connect"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/connect_name"
-        />
+        android:layout_marginTop="50dp" />
 </LinearLayout>

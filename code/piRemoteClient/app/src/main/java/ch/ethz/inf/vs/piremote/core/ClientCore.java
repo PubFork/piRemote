@@ -6,12 +6,11 @@ import android.os.IBinder;
 
 import java.net.InetAddress;
 import java.util.UUID;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import MessageObject.Message;
 import MessageObject.PayloadObject.Payload;
-import SharedConstants.CoreCsts;
+import SharedConstants.CoreCsts.ServerState;
 import StateObject.State;
 import ch.ethz.inf.vs.piremote.core.network.ClientNetwork;
 
@@ -22,8 +21,8 @@ public class ClientCore extends Service {
 
     public static final LinkedBlockingQueue<Message> mainQueue = new LinkedBlockingQueue<>();
 
-    protected static UUID uuid; // Store UUID assigned from the server
-    protected static CoreCsts.ServerState serverState;
+    protected static UUID uuid; // Store UUID assigned from the server // TODO: NETWORK ?
+    protected static ServerState serverState;
     protected static AbstractApplication application;
     protected static boolean running;
 
@@ -39,14 +38,20 @@ public class ClientCore extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        network = new ClientNetwork(address,port,mainQueue);
 
-        // Start all other threads by creating a ClientNetwork. Send Connection Request. Then block on the main queue and process messages using processMessage().
+        // Create a ClientNetwork object, which takes care of starting all other threads running in the background.
+        // Includes a connection request.
+        network = new ClientNetwork(address, port, mainQueue); // TODO: NETWORK ?
+
+        // TODO: Then block on the main queue and process messages using processMessage().
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+
+        // Destroy the ClientNetwork object and all threads running in the background.
+        network.disconnect(); // TODO: NETWORK ?
     }
 
     @Override
@@ -59,8 +64,8 @@ public class ClientCore extends Service {
         if (application != null) {
             return new State(serverState, application.getApplicationState());
         } else {
-            assert serverState.equals(CoreCsts.ServerState.NONE);
-            return new State(CoreCsts.ServerState.NONE, null);
+            assert serverState.equals(ServerState.NONE);
+            return new State(ServerState.NONE, null);
         }
     }
 
