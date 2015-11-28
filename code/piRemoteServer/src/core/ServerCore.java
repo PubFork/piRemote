@@ -151,7 +151,7 @@ public class ServerCore{
         // This will deliver msg to the networking component
         if(msg== null) return;
         try {
-            //ServerSenderThread.sendingQueue.put(msg);
+            //SenderService.sendingQueue.put(msg);
             // TEST ONLY
             /*System.out.println("Outgoing:");
             System.out.println(msg);

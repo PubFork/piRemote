@@ -72,7 +72,7 @@ public class ClientCore extends Service {
     }
 
     protected static void sendMessage(Message msg){
-        // put msg in sendingQueue of ClientSenderThread
+        // put msg in sendingQueue of SenderService
     }
 
     protected static Message makeMessage(){
