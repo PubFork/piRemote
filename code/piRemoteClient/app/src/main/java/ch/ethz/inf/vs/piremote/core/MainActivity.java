@@ -16,12 +16,16 @@ import ch.ethz.inf.vs.piremote.R;
 
 public class MainActivity extends AbstractActivity {
 
+    private static ClientCore clientCore;
     private InetAddress mServerAddress;
     private int mServerPort;
-    private static ClientCore clientCore;
+
+    // UI references
+    private EditText mAddressView;
+    private EditText mPortView;
 
     // Store server address and port entered
-    static SharedPreferences settings;
+    private static SharedPreferences settings;
     // Constant strings for the access to the shared preferences
     private static final String SETTINGS_FILENAME = "ServerSettings";
     private static final String SERVER_ADDRESS_STR = "address";
@@ -30,10 +34,6 @@ public class MainActivity extends AbstractActivity {
     // TODO: default information for server address and port
     private static final String SERVER_ADDRESS = "10.0.2.2"; // This address is for the emulator.
     private static final String SERVER_PORT = "4446";
-
-    // UI references
-    private EditText mAddressView;
-    private EditText mPortView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +84,7 @@ public class MainActivity extends AbstractActivity {
         if(validServerInformation()){
 
             application = new MainApplication(); // create application for main
-            AbstractApplication.setActivity(this); // set reference to current activity
+            application.activity = this; // set reference to current activity
 
             // TODO: I think the proper way to start a service would be to call startService() on an Intent.
             // And use binding to pass arguments.

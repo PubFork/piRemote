@@ -13,10 +13,10 @@ import SharedConstants.ApplicationCsts.ApplicationState;
  */
 public abstract class AbstractApplication {
 
-    private static ApplicationState applicationState;
+    private ApplicationState applicationState;
 
-    protected static AbstractActivity activity; // reference to current Activity
-    protected static ClientCore clientCore;
+    protected AbstractActivity activity; // reference to current Activity
+    protected ClientCore clientCore;
 
     /**
      * Inspect the received message and react to it. We can be sure that the application is still running on the server.
@@ -62,7 +62,7 @@ public abstract class AbstractApplication {
      */
     protected void changeApplicationState(ApplicationState newState) {
         // Do not yet change the applicationState locally, but rather wait for a state update (confirmation) from the server.
-        ClientCore.sendMessage(ClientCore.makeMessage(new ApplicationStateChange(newState))); // Send request to the server
+        clientCore.sendMessage(clientCore.makeMessage(new ApplicationStateChange(newState))); // Send request to the server
     }
 
     /**
@@ -70,31 +70,31 @@ public abstract class AbstractApplication {
      * @param path represents the picked path, may be either a directory or a file
      */
     protected void pickFile(String path) {
-        ClientCore.sendMessage(ClientCore.makeMessage(new Pick(path))); // Send request to the server
+        clientCore.sendMessage(clientCore.makeMessage(new Pick(path))); // Send request to the server
     }
 
     /**
      * Use this to read the current application state.
      * Should be invoked by ClientCore only.
      */
-    public static ApplicationState getApplicationState() {
+    public ApplicationState getApplicationState() {
         return applicationState;
     }
 
-    public static AbstractActivity getActivity() {
+    public AbstractActivity getActivity() {
         return activity;
     }
 
-    public static void setActivity(AbstractActivity activity) {
-        AbstractApplication.activity = activity;
+    public void setActivity(AbstractActivity activity) {
+        this.activity = activity;
     }
 
-    public static ClientCore getClientCore() {
+    public ClientCore getClientCore() {
         return clientCore;
     }
 
-    public static void setClientCore(ClientCore clientCore) {
-        AbstractApplication.clientCore = clientCore;
+    public void setClientCore(ClientCore clientCore) {
+        this.clientCore = clientCore;
     }
 
     /**

@@ -24,21 +24,21 @@ import ch.ethz.inf.vs.piremote.core.network.ClientNetwork;
  */
 public class ClientCore extends Service {
 
-    private static final LinkedBlockingQueue<Message> mainQueue = new LinkedBlockingQueue<>();
+    private final LinkedBlockingQueue<Message> mainQueue = new LinkedBlockingQueue<>();
 
-    private static ServerState serverState;
+    private ServerState serverState;
 
     // There is ALWAYS an application running: Main and AppChooser are also AbstractApplications.
-    protected static AbstractApplication application;
+    protected AbstractApplication application;
 
     // Keep track of all activities in the background
-    private static ClientNetwork clientNetwork;
+    private ClientNetwork clientNetwork;
 
     public ClientCore(InetAddress mAddress, int mPort, AbstractApplication mApplication) {
 
         // We guarantee that there is always an application running.
         application = mApplication;
-        AbstractApplication.setClientCore(this);
+        application.clientCore = this;
 
         // Create a ClientNetwork object, which takes care of starting all other threads running in the background.
         clientNetwork = new ClientNetwork(mAddress, mPort, mainQueue);
@@ -119,8 +119,8 @@ public class ClientCore extends Service {
      * Use this to read the current state (server and application state) of the client.
      * @return state object containing both the current server and application state
      */
-    public static State getState() {
-        return new State(getServerState(), AbstractApplication.getApplicationState());
+    public State getState() {
+        return new State(getServerState(), application.getApplicationState());
     }
 
     /**
@@ -146,20 +146,20 @@ public class ClientCore extends Service {
      * Start FilePicker displaying a list of directories and files to choose from. Adjust UI accordingly.
      * @param paths list of offered directories and files
      */
-    protected static void startFilePicker(List<String> paths) {
+    protected void startFilePicker(List<String> paths) {
     }
 
     /**
      * Close FilePicker. Adjust UI accordingly.
      */
-    protected static void closeFilePicker() {
+    protected void closeFilePicker() {
     }
 
     /**
      * Enqueue the Message on the sendingQueue of the SenderService.
      * @param msg Message object which the client wants to send to the server
      */
-    protected static void sendMessage(Message msg){
+    protected void sendMessage(Message msg){
         if (msg == null) return;
         if (clientNetwork.getSendingQueue() != null) {
             try {
@@ -175,7 +175,7 @@ public class ClientCore extends Service {
      * Builds a session state update.
      * @return Message object containing the server and application state
      */
-    protected static Message makeMessage(){
+    protected Message makeMessage(){
         return new Message(clientNetwork.getUuid(), getState());
     }
 
@@ -184,11 +184,11 @@ public class ClientCore extends Service {
      * @param payload Payload object to be sent to the server
      * @return Message object containing the specified payload and also the server and application state
      */
-    protected static Message makeMessage(Payload payload){
+    protected Message makeMessage(Payload payload){
         return new Message(clientNetwork.getUuid(), getState(), payload);
     }
 
-    public static ServerState getServerState() {
+    public ServerState getServerState() {
         return serverState;
     }
 
@@ -197,6 +197,6 @@ public class ClientCore extends Service {
     }
 
     public void setApplication(AbstractApplication application) {
-        ClientCore.application = application;
+        this.application = application;
     }
 }

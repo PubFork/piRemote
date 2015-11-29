@@ -47,7 +47,7 @@ public class AppChooserActivity extends AbstractActivity {
                         // TEST ONLY
                         break;
                     default:
-                        AbstractApplication.getClientCore().changeServerState(serverStates[position]);
+                        application.clientCore.changeServerState(serverStates[position]);
                         break;
                 }
             }
