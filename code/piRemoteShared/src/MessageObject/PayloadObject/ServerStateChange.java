@@ -11,6 +11,8 @@ import java.io.Serializable;
 public class ServerStateChange extends Payload implements Serializable {
     public ServerState newServerState;
 
+    public ServerStateChange() { }
+
     public ServerStateChange(ServerState newServerState) {
         this.newServerState = newServerState;
     }

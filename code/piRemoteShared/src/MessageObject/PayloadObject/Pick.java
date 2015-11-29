@@ -9,6 +9,8 @@ import java.io.Serializable;
 public class Pick extends Payload implements Serializable {
     public String path;
 
+    public Pick() { }
+
     public Pick(String path) {
         this.path = path;
     }

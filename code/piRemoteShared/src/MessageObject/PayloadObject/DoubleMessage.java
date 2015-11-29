@@ -9,6 +9,8 @@ import java.io.Serializable;
 public class DoubleMessage extends Payload implements Serializable {
     public double d;
 
+    public DoubleMessage() {}
+
     public DoubleMessage(double d) {
         this.d = d;
     }

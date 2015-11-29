@@ -11,6 +11,8 @@ import java.io.Serializable;
 public class ApplicationStateChange extends Payload implements Serializable {
     public ApplicationState newApplicationState;
 
+    public ApplicationStateChange() {}
+
     public ApplicationStateChange(ApplicationState newApplicationState) {
         this.newApplicationState = newApplicationState;
     }
