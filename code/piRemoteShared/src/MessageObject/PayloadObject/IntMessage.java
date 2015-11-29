@@ -9,6 +9,7 @@ import java.io.Serializable;
 public class IntMessage extends Payload implements Serializable {
     public int i;
 
+    public IntMessage(){}
     public IntMessage(int i) {
         this.i = i;
     }

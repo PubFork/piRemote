@@ -11,6 +11,8 @@ import java.util.List;
 public class Offer extends Payload implements Serializable {
     public List<String> paths = new LinkedList<>();
 
+    public Offer() {}
+
     public Offer(List<String> paths) {
         this.paths = paths;
     }

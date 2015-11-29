@@ -9,6 +9,8 @@ import java.io.Serializable;
 public class StringMessage extends Payload implements Serializable {
     public String str;
 
+    public StringMessage() { }
+
     public StringMessage(String str) {
         this.str = str;
     }
