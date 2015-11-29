@@ -1,8 +1,10 @@
 package ch.ethz.inf.vs.piremote.core.network;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import MessageObject.Message;
+import NetworkConstants.NetworkConstants;
 import ch.ethz.inf.vs.piremote.core.ClientCore;
 
 import java.lang.Thread;
@@ -16,11 +18,9 @@ public class KeepAliveService implements Runnable {
     private final ClientNetwork clientNetwork;
     private final DispatcherService dispatcherService;
     private final SenderService senderService;
+    @NonNull
     private final Thread keepAliveThread;
 
-    private final long INTERVAL = 1500;
-    private final long ALLOWED_DROPS = 4;
-    private final long TIMEOUT = ALLOWED_DROPS * INTERVAL;
 
     /**
      * Default constructor for the KeepAliveThread on the Client.
@@ -41,7 +41,7 @@ public class KeepAliveService implements Runnable {
     public void run() {
         while (clientNetwork.isRunning()) {
             long stillAlive = System.currentTimeMillis() - dispatcherService.getLastSeen();
-            if (stillAlive < TIMEOUT) {
+            if (stillAlive < NetworkConstants.TIMEOUT) {
                 // If the server<->client link hasn't timed out yet, place a keep alive message on
                 // the sending queue.
                 Message keepAlive = new Message(clientNetwork.getUuid(), ClientCore.getState());
@@ -55,7 +55,7 @@ public class KeepAliveService implements Runnable {
 
             // Wait INTERVAL time before checking for a need to resend a keep-alive.
             try {
-                Thread.sleep(INTERVAL);
+                Thread.sleep(NetworkConstants.INTERVAL);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -66,6 +66,7 @@ public class KeepAliveService implements Runnable {
      * Returns direct reference to the keepAliveThread.
      * @return Direct reference to keepAliveThread.
      */
+    @NonNull
     public Thread getThread() {
         return keepAliveThread;
     }

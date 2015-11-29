@@ -1,5 +1,7 @@
 package ch.ethz.inf.vs.piremote.core.network;
 
+import android.support.annotation.NonNull;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -9,29 +11,32 @@ import java.net.InetAddress;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-/**
- * created by fabian on 13.11.15
- */
+import NetworkConstants.NetworkConstants;
 
 public class SenderService implements Runnable {
     //TODO(Mickey) Add proper Android logging
 
+    @NonNull
     private final ClientNetwork clientNetwork;
+    @NonNull
     private final InetAddress inetAddress; // Address of server.
     private final int port; // Port on which is being listened/sent by the client.
 
+    @NonNull
     private final BlockingQueue<Object> sendingQueue;
+    @NonNull
     private final DatagramSocket socket; // DatagramSocket used for communication.
 
+    @NonNull
     private final Thread senderThread;
 
     /**
      * Default constructor for the SenderService. The service has to be started explicitly.
      * @param clientNetwork The Network starting this service.
      */
-    public SenderService(ClientNetwork clientNetwork) {
+    public SenderService(@NonNull ClientNetwork clientNetwork) {
         this.clientNetwork = clientNetwork;
-        this.inetAddress = clientNetwork.getInetAddress();
+        this.inetAddress = clientNetwork.getAddress();
         this.socket = clientNetwork.getSocket();
         this.port = clientNetwork.getPort();
 
@@ -47,7 +52,7 @@ public class SenderService implements Runnable {
     @Override
     public void run() {
         // Allocate variables for thread to have less overhead creating them anew.
-        ByteArrayOutputStream byteStream = new ByteArrayOutputStream(8000);
+        ByteArrayOutputStream byteStream = new ByteArrayOutputStream(NetworkConstants.PACKETSIZE);
         ObjectOutputStream objectStream = null;
         Object messageToSend;
         DatagramPacket packet;
@@ -68,10 +73,13 @@ public class SenderService implements Runnable {
                 messageToSend = sendingQueue.take();
 
                 // Serialise the message to send
+                if (objectStream == null) {
+                    throw new IllegalArgumentException("objectStream to write to was null.");
+                }
                 objectStream.writeObject(messageToSend);
                 objectStream.flush();
 
-                // Create a buffer and the corresponding packet to be sent to inetAddress/port.
+                // Create a buffer and the corresponding packet to be sent to address/port.
                 byte[] sendBuffer = byteStream.toByteArray();
                 packet = new DatagramPacket(sendBuffer, sendBuffer.length, inetAddress, port);
 
@@ -91,6 +99,9 @@ public class SenderService implements Runnable {
             e.printStackTrace();
         }
         try {
+            if (objectStream == null) {
+                throw new IllegalArgumentException("objectStream to close was null.");
+            }
             objectStream.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -102,6 +113,7 @@ public class SenderService implements Runnable {
      * Returns direct reference to the sendingQueue.
      * @return Direct reference to sendingQueue.
      */
+    @NonNull
     public BlockingQueue<Object> getQueue() {
         return sendingQueue;
     }
@@ -110,6 +122,7 @@ public class SenderService implements Runnable {
      * Returns direct reference to the senderThread.
      * @return Direct reference to senderThread.
      */
+    @NonNull
     public Thread getThread() {
         return senderThread;
     }

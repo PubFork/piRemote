@@ -1,5 +1,8 @@
 package ch.ethz.inf.vs.piremote.core.network;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import ConnectionManagement.Connection;
 import MessageObject.Message;
 import SharedConstants.CoreCsts;
@@ -18,18 +21,27 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ClientNetwork implements Runnable{
     //TODO(Mickey) Add proper Android logging
 
+    @Nullable
     private DispatcherService dispatcherService;
+    @Nullable
     private KeepAliveService keepAliveService;
+    @Nullable
     private SenderService senderService;
 
+    @Nullable
     private UUID uuid;
+    @NonNull
     private final AtomicBoolean running;
+    @Nullable
     private DatagramSocket socket;
 
+    @NonNull
     private final Thread networkThread;
+    @NonNull
     private final InetAddress address;
+    @NonNull
+    private final LinkedBlockingQueue<Message> mainQueue;
     private final int defaultPort;
-    private final LinkedBlockingQueue mainQueue;
 
     /**
      * create a ClientNetwork object that has several threads. This constructor is called
@@ -38,7 +50,7 @@ public class ClientNetwork implements Runnable{
      * @param port core also needs to provide the port of the server
      * @param mainQueue Queue on which the dispatcher will put the messages for the core
      */
-    public ClientNetwork(InetAddress address, int port, LinkedBlockingQueue mainQueue) {
+    public ClientNetwork(@NonNull InetAddress address, int port, @NonNull LinkedBlockingQueue<Message> mainQueue) {
         this.address = address;
         this.defaultPort = port;
         this.mainQueue = mainQueue;
@@ -54,12 +66,12 @@ public class ClientNetwork implements Runnable{
         startSocket(defaultPort);
         running.set(true);
 
-        // initialize the threads
+        // Initialise the services of the network.
         senderService = new SenderService(this);
-        dispatcherService = new DispatcherService(this, mainQueue);
+        dispatcherService = new DispatcherService(this);
         keepAliveService = new KeepAliveService(this, dispatcherService, senderService);
 
-        // start threads
+        // Start the services of the network.
         senderService.getThread().start();
         keepAliveService.getThread().start();
         dispatcherService.getThread().start();
@@ -85,6 +97,7 @@ public class ClientNetwork implements Runnable{
      * Returns direct reference of the dispatcher object.
      * @return Direct reference of dispatcher object.
      */
+    @Nullable
     public DispatcherService getDispatcher() {
         return dispatcherService;
     }
@@ -93,6 +106,7 @@ public class ClientNetwork implements Runnable{
      * Returns direct reference of the sender object.
      * @return Direct reference of sender object.
      */
+    @Nullable
     public SenderService getSender() {
         return senderService;
     }
@@ -101,6 +115,7 @@ public class ClientNetwork implements Runnable{
      * Returns direct reference of the keep alive object.
      * @return Direct reference of keep alive object.
      */
+    @Nullable
     public KeepAliveService getKeepAlive() {
         return keepAliveService;
     }
@@ -109,12 +124,22 @@ public class ClientNetwork implements Runnable{
      * Returns direct reference of the SendingQueue if the SenderThread is running.
      * @return SendingQueue if SenderThread exists, else null.
      */
+    @Nullable
     public BlockingQueue<Object> getSendingQueue() {
         if (senderService == null) {
             return null;
         } else {
             return senderService.getQueue();
         }
+    }
+
+    /**
+     * Returns direct reference to the client's receiving queue.
+     * @return Direct reference to receiving queue.
+     */
+    @NonNull
+    public BlockingQueue<Message> getMainQueue() {
+        return mainQueue;
     }
 
     /**
@@ -141,7 +166,7 @@ public class ClientNetwork implements Runnable{
         // Notify ClientCore that the connection to the server has been terminated. Set the status
         // of the client appropriately.
         Message disconnectServer = new Message(uuid, CoreCsts.ServerState.SERVER_DOWN, null, null);
-        dispatcherService.getCoreMainQueue().add(disconnectServer);
+        mainQueue.add(disconnectServer);
 
         running.set(false);
         this.uuid = null;
@@ -156,18 +181,22 @@ public class ClientNetwork implements Runnable{
     }
 
     /**
-     * Returns the port the network is attached to.
-     * @return Port the network is attached to.
+     * Returns the port the network is communicating.
+     * @return Returns the port the network is communicating from if it exists, else returns '-1'
      */
     public int getPort() {
+        if(socket == null) {
+            return -1;
+        }
         return socket.getPort();
     }
 
     /**
      * Returns the server's address.
-     * @return InetAddress of the server the client is attached to.
+     * @return Address of the server the client is attached to.
      */
-    public InetAddress getInetAddress() {
+    @NonNull
+    public InetAddress getAddress() {
         return this.address;
     }
 
@@ -175,6 +204,7 @@ public class ClientNetwork implements Runnable{
      * Returns the socket of the Network.
      * @return Socket the Network is attached to.
      */
+    @Nullable
     public DatagramSocket getSocket() {
         return this.socket;
     }
@@ -183,6 +213,7 @@ public class ClientNetwork implements Runnable{
      * Returns the Client's UUID.
      * @return UUID of the client.´
      */
+    @Nullable
     public UUID getUuid() {
         return uuid;
     }
@@ -191,7 +222,14 @@ public class ClientNetwork implements Runnable{
      * Sets the UUID of the Client.
      * @param uuid new UUID to set the old UUID to.
      */
-    public void setUuid(UUID uuid) {
+    public void setUuid(@Nullable UUID uuid) {
         this.uuid = uuid;
+    }
+
+    /**
+     * Method to start the Network part handling all communication.
+     */
+    public void startNetwork(){
+        this.networkThread.start();
     }
 }

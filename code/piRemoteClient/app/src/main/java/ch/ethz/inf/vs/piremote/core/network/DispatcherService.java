@@ -1,7 +1,10 @@
 package ch.ethz.inf.vs.piremote.core.network;
 
+import android.support.annotation.NonNull;
+
 import ConnectionManagement.Connection;
 import MessageObject.Message;
+import NetworkConstants.NetworkConstants;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -10,46 +13,35 @@ import java.io.OptionalDataException;
 import java.io.StreamCorruptedException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.util.UUID;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicLong;
-
-/**
- * created by fabian on 13.11.15
- */
 
 public class DispatcherService implements Runnable {
     //TODO(Mickey) Add proper Android logging
 
+    @NonNull
     private final ClientNetwork clientNetwork;
 
+    @NonNull
     private final DatagramSocket socket; // DatagramSocket used for communication.
-    private BlockingQueue coreMainQueue; // Queue which the DispatcherService puts received messages in.
-    private AtomicLong lastSeen; // Timestamp of last received message from the server.
+    @NonNull
+    private final AtomicLong lastSeen; // Timestamp of last received message from the server.
 
-    private final InetAddress inetAddress; // Address of server.
-    private final int port; // Port on which is being listened/sent by the client.
-
-    private Thread clientDispatcher;
+    @NonNull
+    private final Thread dispatcherThread;
 
     /**
      * Default constructor for the DispatcherService.
      * @param clientNetwork The Network starting this service.
-     * @param queue Queue to put received messages on.
      */
-    public DispatcherService(ClientNetwork clientNetwork, LinkedBlockingQueue queue){
+    public DispatcherService(@NonNull ClientNetwork clientNetwork){
         this.clientNetwork = clientNetwork;
-        this.coreMainQueue = queue;
 
         this.socket = clientNetwork.getSocket();
-        this.inetAddress = clientNetwork.getInetAddress();
-        this.port = clientNetwork.getPort();
 
-        this.lastSeen = new AtomicLong(0l);
-        clientDispatcher = new Thread(this);
-        // clientDispatcher.start();
+        this.lastSeen = new AtomicLong(0L);
+        dispatcherThread = new Thread(this);
+        // dispatcherThread.start();
     }
 
 
@@ -59,7 +51,7 @@ public class DispatcherService implements Runnable {
     @Override
     public void run() {
         // Allocation of variable to minimise overhead of recreating them every iteration.
-        byte[] receiveBuffer = new byte[8000];
+        byte[] receiveBuffer = new byte[NetworkConstants.PACKETSIZE];
         DatagramPacket packet = new DatagramPacket(receiveBuffer, receiveBuffer.length);
         ByteArrayInputStream byteStream = new ByteArrayInputStream(receiveBuffer);
         ObjectInputStream objectStream = null;
@@ -83,6 +75,9 @@ public class DispatcherService implements Runnable {
                 //byteStream = new ByteArrayInputStream(receiveBuffer);
                 //receiveBuffer = packet.getData();
                 //objectStream = new ObjectInputStream(byteStream);
+                if (objectStream == null) {
+                    throw new IllegalArgumentException("objectStream to read from was null.");
+                }
                 input = objectStream.readObject();
 
                 // Handle the object received.
@@ -93,9 +88,10 @@ public class DispatcherService implements Runnable {
                         // The client doesn't have a UUID yet or it has an invalid UUID.
                         clientNetwork.setUuid(((Message) input).getUuid());
                     }
-                    coreMainQueue.put(input);
+                    clientNetwork.getMainQueue().put((Message) input);
                 } else if (input instanceof Connection) {
                     // Connection object received, this shouldn't happen
+                    throw new RuntimeException("Unknown input received from network!");
                 } else {
                     // Something unknown has been received. This is really bad! Abort!
                     throw new RuntimeException("Unknown input received from network!");
@@ -115,6 +111,9 @@ public class DispatcherService implements Runnable {
 
         // Close streams, thread has been closed.
         try {
+            if (objectStream == null) {
+                throw new IllegalArgumentException("objectStream to close was null.");
+            }
             objectStream.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -135,11 +134,12 @@ public class DispatcherService implements Runnable {
         return lastSeen.get();
     }
 
-    public BlockingQueue getCoreMainQueue() {
-        return coreMainQueue;
-    }
-
+    /**
+     * Returns direct reference to the dispatcherThread.
+     * @return Direct reference to dispatcherThread.
+     */
+    @NonNull
     public Thread getThread() {
-        return clientDispatcher;
+        return dispatcherThread;
     }
 }

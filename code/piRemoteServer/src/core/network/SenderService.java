@@ -1,6 +1,7 @@
 package core.network;
 
 import MessageObject.Message;
+import NetworkConstants.NetworkConstants;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayOutputStream;
@@ -46,7 +47,7 @@ public class SenderService implements Runnable {
         }
 
         // Allocate variables for thread to have less overhead creating them anew.
-        ByteArrayOutputStream byteStream = new ByteArrayOutputStream(8000);
+        ByteArrayOutputStream byteStream = new ByteArrayOutputStream(NetworkConstants.PACKETSIZE);
         ObjectOutputStream objectStream = null;
         Message messageToSend;
         NetworkInfo networkInfo;

@@ -2,6 +2,7 @@ package core.network;
 
 import ConnectionManagement.Connection;
 import MessageObject.Message;
+import NetworkConstants.NetworkConstants;
 import core.ServerCore;
 import org.jetbrains.annotations.NotNull;
 
@@ -70,7 +71,7 @@ public class DispatcherService implements Runnable {
         startSocket(defaultPort);
 
         // Allocation of variable to minimise overhead of recreating them every iteration.
-        byte[] receiveBuffer = new byte[8000];
+        byte[] receiveBuffer = new byte[NetworkConstants.PACKETSIZE];
         DatagramPacket packet = new DatagramPacket(receiveBuffer, receiveBuffer.length);
         ByteArrayInputStream byteStream = new ByteArrayInputStream(receiveBuffer);
         ObjectInputStream objectStream = null;
