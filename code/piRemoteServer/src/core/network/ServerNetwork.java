@@ -1,27 +1,31 @@
 package core.network;
 
 import MessageObject.Message;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * Created by Fabian on 13.11.15.
- */
-
 public class ServerNetwork implements Runnable {
 
+    @Nullable
     private DispatcherService dispatcherService;
+    @Nullable
     private KeepAliveService keepAliveService;
+    @Nullable
     private SenderService senderService;
 
-    private AtomicBoolean running;
+    @NotNull
+    private final AtomicBoolean running;
 
-    private final Thread networkThread;
     private final int defaultPort;
+    @NotNull
     private final HashMap<UUID, NetworkInfo> sessionTable;
+    @NotNull
+    private final Thread networkThread;
 
     /**
      * Default constructor for creating the ServerNetwork and all its components.
@@ -54,32 +58,36 @@ public class ServerNetwork implements Runnable {
 
     /**
      * Returns direct reference of the dispatcher object.
-     * @return Direct reference of dispatcher object.
+     * @return Direct reference of dispatcher object if it exists, else null.
      */
+    @Nullable
     public DispatcherService getDispatcher() {
         return dispatcherService;
     }
 
     /**
      * Returns direct reference of the sender object.
-     * @return Direct reference of sender object.
+     * @return Direct reference of sender object if it exists, else null.
      */
+    @Nullable
     public SenderService getSender() {
         return senderService;
     }
 
     /**
      * Returns direct reference of the keep alive object.
-     * @return Direct reference of keep alive object.
+     * @return Direct reference of keep alive object if it exists, else null.
      */
+    @Nullable
     public KeepAliveService getKeepAlive() {
         return keepAliveService;
     }
 
     /**
-     * Returns direct reference of the SendingQueue if the SenderThread is running.
-     * @return SendingQueue if SenderThread exists, else null.
+     * Returns direct reference of the SendingQueue of SenderService.
+     * @return SendingQueue of SenderService if it exists, else null.
      */
+    @Nullable
     public BlockingQueue<Message> getSendingQueue(){
         if(senderService == null) {
             return null;
@@ -91,20 +99,24 @@ public class ServerNetwork implements Runnable {
      * Returns direct reference of the SessionTable.
      * @return Direct reference of SessionTable.
      */
+    @NotNull
     public HashMap<UUID, NetworkInfo> getSessionTable() {
         return sessionTable;
     }
 
+
     /**
-     * Returns direct reference to queue of sessions to be terminated by the server.
-     * @return MorgueQueue if DispatcherThread exists, else null.
+     * Returns direct reference of queue of sessions to be terminated by the server.
+     * @return MorgueQueue of DispatcherService if it exists, else null.
      */
+    @Nullable
     public BlockingQueue<Session> getMorgueQueue(){
         if(dispatcherService == null) {
             return null;
         }
         return dispatcherService.getQueue();
     }
+
 
     /**
      * Returns ServerNetwork's running status.
@@ -116,9 +128,19 @@ public class ServerNetwork implements Runnable {
 
     /**
      * Returns the port the network is receiving from.
-     * @return Returns the port the network is receiving from.
+     * @return Returns the port the network is receiving from if it exists, else returns '-1'
      */
     public int getPort() {
+        if(dispatcherService == null) {
+            return -1;
+        }
         return dispatcherService.getPort();
+    }
+
+    /**
+     * Method to start the Network part handling all communication.
+     */
+    public void startNetwork(){
+        this.networkThread.start();
     }
 }

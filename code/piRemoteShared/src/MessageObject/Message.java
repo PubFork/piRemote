@@ -4,7 +4,6 @@ import MessageObject.PayloadObject.*;
 import SharedConstants.ApplicationCsts.ApplicationState;
 import SharedConstants.CoreCsts.ServerState;
 import StateObject.State;
-import sun.plugin2.message.Serializer;
 
 import java.io.Serializable;
 import java.util.UUID;

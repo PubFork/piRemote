@@ -3,6 +3,7 @@ package core.network;
 import ConnectionManagement.Connection;
 import MessageObject.Message;
 import core.ServerCore;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -23,17 +24,22 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class DispatcherService implements Runnable {
 
+    @NotNull
     private final ServerNetwork serverNetwork;
-    private final SenderService senderService;
 
-    private BlockingQueue<Session> morgueQueue;
-    private HashMap<UUID, NetworkInfo> sessionTable;
-    private BlockingQueue<Message> sendingQueue;
+    @NotNull
+    private final BlockingQueue<Session> morgueQueue;
+    @NotNull
+    private final BlockingQueue<Message> sendingQueue;
+    @NotNull
+    private final HashMap<UUID, NetworkInfo> sessionTable;
 
     private DatagramSocket socket;
     private final int defaultPort;
 
-    private AtomicLong lastSeen; // Timestamp of last received message.
+    @NotNull
+    private final AtomicLong lastSeen;
+    @NotNull
     private final Thread dispatcherThread;
 
     /**
@@ -42,15 +48,14 @@ public class DispatcherService implements Runnable {
      * @param serverNetwork The Network starting this service.
      * @param senderService The Network's sending service.
      */
-    public DispatcherService(int defaultPort, ServerNetwork serverNetwork, SenderService senderService) {
+    public DispatcherService(int defaultPort, @NotNull ServerNetwork serverNetwork, @NotNull SenderService senderService) {
         this.defaultPort = defaultPort;
         this.serverNetwork = serverNetwork;
-        this.senderService = senderService;
 
         this.sessionTable = serverNetwork.getSessionTable();
         this.sendingQueue = senderService.getQueue();
 
-        this.lastSeen = new AtomicLong(0l);
+        this.lastSeen = new AtomicLong(0L);
         this.morgueQueue = new LinkedBlockingQueue<>();
         this.dispatcherThread = new Thread(this);
         // dispatcherThread.start();
@@ -89,13 +94,17 @@ public class DispatcherService implements Runnable {
 
                 // Check for any clients that need to be removed
                 while (!morgueQueue.isEmpty()) {
-                    sessionTable.remove(morgueQueue.take());
+                    Session temp = morgueQueue.take();
+                    sessionTable.remove(temp.getUUID(), temp.getNetworkInfo());
                 }
 
                 // Marshalling of the DatagramPacket back to an object
                 //byteStream = new ByteArrayInputStream(receiveBuffer);
                 //receiveBuffer = packet.getData();
                 //objectStream = new ObjectInputStream(byteStream);
+                if (objectStream == null) {
+                    throw new IllegalArgumentException("objectStream to read from was null.");
+                }
                 input = objectStream.readObject();
 
                 if (input instanceof Message) {
@@ -156,27 +165,28 @@ public class DispatcherService implements Runnable {
 
     /**
      * Add a new session to the sessionTable and send it an UUID back with the current ServerState
-     * @param inetAddress Client address requesting a new session.
+     * @param address Client address requesting a new session.
      * @param port Client port requesting a new session.
      * @param lastSeen Timestamp of received message.
      */
-    private void addNewClient(InetAddress inetAddress, int port, AtomicLong lastSeen) {
+    private void addNewClient(@NotNull InetAddress address, int port, @NotNull AtomicLong lastSeen) {
         // Generate a new uuid for the client and save the connection's details.
         UUID clientUUID = UUID.randomUUID();
-        NetworkInfo clientInfo = new NetworkInfo(inetAddress, port, lastSeen.get());
+        NetworkInfo clientInfo = new NetworkInfo(address, port, lastSeen.get());
 
         // Store the info in the table.
         sessionTable.put(clientUUID, clientInfo);
 
         // Create a reply and store it on the sender's queue.
         Message newClient = new Message(clientUUID, ServerCore.getState());
-        senderService.getQueue().add(newClient);
+        sendingQueue.add(newClient);
     }
 
     /**
      * Returns direct reference to the morgueQueue.
      * @return Direct reference to morgueQueue.
      */
+    @NotNull
     public BlockingQueue<Session> getQueue() {
         return morgueQueue;
     }
@@ -185,12 +195,13 @@ public class DispatcherService implements Runnable {
      * Returns direct reference to the dispatcherThread.
      * @return Direct reference to dispatcherThread.
      */
+    @NotNull
     public Thread getThread() {
         return dispatcherThread;
     }
 
     /**
-     * Returns the port the dispatcher is listenting to.
+     * Returns the port the dispatcher is listening to.
      * @return Returns the port the network is receiving from.
      */
     public int getPort() {

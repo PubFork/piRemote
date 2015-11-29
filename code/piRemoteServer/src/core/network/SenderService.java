@@ -1,6 +1,7 @@
 package core.network;
 
 import MessageObject.Message;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -11,17 +12,15 @@ import java.net.SocketException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-/**
- * Created by Fabian on 13.11.15.
- */
-
 public class SenderService implements Runnable {
 
     private final ServerNetwork serverNetwork;
 
+    @NotNull
     private final BlockingQueue<Message> sendingQueue;
     private DatagramSocket socket;
 
+    @NotNull
     private final Thread senderThread;
 
     /**
@@ -72,10 +71,13 @@ public class SenderService implements Runnable {
                 networkInfo = serverNetwork.getSessionTable().get(messageToSend.getUuid());
 
                 // Serialise the message to send
+                if (objectStream == null) {
+                    throw new IllegalArgumentException("objectStream to write to was null.");
+                }
                 objectStream.writeObject(messageToSend);
                 objectStream.flush();
 
-                // Create a buffer and the corresponding packet to be sent to inetAddress/port.
+                // Create a buffer and the corresponding packet to be sent to address/port.
                 byte[] sendBuffer = byteStream.toByteArray();
                 packet = new DatagramPacket(sendBuffer, sendBuffer.length, networkInfo.getIp(), networkInfo.getPort());
 
@@ -95,6 +97,9 @@ public class SenderService implements Runnable {
             e.printStackTrace();
         }
         try {
+            if (objectStream == null) {
+                throw new IllegalArgumentException("objectStream to close was null.");
+            }
             objectStream.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -105,6 +110,7 @@ public class SenderService implements Runnable {
      * Returns direct reference to the sendingQueue.
      * @return Direct reference to sendingQueue.
      */
+    @NotNull
     public BlockingQueue<Message> getQueue() {
         return sendingQueue;
     }
@@ -113,6 +119,7 @@ public class SenderService implements Runnable {
      * Returns direct reference to the senderThread.
      * @return Direct reference to senderThread.
      */
+    @NotNull
     public Thread getThread() {
         return senderThread;
     }

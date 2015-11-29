@@ -1,7 +1,9 @@
 package core.network;
 
 import MessageObject.Message;
+import NetworkConstants.NetworkConstants;
 import core.ServerCore;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.Thread;
 import java.util.Map;
@@ -14,14 +16,14 @@ import java.util.UUID;
 
 public class KeepAliveService implements Runnable {
 
+    @NotNull
     private final ServerNetwork serverNetwork;
+    @NotNull
     private final DispatcherService dispatcherService;
+    @NotNull
     private final SenderService senderService;
+    @NotNull
     private final Thread keepAliveThread;
-
-    private final long INTERVAL = 1500;
-    private final long ALLOWED_DROPS = 4;
-    private final long TIMEOUT = ALLOWED_DROPS * INTERVAL;
 
     /**
      * Default constructor for the KeepAliveThread on the Server.
@@ -29,7 +31,7 @@ public class KeepAliveService implements Runnable {
      * @param dispatcherService Reference to the network's dispatcher.
      * @param senderService Reference to the network's sender.
      */
-    public KeepAliveService(ServerNetwork serverNetwork, DispatcherService dispatcherService, SenderService senderService) {
+    public KeepAliveService(@NotNull ServerNetwork serverNetwork, @NotNull DispatcherService dispatcherService, @NotNull SenderService senderService) {
         this.serverNetwork = serverNetwork;
         this.dispatcherService = dispatcherService;
         this.senderService = senderService;
@@ -44,7 +46,7 @@ public class KeepAliveService implements Runnable {
             for (Map.Entry<UUID, NetworkInfo> entry : serverNetwork.getSessionTable().entrySet()) {
                 // Iterate over all elements of the sessionTable
                 long stillAlive = System.currentTimeMillis() - entry.getValue().getLastSeen();
-                if (stillAlive < TIMEOUT) {
+                if (stillAlive < NetworkConstants.TIMEOUT) {
                     // If the server<->client link hasn't timed out yet, place a keep alive message on
                     // the sending queue.
                     Message keepAlive = new Message(entry.getKey(), ServerCore.getState());
@@ -58,7 +60,7 @@ public class KeepAliveService implements Runnable {
 
             // Wait INTERVAL time before checking for a need to resend a keep-alive.
             try {
-                Thread.sleep(INTERVAL);
+                Thread.sleep(NetworkConstants.INTERVAL);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -69,6 +71,7 @@ public class KeepAliveService implements Runnable {
      * Returns direct reference to the keepAliveThread.
      * @return Direct reference to keepAliveThread.
      */
+    @NotNull
     public Thread getThread() {
         return keepAliveThread;
     }

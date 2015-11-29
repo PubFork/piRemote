@@ -1,13 +1,14 @@
 package core.network;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.UUID;
 
-/**
- * Created by FR4NK-W on 11/21/2015.
- */
-public class Session {
+class Session {
 
+    @NotNull
     private final UUID uuid;
+    @NotNull
     private final NetworkInfo networkInfo;
 
     /**
@@ -15,7 +16,7 @@ public class Session {
      * @param uuid UUID of the client to manage.
      * @param networkInfo NetworkInfo of the client to manage.
      */
-    public Session(UUID uuid, NetworkInfo networkInfo) {
+    public Session(@NotNull UUID uuid, @NotNull NetworkInfo networkInfo) {
         this.uuid = uuid;
         this.networkInfo = networkInfo;
     }
@@ -24,6 +25,7 @@ public class Session {
      * Returns session UUID.
      * @return UUID if set, else null.
      */
+    @NotNull
     public UUID getUUID() {
         return uuid;
     }
@@ -32,6 +34,7 @@ public class Session {
      * Returns NetworkInfo object (ip, port, lastSeen) of the session.
      * @return Instantiated object NetworkInfo.
      */
+    @NotNull
     public NetworkInfo getNetworkInfo() {
         return networkInfo;
     }

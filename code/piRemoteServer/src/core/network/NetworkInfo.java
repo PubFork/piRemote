@@ -1,15 +1,16 @@
 package core.network;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.net.InetAddress;
 import java.util.concurrent.atomic.AtomicLong;
 
-/**
- * Created by Fabian on 13.11.15.
- */
 public class NetworkInfo {
 
+    @NotNull
     private final InetAddress ip;
     private final int port;
+    @NotNull
     private final AtomicLong lastSeen;
 
     /**
@@ -18,7 +19,7 @@ public class NetworkInfo {
      * @param port Port with which the client communicates.
      * @param lastSeen AtomicLong of last communication by the client to the server.
      */
-    public NetworkInfo(InetAddress ip, int port, long lastSeen){
+    public NetworkInfo(@NotNull InetAddress ip, int port, long lastSeen){
         this.ip = ip;
         this.port = port;
         this.lastSeen = new AtomicLong(lastSeen);
@@ -28,6 +29,7 @@ public class NetworkInfo {
      * Returns the IP of the active session.
      * @return IP of session.
      */
+    @NotNull
     public InetAddress getIp() {
         return this.ip;
     }
