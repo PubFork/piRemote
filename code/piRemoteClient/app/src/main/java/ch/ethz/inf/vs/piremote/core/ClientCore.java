@@ -41,7 +41,7 @@ public class ClientCore extends Service {
         application.clientCore = this;
 
         // Create a ClientNetwork object, which takes care of starting all other threads running in the background.
-        clientNetwork = new ClientNetwork(mAddress, mPort, mainQueue);
+        clientNetwork = new ClientNetwork(mAddress, mPort, this);
     }
 
     @Override
@@ -186,6 +186,10 @@ public class ClientCore extends Service {
      */
     protected Message makeMessage(Payload payload){
         return new Message(clientNetwork.getUuid(), getState(), payload);
+    }
+
+    public LinkedBlockingQueue<Message> getMainQueue() {
+        return mainQueue;
     }
 
     public ServerState getServerState() {

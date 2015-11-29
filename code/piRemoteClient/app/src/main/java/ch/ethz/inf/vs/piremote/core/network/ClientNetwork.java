@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import ConnectionManagement.Connection;
 import MessageObject.Message;
 import SharedConstants.CoreCsts;
+import ch.ethz.inf.vs.piremote.core.ClientCore;
 
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -20,6 +21,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class ClientNetwork implements Runnable{
     //TODO(Mickey) Add proper Android logging
+
+    @NonNull
+    private final ClientCore clientCore;
 
     @Nullable
     private DispatcherService dispatcherService;
@@ -48,12 +52,13 @@ public class ClientNetwork implements Runnable{
      * from the ClientCore to build its network. This constructor also starts the threads!
      * @param address core needs to provide the address of the server
      * @param port core also needs to provide the port of the server
-     * @param mainQueue Queue on which the dispatcher will put the messages for the core
+     * @param clientCore reference to the core provides access to the mainQueue (on which the dispatcher will put the messages for the core)
      */
-    public ClientNetwork(@NonNull InetAddress address, int port, @NonNull LinkedBlockingQueue<Message> mainQueue) {
+    public ClientNetwork(@NonNull InetAddress address, int port, @NonNull ClientCore clientCore) {
         this.address = address;
         this.defaultPort = port;
-        this.mainQueue = mainQueue;
+        this.clientCore = clientCore;
+        this.mainQueue = clientCore.getMainQueue();
 
         this.uuid = null;
         this.running = new AtomicBoolean(false);
@@ -91,6 +96,11 @@ public class ClientNetwork implements Runnable{
                 e1.printStackTrace();
             }
         }
+    }
+
+    @NonNull
+    public ClientCore getClientCore() {
+        return clientCore;
     }
 
     /**

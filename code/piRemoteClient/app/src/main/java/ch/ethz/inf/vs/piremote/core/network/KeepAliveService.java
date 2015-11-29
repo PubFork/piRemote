@@ -44,7 +44,7 @@ public class KeepAliveService implements Runnable {
             if (stillAlive < NetworkConstants.TIMEOUT) {
                 // If the server<->client link hasn't timed out yet, place a keep alive message on
                 // the sending queue.
-                Message keepAlive = new Message(clientNetwork.getUuid(), ClientCore.getState());
+                Message keepAlive = new Message(clientNetwork.getUuid(), clientNetwork.getClientCore().getState());
                 senderService.getQueue().add(keepAlive);
                 Log.d("## KeepAlive ##", "Sending keep alive to server");
             } else {
