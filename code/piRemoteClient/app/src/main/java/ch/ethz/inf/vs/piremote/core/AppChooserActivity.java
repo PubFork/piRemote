@@ -21,6 +21,8 @@ public class AppChooserActivity extends AbstractActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        application.setActivity(this);
+
         // Get an array of all the available applications (given by the ServerState enumeration) and store their names.
         final ServerState[] serverStates = ServerState.values();
         final String[] applicationNames = new String[serverStates.length];

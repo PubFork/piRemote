@@ -16,6 +16,7 @@ public class AppChooserApplication extends AbstractApplication {
     @Override
     public void onApplicationStart(ApplicationState startState) {
 
+        applicationState = startState;
         // Create Intent to adapt UI for the new application.
         Intent startApplication = new Intent(activity.getBaseContext(), AppChooserActivity.class);
         activity.startActivity(startApplication);
@@ -28,7 +29,7 @@ public class AppChooserApplication extends AbstractApplication {
 
     @Override
     public void onApplicationStateChange(ApplicationState newState) {
-
+        applicationState = newState;
     }
 
     @Override

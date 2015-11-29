@@ -26,7 +26,7 @@ public class ClientCore extends Service {
 
     private final LinkedBlockingQueue<Message> mainQueue = new LinkedBlockingQueue<>();
 
-    private ServerState serverState;
+    protected ServerState serverState;
 
     // There is ALWAYS an application running: Main and AppChooser are also AbstractApplications.
     protected AbstractApplication application;

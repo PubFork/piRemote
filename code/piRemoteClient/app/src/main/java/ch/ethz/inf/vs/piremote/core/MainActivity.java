@@ -84,7 +84,7 @@ public class MainActivity extends AbstractActivity {
         if(validServerInformation()){
 
             application = new MainApplication(); // create application for main
-            application.activity = this; // set reference to current activity
+            application.setActivity(this); // set reference to current activity
 
             // TODO: I think the proper way to start a service would be to call startService() on an Intent.
             // And use binding to pass arguments.

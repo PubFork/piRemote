@@ -4,13 +4,13 @@ import android.support.v7.app.AppCompatActivity;
 
 public abstract class AbstractActivity extends AppCompatActivity {
 
-    protected AbstractApplication application;
+    protected static AbstractApplication application;
 
     public AbstractApplication getAbstractApplication() {
         return application;
     }
 
     public void setApplication(AbstractApplication application) {
-        this.application = application;
+        AbstractActivity.application = application;
     }
 }

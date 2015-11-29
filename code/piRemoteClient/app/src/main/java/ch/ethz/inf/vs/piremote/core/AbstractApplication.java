@@ -13,9 +13,9 @@ import SharedConstants.ApplicationCsts.ApplicationState;
  */
 public abstract class AbstractApplication {
 
-    private ApplicationState applicationState;
+    protected ApplicationState applicationState;
 
-    protected AbstractActivity activity; // reference to current Activity
+    protected static AbstractActivity activity; // reference to current Activity
     protected ClientCore clientCore;
 
     /**
@@ -86,7 +86,7 @@ public abstract class AbstractApplication {
     }
 
     public void setActivity(AbstractActivity activity) {
-        this.activity = activity;
+        AbstractApplication.activity = activity;
     }
 
     public ClientCore getClientCore() {
