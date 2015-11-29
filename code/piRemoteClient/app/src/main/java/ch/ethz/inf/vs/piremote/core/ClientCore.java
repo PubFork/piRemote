@@ -24,34 +24,34 @@ import ch.ethz.inf.vs.piremote.core.network.ClientNetwork;
  */
 public class ClientCore extends Service {
 
-    public static final LinkedBlockingQueue<Message> mainQueue = new LinkedBlockingQueue<>();
+    private static final LinkedBlockingQueue<Message> mainQueue = new LinkedBlockingQueue<>();
 
-    protected static UUID uuid; // Store UUID assigned from the server // TODO: NETWORK ?
-    protected static ServerState serverState;
+    private static ServerState serverState;
 
-    // There is ALWAYS an application running: Main and AppChooser are also AbstractApplication.
+    // There is ALWAYS an application running: Main and AppChooser are also AbstractApplications.
     protected static AbstractApplication application;
-    protected static boolean running;
 
-    protected static InetAddress address;
-    protected static int port;
-    protected static ClientNetwork clientNetwork;
+    // Keep track of all activities in the background
+    private static ClientNetwork clientNetwork;
 
-    public ClientCore(InetAddress mAddress, int mPort) {
-        address = mAddress;
-        port = mPort;
+    public ClientCore(InetAddress mAddress, int mPort, AbstractApplication mApplication) {
 
         // We guarantee that there is always an application running.
-        application = new MainApplication();
+        application = mApplication;
+        AbstractApplication.setClientCore(this);
+
+        // Create a ClientNetwork object, which takes care of starting all other threads running in the background.
+        clientNetwork = new ClientNetwork(mAddress, mPort, mainQueue);
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        // Create a ClientNetwork object, which takes care of starting all other threads running in the background.
-        // Includes a connection request.
-        clientNetwork = new ClientNetwork(address, port, mainQueue); // TODO: NETWORK ?
+/*
+        clientNetwork.startNetwork(); // Start background threads
+        clientNetwork.connectToServer(); // Send connection request
+*/
 
         // TODO: Blocking wait on the mainQueue for messages to arrive and handle incoming messages.
 /*
@@ -59,14 +59,20 @@ public class ClientCore extends Service {
         Message msg = mainQueue.take();
         processMessage(msg);
 */
+        // TEST ONLY
+        // Switch to app chooser
+        serverState = ServerState.NONE;
+        application.onApplicationStop();
+        application = ApplicationFactory.makeApplication(serverState);
+        application.onApplicationStart(null);
+        // TEST ONLY
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
 
-        // Destroy the ClientNetwork object and all threads running in the background.
-        clientNetwork.disconnectFromServer(); // TODO: NETWORK ?
+        clientNetwork.disconnectFromServer(); // Stop background threads
     }
 
     @Override
@@ -79,7 +85,7 @@ public class ClientCore extends Service {
      * Inspect the ServerState of the received message and react to it. In most cases we have to forward it to the application currently running.
      * @param msg Message the Dispatcher put into the mainQueue
      */
-    public static void processMessage(Message msg) {
+    public void processMessage(Message msg) {
 
         // First, we need to check the ServerState.
         if(!checkServerState(msg)){
@@ -114,17 +120,17 @@ public class ClientCore extends Service {
      * @return state object containing both the current server and application state
      */
     public static State getState() {
-        return new State(serverState, application.getApplicationState());
+        return new State(getServerState(), AbstractApplication.getApplicationState());
     }
 
     /**
      * Test whether the actual ServerState in the Message corresponds to the expected ServerState stored in the ClientCore.
      * @param msg Message object for which we have to check the server state
      */
-    private static boolean checkServerState(Message msg) {
+    private boolean checkServerState(Message msg) {
         return msg != null
                 && msg.getServerState() != null
-                && msg.getServerState().equals(serverState);
+                && msg.getServerState().equals(getServerState());
     }
 
     /**
@@ -133,7 +139,7 @@ public class ClientCore extends Service {
      */
     protected void changeServerState(ServerState newState) {
         // Do not yet change the serverState locally, but rather wait for a state update (confirmation) from the server.
-        ClientCore.sendMessage(ClientCore.makeMessage(new ServerStateChange(newState))); // Send request to the server
+        sendMessage(makeMessage(new ServerStateChange(newState))); // Send request to the server
     }
 
     /**
@@ -170,7 +176,7 @@ public class ClientCore extends Service {
      * @return Message object containing the server and application state
      */
     protected static Message makeMessage(){
-        return new Message(uuid, getState());
+        return new Message(clientNetwork.getUuid(), getState());
     }
 
     /**
@@ -179,6 +185,18 @@ public class ClientCore extends Service {
      * @return Message object containing the specified payload and also the server and application state
      */
     protected static Message makeMessage(Payload payload){
-        return new Message(uuid, getState(), payload);
+        return new Message(clientNetwork.getUuid(), getState(), payload);
+    }
+
+    public static ServerState getServerState() {
+        return serverState;
+    }
+
+    public AbstractApplication getAbstractApplication() {
+        return application;
+    }
+
+    public void setApplication(AbstractApplication application) {
+        ClientCore.application = application;
     }
 }

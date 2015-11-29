@@ -13,7 +13,10 @@ import SharedConstants.ApplicationCsts.ApplicationState;
  */
 public abstract class AbstractApplication {
 
-    protected static ApplicationState applicationState;
+    private static ApplicationState applicationState;
+
+    protected static AbstractActivity activity; // reference to current Activity
+    protected static ClientCore clientCore;
 
     /**
      * Inspect the received message and react to it. We can be sure that the application is still running on the server.
@@ -43,14 +46,6 @@ public abstract class AbstractApplication {
     }
 
     /**
-     * Use this to read the current application state.
-     * Should be invoked by ClientCore only.
-     */
-    public ApplicationState getApplicationState() {
-        return applicationState;
-    }
-
-    /**
      * Test whether the actual ApplicationState in the Message corresponds to the expected ApplicationState stored in the AbstractApplication.
      * @param msg Message object for which we have to check the server state
      */
@@ -76,6 +71,30 @@ public abstract class AbstractApplication {
      */
     protected void pickFile(String path) {
         ClientCore.sendMessage(ClientCore.makeMessage(new Pick(path))); // Send request to the server
+    }
+
+    /**
+     * Use this to read the current application state.
+     * Should be invoked by ClientCore only.
+     */
+    public static ApplicationState getApplicationState() {
+        return applicationState;
+    }
+
+    public static AbstractActivity getActivity() {
+        return activity;
+    }
+
+    public static void setActivity(AbstractActivity activity) {
+        AbstractApplication.activity = activity;
+    }
+
+    public static ClientCore getClientCore() {
+        return clientCore;
+    }
+
+    public static void setClientCore(ClientCore clientCore) {
+        AbstractApplication.clientCore = clientCore;
     }
 
     /**

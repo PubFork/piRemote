@@ -1,8 +1,9 @@
 package ch.ethz.inf.vs.piremote.core;
 
+import android.content.Intent;
+
 import java.io.File;
 
-import SharedConstants.ApplicationCsts;
 import SharedConstants.ApplicationCsts.ApplicationState;
 
 /**
@@ -15,6 +16,9 @@ public class AppChooserApplication extends AbstractApplication {
     @Override
     public void onApplicationStart(ApplicationState startState) {
 
+        // Create Intent to adapt UI for the new application.
+        Intent startApplication = new Intent(activity.getBaseContext(), AppChooserActivity.class);
+        activity.startActivity(startApplication);
     }
 
     @Override

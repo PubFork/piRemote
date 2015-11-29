@@ -2,7 +2,6 @@ package ch.ethz.inf.vs.piremote.core;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
@@ -15,11 +14,11 @@ import java.net.InetAddress;
 
 import ch.ethz.inf.vs.piremote.R;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AbstractActivity {
 
     private InetAddress mServerAddress;
     private int mServerPort;
-    public ClientCore clientCore;
+    private static ClientCore clientCore;
 
     // Store server address and port entered
     static SharedPreferences settings;
@@ -83,10 +82,14 @@ public class MainActivity extends AppCompatActivity {
      */
     private void connectToPi() {
         if(validServerInformation()){
+
+            application = new MainApplication(); // create application for main
+            AbstractApplication.setActivity(this); // set reference to current activity
+
             // TODO: I think the proper way to start a service would be to call startService() on an Intent.
             // And use binding to pass arguments.
             // startService(new Intent(this,ClientCore.class));
-            clientCore = new ClientCore(mServerAddress, mServerPort);
+            clientCore = new ClientCore(mServerAddress, mServerPort, application);
             clientCore.onCreate();
 
             // Let the user know that something is going on.
