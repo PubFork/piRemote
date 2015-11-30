@@ -35,7 +35,7 @@ public class ClientCore extends Service {
     // Keep track of all activities in the background
     private ClientNetwork clientNetwork;
 
-    public ClientCore(InetAddress mAddress, int mPort, AbstractApplication mApplication) {
+    public void createClientCore(InetAddress mAddress, int mPort, AbstractApplication mApplication) {
 
         // We guarantee that there is always an application running.
         application = mApplication;
@@ -52,9 +52,13 @@ public class ClientCore extends Service {
         if (arguments != null) {
             InetAddress address = (InetAddress) arguments.get("address");
             int port = (Integer) arguments.get("port");
-            new ClientCore(address, port, MainActivity.application);
+            createClientCore(address, port, MainActivity.application);
         }
-        return 0;
+
+        clientNetwork.startNetwork();
+        clientNetwork.connectToServer();
+
+        return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
@@ -63,8 +67,9 @@ public class ClientCore extends Service {
 
         // Intent intent = get
         // Bundle arguments = getIntent().g
-        clientNetwork.startNetwork(); // Start background threads
-        clientNetwork.connectToServer(); // Send connection request
+
+        // clientNetwork.startNetwork(); // Start background threads
+        // clientNetwork.connectToServer(); // Send connection request
 
 
         // TODO: Blocking wait on the mainQueue for messages to arrive and handle incoming messages.
@@ -76,10 +81,12 @@ public class ClientCore extends Service {
         // TEST ONLY
         // Switch to app chooser
 
+        /*
         serverState = ServerState.NONE;
         application.onApplicationStop();
         application = ApplicationFactory.makeApplication(serverState);
         application.onApplicationStart(null);
+        */
 
         // TEST ONLY
     }
