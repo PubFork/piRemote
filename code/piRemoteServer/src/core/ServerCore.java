@@ -40,6 +40,7 @@ public class ServerCore{
 
         // Init Network component
         serverNetwork = new ServerNetwork(8015);
+        serverNetwork.startNetwork();
 
         // TEST ONLY
         //ServerCoreTester st = new ServerCoreTester(mainQueue);
