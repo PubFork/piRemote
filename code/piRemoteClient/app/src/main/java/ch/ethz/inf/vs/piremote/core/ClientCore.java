@@ -8,6 +8,7 @@ import android.os.IBinder;
 import java.net.InetAddress;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import MessageObject.Message;
@@ -47,55 +48,45 @@ public class ClientCore extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        int result = super.onStartCommand(intent, flags, startId);
+
+        // get the arguments from the intent
         Bundle arguments = intent.getExtras();
 
         if (arguments != null) {
+            // read the arguments out of the intent
             InetAddress address = (InetAddress) arguments.get("address");
             int port = (Integer) arguments.get("port");
+
+            // create the client core
             createClientCore(address, port, MainActivity.application);
+        } else {
+
         }
 
+        // start the network and connect to the server
         clientNetwork.startNetwork();
         clientNetwork.connectToServer();
 
-        return super.onStartCommand(intent, flags, startId);
-    }
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-        // Intent intent = get
-        // Bundle arguments = getIntent().g
-
-        // clientNetwork.startNetwork(); // Start background threads
-        // clientNetwork.connectToServer(); // Send connection request
+        // TODO: while isRunning() do some stuff
+        while (clientNetwork.isRunning()) {
+            try {
+                Message msg = mainQueue.take();
+                processMessage(msg);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
 
 
-        // TODO: Blocking wait on the mainQueue for messages to arrive and handle incoming messages.
-/*
-        // Do repeatedly until serivce is called.
-        Message msg = mainQueue.take();
-        processMessage(msg);
-*/
-        // TEST ONLY
-        // Switch to app chooser
-
-        /*
-        serverState = ServerState.NONE;
-        application.onApplicationStop();
-        application = ApplicationFactory.makeApplication(serverState);
-        application.onApplicationStart(null);
-        */
-
-        // TEST ONLY
+        return result;
     }
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
-
         clientNetwork.disconnectFromServer(); // Stop background threads
+
+        super.onDestroy();
     }
 
     @Override
