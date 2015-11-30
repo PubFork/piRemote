@@ -1,13 +1,11 @@
 package ch.ethz.inf.vs.piremote.core.network;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import MessageObject.Message;
 import NetworkConstants.NetworkConstants;
-import ch.ethz.inf.vs.piremote.core.ClientCore;
-
-import java.lang.Thread;
 
 /**
  * created by fabian on 13.11.15
@@ -15,26 +13,28 @@ import java.lang.Thread;
 
 public class KeepAliveService implements Runnable {
 
-    private final ClientNetwork clientNetwork;
-    private final DispatcherService dispatcherService;
-    private final SenderService senderService;
     @NonNull
-    private final Thread keepAliveThread;
+    private final ClientNetwork clientNetwork;
+    @NonNull
+    private final DispatcherService dispatcherService;
+    @NonNull
+    private final SenderService senderService;
+    @Nullable
+    private Thread keepAliveThread;
 
 
     /**
      * Default constructor for the KeepAliveThread on the Client.
-     * @param clientNetwork Reference to the main network.
-     * @param dispatcherService Reference to the network's dispatcher.
-     * @param senderService Reference to the network's sender.
+     *
+     * @param network    Reference to the main network.
+     * @param dispatcher Reference to the network's dispatcher.
+     * @param sender     Reference to the network's sender.
      */
-    public KeepAliveService(ClientNetwork clientNetwork, DispatcherService dispatcherService, SenderService senderService) {
-        this.clientNetwork = clientNetwork;
-        this.dispatcherService = dispatcherService;
-        this.senderService = senderService;
-
-        this.keepAliveThread = new Thread(this);
-        // keepAliveThread.start();
+    KeepAliveService(@NonNull ClientNetwork network, @NonNull DispatcherService dispatcher, @NonNull SenderService sender) {
+        clientNetwork = network;
+        dispatcherService = dispatcher;
+        senderService = sender;
+        network.setKeepAliveConstructed();
     }
 
     @Override
@@ -45,7 +45,7 @@ public class KeepAliveService implements Runnable {
                 // If the server<->client link hasn't timed out yet, place a keep alive message on
                 // the sending queue.
                 Message keepAlive = new Message(clientNetwork.getUuid(), clientNetwork.getClientCore().getState());
-                senderService.getQueue().add(keepAlive);
+                clientNetwork.putOnSendingQueue(keepAlive);
                 Log.d("## KeepAlive ##", "Sending keep alive to server");
             } else {
                 // Else let us reset our application's state.
@@ -63,11 +63,10 @@ public class KeepAliveService implements Runnable {
     }
 
     /**
-     * Returns direct reference to the keepAliveThread.
-     * @return Direct reference to keepAliveThread.
+     * Start the keepAliveThread.
      */
-    @NonNull
-    public Thread getThread() {
-        return keepAliveThread;
+    void startThread() {
+        keepAliveThread = new Thread(this);
+        keepAliveThread.start();
     }
 }

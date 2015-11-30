@@ -1,10 +1,7 @@
 package ch.ethz.inf.vs.piremote.core.network;
 
 import android.support.annotation.NonNull;
-
-import ConnectionManagement.Connection;
-import MessageObject.Message;
-import NetworkConstants.NetworkConstants;
+import android.support.annotation.Nullable;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -16,6 +13,9 @@ import java.net.DatagramSocket;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
+import MessageObject.Message;
+import NetworkConstants.NetworkConstants;
+
 public class DispatcherService implements Runnable {
     //TODO(Mickey) Add proper Android logging
 
@@ -25,23 +25,20 @@ public class DispatcherService implements Runnable {
     @NonNull
     private final DatagramSocket socket; // DatagramSocket used for communication.
     @NonNull
-    private final AtomicLong lastSeen; // Timestamp of last received message from the server.
+    private final AtomicLong lastSeen = new AtomicLong(0L); // Timestamp of last received message from the server.
 
-    @NonNull
-    private final Thread dispatcherThread;
+    @Nullable
+    private Thread dispatcherThread;
 
     /**
      * Default constructor for the DispatcherService.
-     * @param clientNetwork The Network starting this service.
+     *
+     * @param network The Network starting this service.
      */
-    public DispatcherService(@NonNull ClientNetwork clientNetwork){
-        this.clientNetwork = clientNetwork;
-
-        this.socket = clientNetwork.getSocket();
-
-        this.lastSeen = new AtomicLong(0L);
-        dispatcherThread = new Thread(this);
-        // dispatcherThread.start();
+    DispatcherService(@NonNull ClientNetwork network) {
+        clientNetwork = network;
+        socket = clientNetwork.getSocket();
+        network.setDispatcherConstructed();
     }
 
 
@@ -55,16 +52,19 @@ public class DispatcherService implements Runnable {
         DatagramPacket packet = new DatagramPacket(receiveBuffer, receiveBuffer.length);
         ByteArrayInputStream byteStream = new ByteArrayInputStream(receiveBuffer);
         ObjectInputStream objectStream = null;
+        // TODO(Mickey): Narrow down to Message?
         Object input;
 
         try {
             objectStream = new ObjectInputStream(byteStream);
+        } catch (StreamCorruptedException e) {
+            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
         // Allocation end
 
-        while(clientNetwork.isRunning()) {
+        while (clientNetwork.isRunning()) {
             // Receive packets while ClientNetwork is running.
             try {
                 // Receive an input and update the lastSeen value
@@ -84,23 +84,18 @@ public class DispatcherService implements Runnable {
                 if (input instanceof Message) {
                     // Message object received
                     UUID clientUUID = clientNetwork.getUuid();
-                    if (clientUUID == null || clientUUID != ((Message) input).getUuid()) {
+                    if ((clientUUID == null) || !clientUUID.equals(((Message) input).getUuid())) {
                         // The client doesn't have a UUID yet or it has an invalid UUID.
                         clientNetwork.setUuid(((Message) input).getUuid());
                     }
-                    clientNetwork.getMainQueue().put((Message) input);
-                } else if (input instanceof Connection) {
-                    // Connection object received, this shouldn't happen
-                    throw new RuntimeException("Unknown input received from network!");
+                    clientNetwork.putOnMainQueue((Message) input);
                 } else {
-                    // Something unknown has been received. This is really bad! Abort!
+                    // Unknown object received, this shouldn't happen
                     throw new RuntimeException("Unknown input received from network!");
                 }
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             } catch (OptionalDataException e) {
-                e.printStackTrace();
-            } catch (StreamCorruptedException e) {
                 e.printStackTrace();
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -128,6 +123,7 @@ public class DispatcherService implements Runnable {
 
     /**
      * Returns the last timestamp a message has been received.
+     *
      * @return lastSeen-value of successful incoming communication if any happened, else return 0;
      */
     public long getLastSeen() {
@@ -135,11 +131,10 @@ public class DispatcherService implements Runnable {
     }
 
     /**
-     * Returns direct reference to the dispatcherThread.
-     * @return Direct reference to dispatcherThread.
+     * Start the dispatcherThread.
      */
-    @NonNull
-    public Thread getThread() {
-        return dispatcherThread;
+    void startThread() {
+        dispatcherThread = new Thread(this);
+        dispatcherThread.start();
     }
 }

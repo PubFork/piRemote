@@ -1,6 +1,7 @@
 package ch.ethz.inf.vs.piremote.core.network;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -11,6 +12,8 @@ import java.net.InetAddress;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import ConnectionManagement.Connection;
+import MessageObject.Message;
 import NetworkConstants.NetworkConstants;
 
 public class SenderService implements Runnable {
@@ -23,26 +26,25 @@ public class SenderService implements Runnable {
     private final int port; // Port on which is being listened/sent by the client.
 
     @NonNull
-    private final BlockingQueue<Object> sendingQueue;
+    private final BlockingQueue<Object> sendingQueue = new LinkedBlockingQueue<>();
+    ;
     @NonNull
     private final DatagramSocket socket; // DatagramSocket used for communication.
 
-    @NonNull
-    private final Thread senderThread;
+    @Nullable
+    private Thread senderThread;
 
     /**
      * Default constructor for the SenderService. The service has to be started explicitly.
-     * @param clientNetwork The Network starting this service.
+     *
+     * @param network The Network starting this service.
      */
-    public SenderService(@NonNull ClientNetwork clientNetwork) {
-        this.clientNetwork = clientNetwork;
-        this.inetAddress = clientNetwork.getAddress();
-        this.socket = clientNetwork.getSocket();
-        this.port = clientNetwork.getPort();
-
-        this.sendingQueue = new LinkedBlockingQueue<>();
-        this.senderThread = new Thread(this);
-        // senderThread.start();
+    SenderService(@NonNull ClientNetwork network) {
+        clientNetwork = network;
+        inetAddress = clientNetwork.getAddress();
+        socket = clientNetwork.getSocket();
+        port = clientNetwork.getPort();
+        network.setSenderConstructed();
     }
 
 
@@ -65,10 +67,10 @@ public class SenderService implements Runnable {
         }
         // End of allocating memory and objects.
 
-        while(clientNetwork.isRunning() || !sendingQueue.isEmpty()) {
+        while (clientNetwork.isRunning() || !sendingQueue.isEmpty()) {
             // Try sending a message while ClientNetwork is running.
             //TODO(Mickey) Proper documentation on the program logic
-            try{
+            try {
                 // Take an Object from the Queue.
                 messageToSend = sendingQueue.take();
 
@@ -76,8 +78,15 @@ public class SenderService implements Runnable {
                 if (objectStream == null) {
                     throw new IllegalArgumentException("objectStream to write to was null.");
                 }
-                objectStream.writeObject(messageToSend);
+                if (messageToSend instanceof Message) {
+                    Message message = (Message) messageToSend;
+                    objectStream.writeObject(message);
+                } else if (messageToSend instanceof Connection) {
+                    Connection connection = (Connection) messageToSend;
+                    objectStream.writeObject(connection);
+                }
                 objectStream.flush();
+
 
                 // Create a buffer and the corresponding packet to be sent to address/port.
                 byte[] sendBuffer = byteStream.toByteArray();
@@ -111,6 +120,7 @@ public class SenderService implements Runnable {
 
     /**
      * Returns direct reference to the sendingQueue.
+     *
      * @return Direct reference to sendingQueue.
      */
     @NonNull
@@ -119,11 +129,10 @@ public class SenderService implements Runnable {
     }
 
     /**
-     * Returns direct reference to the senderThread.
-     * @return Direct reference to senderThread.
+     * Start the senderThread.
      */
-    @NonNull
-    public Thread getThread() {
-        return senderThread;
+    void startThread() {
+        senderThread = new Thread(this);
+        senderThread.start();
     }
 }

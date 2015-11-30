@@ -3,11 +3,6 @@ package ch.ethz.inf.vs.piremote.core.network;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import ConnectionManagement.Connection;
-import MessageObject.Message;
-import SharedConstants.CoreCsts;
-import ch.ethz.inf.vs.piremote.core.ClientCore;
-
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
@@ -16,10 +11,15 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import ConnectionManagement.Connection;
+import MessageObject.Message;
+import SharedConstants.CoreCsts;
+import ch.ethz.inf.vs.piremote.core.ClientCore;
+
 /**
  * created by fabian on 13.11.15
  */
-public class ClientNetwork implements Runnable{
+public class ClientNetwork implements Runnable {
     //TODO(Mickey) Add proper Android logging
 
     @NonNull
@@ -34,36 +34,38 @@ public class ClientNetwork implements Runnable{
 
     @Nullable
     private UUID uuid;
-    @NonNull
-    private final AtomicBoolean running;
     @Nullable
     private DatagramSocket socket;
+    private Thread networkThread;
 
-    @NonNull
-    private final Thread networkThread;
     @NonNull
     private final InetAddress address;
     @NonNull
     private final LinkedBlockingQueue<Message> mainQueue;
     private final int defaultPort;
 
+    @NonNull
+    private final AtomicBoolean running = new AtomicBoolean(false);
+    @NonNull
+    private final AtomicBoolean senderConstructed = new AtomicBoolean(false);
+    @NonNull
+    private final AtomicBoolean dispatcherConstructed = new AtomicBoolean(false);
+    @NonNull
+    private final AtomicBoolean keepAliveConstructed = new AtomicBoolean(false);
+
     /**
      * create a ClientNetwork object that has several threads. This constructor is called
      * from the ClientCore to build its network. This constructor also starts the threads!
-     * @param address core needs to provide the address of the server
-     * @param port core also needs to provide the port of the server
-     * @param clientCore reference to the core provides access to the mainQueue (on which the dispatcher will put the messages for the core)
+     *
+     * @param serverAddress core needs to provide the address of the server
+     * @param port          core also needs to provide the port of the server
+     * @param core          reference to the core provides access to the mainQueue (on which the dispatcher will put the messages for the core)
      */
-    public ClientNetwork(@NonNull InetAddress address, int port, @NonNull ClientCore clientCore) {
-        this.address = address;
-        this.defaultPort = port;
-        this.clientCore = clientCore;
-        this.mainQueue = clientCore.getMainQueue();
-
-        this.uuid = null;
-        this.running = new AtomicBoolean(false);
-        this.networkThread = new Thread(this);
-        //this.networkThread.start();
+    public ClientNetwork(@NonNull InetAddress serverAddress, int port, @NonNull ClientCore core) {
+        address = serverAddress;
+        defaultPort = port;
+        clientCore = core;
+        mainQueue = clientCore.getMainQueue();
     }
 
     @Override
@@ -77,13 +79,14 @@ public class ClientNetwork implements Runnable{
         keepAliveService = new KeepAliveService(this, dispatcherService, senderService);
 
         // Start the services of the network.
-        senderService.getThread().start();
-        keepAliveService.getThread().start();
-        dispatcherService.getThread().start();
+        senderService.startThread();
+        keepAliveService.startThread();
+        dispatcherService.startThread();
     }
 
     /**
      * Creates a socket bound to port 'number' if possible, else gets any open port.
+     *
      * @param number Port on which the socket should bind to.
      */
     private void startSocket(int number) {
@@ -105,46 +108,50 @@ public class ClientNetwork implements Runnable{
 
     /**
      * Returns direct reference of the dispatcher object.
+     *
      * @return Direct reference of dispatcher object.
      */
     @Nullable
-    public DispatcherService getDispatcher() {
+    public DispatcherService getDispatcherService() {
         return dispatcherService;
     }
 
     /**
      * Returns direct reference of the sender object.
+     *
      * @return Direct reference of sender object.
      */
     @Nullable
-    public SenderService getSender() {
+    public SenderService getSenderService() {
         return senderService;
     }
 
     /**
      * Returns direct reference of the keep alive object.
+     *
      * @return Direct reference of keep alive object.
      */
     @Nullable
-    public KeepAliveService getKeepAlive() {
+    public KeepAliveService getKeepAliveService() {
         return keepAliveService;
     }
 
     /**
      * Returns direct reference of the SendingQueue if the SenderThread is running.
+     *
      * @return SendingQueue if SenderThread exists, else null.
      */
     @Nullable
     public BlockingQueue<Object> getSendingQueue() {
         if (senderService == null) {
             return null;
-        } else {
-            return senderService.getQueue();
         }
+        return senderService.getQueue();
     }
 
     /**
      * Returns direct reference to the client's receiving queue.
+     *
      * @return Direct reference to receiving queue.
      */
     @NonNull
@@ -160,7 +167,47 @@ public class ClientNetwork implements Runnable{
         request.requestConnection();
 
         // put connection request on sendingQueue
-        getSendingQueue().add(request);
+        putOnSendingQueue(request);
+    }
+
+    /**
+     * Internal method to try adding to sendingQueue.
+     *
+     * @param request Object to put on the queue.
+     * @return 0 on success, -1 if queue doesn't exist, -2 is sender not initialised.
+     */
+    private int addToSendingQueue(Object request) {
+        if (senderConstructed.get()) {
+            BlockingQueue<Object> queue = getSendingQueue();
+            if (queue != null) {
+                queue.add(request);
+                return 0;
+            }
+            return -1;
+        }
+        return -2;
+    }
+
+    /**
+     * Try adding an object to the sendingQueue until it succeeds.
+     *
+     * @param obj Object to put onto the queue.
+     */
+    void putOnSendingQueue(Object obj) {
+        int putOnQueue = 1;
+        while (putOnQueue != 0) {
+            putOnQueue = addToSendingQueue(obj);
+        }
+    }
+
+    /**
+     * Try adding an object to the mainQueue.
+     *
+     * @param msg Message to add to mainQueue.
+     * @throws InterruptedException
+     */
+    void putOnMainQueue(Message msg) throws InterruptedException {
+        mainQueue.put(msg);
     }
 
     /**
@@ -171,7 +218,7 @@ public class ClientNetwork implements Runnable{
         disconnectRequest.disconnect(uuid);
 
         // Send disconnection request to the server.
-        getSendingQueue().add(disconnectRequest);
+        putOnSendingQueue(disconnectRequest);
 
         // Notify ClientCore that the connection to the server has been terminated. Set the status
         // of the client appropriately.
@@ -179,11 +226,12 @@ public class ClientNetwork implements Runnable{
         mainQueue.add(disconnectServer);
 
         running.set(false);
-        this.uuid = null;
+        uuid = null;
     }
 
     /**
      * Return whether ClientNetwork is running or not.
+     *
      * @return Returns true if the ClientNetwork is running, else false.
      */
     public boolean isRunning() {
@@ -192,35 +240,39 @@ public class ClientNetwork implements Runnable{
 
     /**
      * Returns the port the network is communicating.
-     * @return Returns the port the network is communicating from if it exists, else returns '-1'
+     *
+     * @return Returns the port the network is communicating from if it exists, else returns '-2'
      */
     public int getPort() {
-        if(socket == null) {
-            return -1;
+        if (socket == null) {
+            return -2;
         }
-        return socket.getPort();
+        return socket.getLocalPort();
     }
 
     /**
      * Returns the server's address.
+     *
      * @return Address of the server the client is attached to.
      */
     @NonNull
     public InetAddress getAddress() {
-        return this.address;
+        return address;
     }
 
     /**
-     * Returns the socket of the Network.
+     * Returns the socket instance of the Network once the network-thread has been started.
+     *
      * @return Socket the Network is attached to.
      */
     @Nullable
     public DatagramSocket getSocket() {
-        return this.socket;
+        return socket;
     }
 
     /**
      * Returns the Client's UUID.
+     *
      * @return UUID of the client.´
      */
     @Nullable
@@ -230,16 +282,30 @@ public class ClientNetwork implements Runnable{
 
     /**
      * Sets the UUID of the Client.
-     * @param uuid new UUID to set the old UUID to.
+     *
+     * @param newUUID new UUID to set the old UUID to.
      */
-    public void setUuid(@Nullable UUID uuid) {
-        this.uuid = uuid;
+    public void setUuid(@Nullable UUID newUUID) {
+        uuid = newUUID;
     }
 
     /**
      * Method to start the Network part handling all communication.
      */
-    public void startNetwork(){
-        this.networkThread.start();
+    public void startNetwork() {
+        networkThread = new Thread(this);
+        networkThread.start();
+    }
+
+    void setSenderConstructed() {
+        senderConstructed.set(true);
+    }
+
+    void setDispatcherConstructed() {
+        dispatcherConstructed.set(true);
+    }
+
+    void setKeepAliveConstructed() {
+        keepAliveConstructed.set(true);
     }
 }
