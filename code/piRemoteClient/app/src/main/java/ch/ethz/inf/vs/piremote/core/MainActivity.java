@@ -87,22 +87,15 @@ public class MainActivity extends AbstractActivity {
             application = new MainApplication(); // create application for main
             application.setActivity(this); // set reference to current activity
 
-            // TODO: I think the proper way to start a service would be to call startService() on an Intent.
-            // And use binding to pass arguments.
-            // startService(new Intent(this,ClientCore.class));
+            // set up the intent and put some arguments to it
             Intent clientCoreIntent = new Intent(this, ClientCore.class);
             clientCoreIntent.putExtra("address", mServerAddress);
             clientCoreIntent.putExtra("port", mServerPort);
 
-            startService(clientCoreIntent);
-
-            // clientCoreIntent.putExtra("application", application);
-            // startService(new Intent(this, ClientCore.class));
-            // clientCore = new ClientCore(mServerAddress, mServerPort, application);
-            // clientCore.onCreate();
-
-            // Let the user know that something is going on.
+            // display "connecting"
             Toast.makeText(this, R.string.toast_connecting, Toast.LENGTH_SHORT).show();
+
+            startService(clientCoreIntent);
         }
     }
 
