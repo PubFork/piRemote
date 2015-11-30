@@ -1,5 +1,8 @@
 package ch.ethz.inf.vs.piremote.application;
 
+import android.content.Intent;
+import android.util.Log;
+
 import java.io.File;
 
 import SharedConstants.ApplicationCsts;
@@ -13,24 +16,25 @@ import ch.ethz.inf.vs.piremote.core.AbstractApplication;
  */
 public class TrafficLightApplication extends AbstractApplication {
 
+    public final String AID = "TrafficLightAppl";
+
     @Override
     public void onApplicationStart(ApplicationState startState) {
-
+        Log.d(AID, "Starting up, going to state "+startState);
     }
 
     @Override
     public void onApplicationStop() {
-
+        Log.d(AID, "Exiting.");
     }
 
     @Override
     public void onApplicationStateChange(ApplicationState newState) {
-
+        Log.d(AID, "Changing to state " + newState);
     }
 
     @Override
     public void onFilePicked(File file) {
-
     }
 
     @Override
