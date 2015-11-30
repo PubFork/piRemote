@@ -1,5 +1,6 @@
 package ch.ethz.inf.vs.piremote.core;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -89,8 +90,16 @@ public class MainActivity extends AbstractActivity {
             // TODO: I think the proper way to start a service would be to call startService() on an Intent.
             // And use binding to pass arguments.
             // startService(new Intent(this,ClientCore.class));
-            clientCore = new ClientCore(mServerAddress, mServerPort, application);
-            clientCore.onCreate();
+            Intent clientCoreIntent = new Intent(this, ClientCore.class);
+            clientCoreIntent.putExtra("address", mServerAddress);
+            clientCoreIntent.putExtra("port", mServerPort);
+
+            startService(clientCoreIntent);
+
+            // clientCoreIntent.putExtra("application", application);
+            // startService(new Intent(this, ClientCore.class));
+            // clientCore = new ClientCore(mServerAddress, mServerPort, application);
+            // clientCore.onCreate();
 
             // Let the user know that something is going on.
             Toast.makeText(this, R.string.toast_connecting, Toast.LENGTH_SHORT).show();

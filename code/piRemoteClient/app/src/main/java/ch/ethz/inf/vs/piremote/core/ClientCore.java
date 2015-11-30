@@ -2,6 +2,7 @@ package ch.ethz.inf.vs.piremote.core;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.IBinder;
 
 import java.net.InetAddress;
@@ -45,13 +46,26 @@ public class ClientCore extends Service {
     }
 
     @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Bundle arguments = intent.getExtras();
+
+        if (arguments != null) {
+            InetAddress address = (InetAddress) arguments.get("address");
+            int port = (Integer) arguments.get("port");
+            new ClientCore(address, port, MainActivity.application);
+        }
+        return 0;
+    }
+
+    @Override
     public void onCreate() {
         super.onCreate();
 
-/*
+        // Intent intent = get
+        // Bundle arguments = getIntent().g
         clientNetwork.startNetwork(); // Start background threads
         clientNetwork.connectToServer(); // Send connection request
-*/
+
 
         // TODO: Blocking wait on the mainQueue for messages to arrive and handle incoming messages.
 /*
@@ -61,10 +75,12 @@ public class ClientCore extends Service {
 */
         // TEST ONLY
         // Switch to app chooser
+
         serverState = ServerState.NONE;
         application.onApplicationStop();
         application = ApplicationFactory.makeApplication(serverState);
         application.onApplicationStart(null);
+
         // TEST ONLY
     }
 
