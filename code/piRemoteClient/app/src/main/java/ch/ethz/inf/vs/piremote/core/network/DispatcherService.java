@@ -25,7 +25,7 @@ public class DispatcherService implements Runnable {
     @NonNull
     private final DatagramSocket socket; // DatagramSocket used for communication.
     @NonNull
-    private final AtomicLong lastSeen = new AtomicLong(0L); // Timestamp of last received message from the server.
+    private final AtomicLong lastSeen = new AtomicLong(System.currentTimeMillis()); // Timestamp of last received message from the server.
 
     @Nullable
     private Thread dispatcherThread;

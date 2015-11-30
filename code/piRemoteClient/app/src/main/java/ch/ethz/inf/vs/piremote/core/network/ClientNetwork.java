@@ -2,6 +2,7 @@ package ch.ethz.inf.vs.piremote.core.network;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -299,13 +300,16 @@ public class ClientNetwork implements Runnable {
 
     void setSenderConstructed() {
         senderConstructed.set(true);
+        Log.d("## Sender ##:", "Sender is constructed succesfully");
     }
 
     void setDispatcherConstructed() {
         dispatcherConstructed.set(true);
+        Log.d("## Dispatcher ##:", "Dispatcher is constructed succesfully");
     }
 
     void setKeepAliveConstructed() {
         keepAliveConstructed.set(true);
+        Log.d("## KeepAlive ##:", "KeepAlive is constructed succesfully");
     }
 }
