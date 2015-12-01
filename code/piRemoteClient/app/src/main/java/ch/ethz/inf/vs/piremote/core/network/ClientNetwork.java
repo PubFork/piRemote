@@ -17,9 +17,6 @@ import MessageObject.Message;
 import SharedConstants.CoreCsts;
 import ch.ethz.inf.vs.piremote.core.ClientCore;
 
-/**
- * created by fabian on 13.11.15
- */
 public class ClientNetwork implements Runnable {
     //TODO(Mickey) Add proper Android logging
 
@@ -83,6 +80,13 @@ public class ClientNetwork implements Runnable {
         senderService.startThread();
         keepAliveService.startThread();
         dispatcherService.startThread();
+
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        disconnectFromServer();
     }
 
     /**
@@ -298,18 +302,27 @@ public class ClientNetwork implements Runnable {
         networkThread.start();
     }
 
+    /**
+     * Internal method called by the senderService, used for synchronisation.
+     */
     void setSenderConstructed() {
         senderConstructed.set(true);
-        Log.d("## Sender ##:", "Sender is constructed succesfully");
+        Log.d("## Sender ##:", "Sender is constructed successfully");
     }
 
+    /**
+     * Internal method called by the dispatcherService, used for synchronisation.
+     */
     void setDispatcherConstructed() {
         dispatcherConstructed.set(true);
-        Log.d("## Dispatcher ##:", "Dispatcher is constructed succesfully");
+        Log.d("## Dispatcher ##:", "Dispatcher is constructed successfully");
     }
 
+    /**
+     * Internal method called by the keepAliveService, used for synchronisation.
+     */
     void setKeepAliveConstructed() {
-        keepAliveConstructed.set(true);
-        Log.d("## KeepAlive ##:", "KeepAlive is constructed succesfully");
+            keepAliveConstructed.set(true);
+        Log.d("## KeepAlive ##:", "KeepAlive is constructed successfully");
     }
 }

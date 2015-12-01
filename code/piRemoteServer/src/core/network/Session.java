@@ -13,16 +13,18 @@ class Session {
 
     /**
      * Default constructor for creating a session object managed by the server.
-     * @param uuid UUID of the client to manage.
-     * @param networkInfo NetworkInfo of the client to manage.
+     *
+     * @param clientUUID UUID of the client to manage.
+     * @param clientInfo NetworkInfo of the client to manage.
      */
-    public Session(@NotNull UUID uuid, @NotNull NetworkInfo networkInfo) {
-        this.uuid = uuid;
-        this.networkInfo = networkInfo;
+    Session(@NotNull UUID clientUUID, @NotNull NetworkInfo clientInfo) {
+        uuid = clientUUID;
+        networkInfo = clientInfo;
     }
 
     /**
      * Returns session UUID.
+     *
      * @return UUID if set, else null.
      */
     @NotNull
@@ -32,6 +34,7 @@ class Session {
 
     /**
      * Returns NetworkInfo object (ip, port, lastSeen) of the session.
+     *
      * @return Instantiated object NetworkInfo.
      */
     @NotNull

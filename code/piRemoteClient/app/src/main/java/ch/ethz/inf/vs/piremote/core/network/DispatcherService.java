@@ -2,12 +2,12 @@ package ch.ethz.inf.vs.piremote.core.network;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.OptionalDataException;
-import java.io.StreamCorruptedException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.UUID;
@@ -50,19 +50,6 @@ public class DispatcherService implements Runnable {
         // Allocation of variable to minimise overhead of recreating them every iteration.
         byte[] receiveBuffer = new byte[NetworkConstants.PACKETSIZE];
         DatagramPacket packet = new DatagramPacket(receiveBuffer, receiveBuffer.length);
-        ByteArrayInputStream byteStream = new ByteArrayInputStream(receiveBuffer);
-        ObjectInputStream objectStream = null;
-        // TODO(Mickey): Narrow down to Message?
-        Object input;
-
-        try {
-            objectStream = new ObjectInputStream(byteStream);
-        } catch (StreamCorruptedException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        // Allocation end
 
         while (clientNetwork.isRunning()) {
             // Receive packets while ClientNetwork is running.
@@ -72,13 +59,10 @@ public class DispatcherService implements Runnable {
                 lastSeen.set(System.currentTimeMillis());
 
                 // Marshalling of the DatagramPacket back to an object
-                //byteStream = new ByteArrayInputStream(receiveBuffer);
+                ByteArrayInputStream byteStream = new ByteArrayInputStream(receiveBuffer);
                 //receiveBuffer = packet.getData();
-                //objectStream = new ObjectInputStream(byteStream);
-                if (objectStream == null) {
-                    throw new IllegalArgumentException("objectStream to read from was null.");
-                }
-                input = objectStream.readObject();
+                ObjectInputStream objectStream = new ObjectInputStream(byteStream);
+                Object input = objectStream.readObject();
 
                 // Handle the object received.
                 if (input instanceof Message) {
@@ -103,22 +87,6 @@ public class DispatcherService implements Runnable {
                 e.printStackTrace();
             }
         }
-
-        // Close streams, thread has been closed.
-        try {
-            if (objectStream == null) {
-                throw new IllegalArgumentException("objectStream to close was null.");
-            }
-            objectStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            byteStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
     }
 
     /**

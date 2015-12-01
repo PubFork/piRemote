@@ -2,6 +2,7 @@ package ch.ethz.inf.vs.piremote.core.network;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -27,7 +28,6 @@ public class SenderService implements Runnable {
 
     @NonNull
     private final BlockingQueue<Object> sendingQueue = new LinkedBlockingQueue<>();
-    ;
     @NonNull
     private final DatagramSocket socket; // DatagramSocket used for communication.
 
@@ -53,31 +53,18 @@ public class SenderService implements Runnable {
      */
     @Override
     public void run() {
-        // Allocate variables for thread to have less overhead creating them anew.
-        ByteArrayOutputStream byteStream = new ByteArrayOutputStream(NetworkConstants.PACKETSIZE);
-        ObjectOutputStream objectStream = null;
-        Object messageToSend;
-        DatagramPacket packet;
-
-        try {
-            objectStream = new ObjectOutputStream(byteStream);
-            objectStream.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        // End of allocating memory and objects.
-
         while (clientNetwork.isRunning() || !sendingQueue.isEmpty()) {
             // Try sending a message while ClientNetwork is running.
             //TODO(Mickey) Proper documentation on the program logic
             try {
+                //TODO(Mickey): This is NOT??? blocking... WTF?!
                 // Take an Object from the Queue.
-                messageToSend = sendingQueue.take();
+                Object messageToSend = sendingQueue.take();
+
+                ByteArrayOutputStream byteStream = new ByteArrayOutputStream(NetworkConstants.PACKETSIZE);
+                ObjectOutputStream objectStream = new ObjectOutputStream(byteStream);
 
                 // Serialise the message to send
-                if (objectStream == null) {
-                    throw new IllegalArgumentException("objectStream to write to was null.");
-                }
                 if (messageToSend instanceof Message) {
                     Message message = (Message) messageToSend;
                     objectStream.writeObject(message);
@@ -87,11 +74,9 @@ public class SenderService implements Runnable {
                 }
                 objectStream.flush();
 
-
                 // Create a buffer and the corresponding packet to be sent to address/port.
                 byte[] sendBuffer = byteStream.toByteArray();
-                packet = new DatagramPacket(sendBuffer, sendBuffer.length, inetAddress, port);
-
+                DatagramPacket packet = new DatagramPacket(sendBuffer, sendBuffer.length, inetAddress, port);
                 // Send the packet.
                 socket.send(packet);
             } catch (InterruptedException e) {
@@ -99,21 +84,6 @@ public class SenderService implements Runnable {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
-
-        // Close streams, thread has been closed.
-        try {
-            byteStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            if (objectStream == null) {
-                throw new IllegalArgumentException("objectStream to close was null.");
-            }
-            objectStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 

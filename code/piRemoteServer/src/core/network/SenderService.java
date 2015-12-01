@@ -3,6 +3,7 @@ package core.network;
 import MessageObject.Message;
 import NetworkConstants.NetworkConstants;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -13,74 +14,59 @@ import java.net.SocketException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class SenderService implements Runnable {
+class SenderService implements Runnable {
 
+    @NotNull
     private final ServerNetwork serverNetwork;
 
     @NotNull
-    private final BlockingQueue<Message> sendingQueue;
+    private final BlockingQueue<Message> sendingQueue = new LinkedBlockingQueue<>();
+
+    @Nullable
     private DatagramSocket socket;
 
-    @NotNull
-    private final Thread senderThread;
+    @Nullable
+    private Thread senderThread;
 
     /**
      * Default constructor for the SenderService. The service has to be started explicitly.
-     * @param serverNetwork The Network starting this service.
+     *
+     * @param network The Network starting this service.
      */
-    public SenderService(ServerNetwork serverNetwork){
-        this.serverNetwork = serverNetwork;
-
-        this.sendingQueue = new LinkedBlockingQueue<>();
-        this.senderThread = new Thread(this);
-        // senderThread.start();
+    SenderService(@NotNull ServerNetwork network) {
+        serverNetwork = network;
+        network.setSenderConstructed();
     }
 
 
     @Override
     public void run() {
-        // Open a new socket for outgoing communication with the clients.
+        // Open a new socket for outgoing communication with the clients on any free port.
         try {
             socket = new DatagramSocket();
         } catch (SocketException e) {
             e.printStackTrace();
         }
 
-        // Allocate variables for thread to have less overhead creating them anew.
-        ByteArrayOutputStream byteStream = new ByteArrayOutputStream(NetworkConstants.PACKETSIZE);
-        ObjectOutputStream objectStream = null;
-        Message messageToSend;
-        NetworkInfo networkInfo;
-        DatagramPacket packet;
-
-        try {
-            objectStream = new ObjectOutputStream(byteStream);
-            objectStream.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        // End of allocating memory and objects.
-
         while (serverNetwork.isRunning() || !sendingQueue.isEmpty()) {
             // Try sending a message while SendingService is running.
+            //TODO(Mickey) Proper documentation on the program logic
             try {
-                //TODO(Mickey) Proper documentation on the program logic
                 // Take an Object from the Queue.
-                messageToSend = sendingQueue.take();
+                Message messageToSend = sendingQueue.take();
 
                 // Get the NetworkInfo about the client supposed to the receive the Message.
-                networkInfo = serverNetwork.getSessionTable().get(messageToSend.getUuid());
+                NetworkInfo networkInfo = serverNetwork.getSessionTable().get(messageToSend.getUuid());
 
                 // Serialise the message to send
-                if (objectStream == null) {
-                    throw new IllegalArgumentException("objectStream to write to was null.");
-                }
+                ByteArrayOutputStream byteStream = new ByteArrayOutputStream(NetworkConstants.PACKETSIZE);
+                ObjectOutputStream objectStream = new ObjectOutputStream(byteStream);
                 objectStream.writeObject(messageToSend);
                 objectStream.flush();
 
                 // Create a buffer and the corresponding packet to be sent to address/port.
                 byte[] sendBuffer = byteStream.toByteArray();
-                packet = new DatagramPacket(sendBuffer, sendBuffer.length, networkInfo.getIp(), networkInfo.getPort());
+                DatagramPacket packet = new DatagramPacket(sendBuffer, sendBuffer.length, networkInfo.getIp(), networkInfo.getPort());
 
                 // Send the packet.
                 socket.send(packet);
@@ -90,39 +76,31 @@ public class SenderService implements Runnable {
                 e.printStackTrace();
             }
         }
-
-        // Close streams, thread has been closed.
-        try {
-            byteStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            if (objectStream == null) {
-                throw new IllegalArgumentException("objectStream to close was null.");
-            }
-            objectStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     /**
      * Returns direct reference to the sendingQueue.
+     *
      * @return Direct reference to sendingQueue.
      */
-    @NotNull
-    public BlockingQueue<Message> getQueue() {
+    @NotNull BlockingQueue<Message> getQueue() {
         return sendingQueue;
     }
 
     /**
-     * Returns direct reference to the senderThread.
-     * @return Direct reference to senderThread.
+     * Put a Message on the SendingQueue to send.
+     *
+     * @param msg Message to send.
      */
-    @NotNull
-    public Thread getThread() {
-        return senderThread;
+    void putOnQueue(Message msg) {
+        sendingQueue.add(msg);
     }
 
+    /**
+     * Start the senderThread.
+     */
+    void startThread() {
+        senderThread = new Thread(this);
+        senderThread.start();
+    }
 }

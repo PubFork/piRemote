@@ -5,6 +5,7 @@ import MessageObject.Message;
 import NetworkConstants.NetworkConstants;
 import core.ServerCore;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -19,47 +20,40 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicLong;
 
-/**
- * created by fabian on 13.11.15
- */
-
-public class DispatcherService implements Runnable {
+class DispatcherService implements Runnable {
 
     @NotNull
     private final ServerNetwork serverNetwork;
 
     @NotNull
-    private final BlockingQueue<Session> morgueQueue;
+    private final BlockingQueue<Session> morgueQueue = new LinkedBlockingQueue<>();
     @NotNull
     private final BlockingQueue<Message> sendingQueue;
     @NotNull
     private final HashMap<UUID, NetworkInfo> sessionTable;
 
+    @Nullable
     private DatagramSocket socket;
     private final int defaultPort;
 
     @NotNull
-    private final AtomicLong lastSeen;
-    @NotNull
-    private final Thread dispatcherThread;
+    private final AtomicLong lastSeen = new AtomicLong(0L);
+    @Nullable
+    private Thread dispatcherThread;
 
     /**
      * Default constructor for the DispatcherService.
-     * @param defaultPort The default port for receiving incoming packets.
-     * @param serverNetwork The Network starting this service.
-     * @param senderService The Network's sending service.
+     *
+     * @param portNumber The default port for receiving incoming packets.
+     * @param network    The Network starting this service.
+     * @param sender     The Network's sending service.
      */
-    public DispatcherService(int defaultPort, @NotNull ServerNetwork serverNetwork, @NotNull SenderService senderService) {
-        this.defaultPort = defaultPort;
-        this.serverNetwork = serverNetwork;
-
-        this.sessionTable = serverNetwork.getSessionTable();
-        this.sendingQueue = senderService.getQueue();
-
-        this.lastSeen = new AtomicLong(0L);
-        this.morgueQueue = new LinkedBlockingQueue<>();
-        this.dispatcherThread = new Thread(this);
-        // dispatcherThread.start();
+    DispatcherService(int portNumber, @NotNull ServerNetwork network, @NotNull SenderService sender) {
+        defaultPort = portNumber;
+        serverNetwork = network;
+        sessionTable = network.getSessionTable();
+        sendingQueue = sender.getQueue();
+        network.setDispatcherConstructed();
     }
 
     /**
@@ -70,21 +64,10 @@ public class DispatcherService implements Runnable {
         // Initialise the socket to receive data.
         startSocket(defaultPort);
 
-        // Allocation of variable to minimise overhead of recreating them every iteration.
         byte[] receiveBuffer = new byte[NetworkConstants.PACKETSIZE];
         DatagramPacket packet = new DatagramPacket(receiveBuffer, receiveBuffer.length);
-        ByteArrayInputStream byteStream = new ByteArrayInputStream(receiveBuffer);
-        ObjectInputStream objectStream = null;
-        Object input;
 
-        try {
-            objectStream = new ObjectInputStream(byteStream);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        // Allocation end
-
-        while(serverNetwork.isRunning()) {
+        while (serverNetwork.isRunning()) {
             // Receive packets while ServerNetwork is running.
             try {
                 // Receive an input and update the lastSeen value
@@ -100,26 +83,23 @@ public class DispatcherService implements Runnable {
                 }
 
                 // Marshalling of the DatagramPacket back to an object
-                //byteStream = new ByteArrayInputStream(receiveBuffer);
+                ByteArrayInputStream byteStream = new ByteArrayInputStream(receiveBuffer);
                 //receiveBuffer = packet.getData();
-                //objectStream = new ObjectInputStream(byteStream);
-                if (objectStream == null) {
-                    throw new IllegalArgumentException("objectStream to read from was null.");
-                }
-                input = objectStream.readObject();
+                ObjectInputStream objectStream = new ObjectInputStream(byteStream);
+                Object input = objectStream.readObject();
 
                 if (input instanceof Message) {
                     Message receivedMessage = (Message) input;
                     UUID uuid = receivedMessage.getUuid();
 
                     // check the sessionTable
-                    if (!sessionTable.containsKey(uuid)) {
-                        // The client has likely timed out and doesn't have a valid UUID anymore, reassociate it.
-                        addNewClient(packet.getAddress(), packet.getPort(), lastSeen);
-                    } else {
+                    if (sessionTable.containsKey(uuid)) {
                         // Update lastSeen and put the message on the Core's queue.
                         sessionTable.get(uuid).updateLastSeen(lastSeen.get());
                         ServerCore.mainQueue.put(receivedMessage);
+                    } else {
+                        // The client has likely timed out and doesn't have a valid UUID anymore, reassociate it.
+                        addNewClient(packet.getAddress(), packet.getPort(), lastSeen);
                     }
                     // (TODO: first check if it is a FilePickerRequest) is handled by ServerCore
                 } else if (input instanceof Connection) {
@@ -137,7 +117,6 @@ public class DispatcherService implements Runnable {
                     // Something unknown has been received. This is really bad! Abort!
                     throw new RuntimeException("Unknown input received from network!");
                 }
-
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -150,6 +129,7 @@ public class DispatcherService implements Runnable {
 
     /**
      * Creates a socket bound to port 'number' if possible, else gets any open port.
+     *
      * @param number Port on which the socket should bind to.
      */
     private void startSocket(int number) {
@@ -166,14 +146,15 @@ public class DispatcherService implements Runnable {
 
     /**
      * Add a new session to the sessionTable and send it an UUID back with the current ServerState
-     * @param address Client address requesting a new session.
-     * @param port Client port requesting a new session.
-     * @param lastSeen Timestamp of received message.
+     *
+     * @param address   Client address requesting a new session.
+     * @param port      Client port requesting a new session.
+     * @param timestamp Timestamp of received message.
      */
-    private void addNewClient(@NotNull InetAddress address, int port, @NotNull AtomicLong lastSeen) {
+    private void addNewClient(@NotNull InetAddress address, int port, @NotNull AtomicLong timestamp) {
         // Generate a new uuid for the client and save the connection's details.
         UUID clientUUID = UUID.randomUUID();
-        NetworkInfo clientInfo = new NetworkInfo(address, port, lastSeen.get());
+        NetworkInfo clientInfo = new NetworkInfo(address, port, timestamp.get());
 
         // Store the info in the table.
         sessionTable.put(clientUUID, clientInfo);
@@ -185,6 +166,7 @@ public class DispatcherService implements Runnable {
 
     /**
      * Returns direct reference to the morgueQueue.
+     *
      * @return Direct reference to morgueQueue.
      */
     @NotNull
@@ -193,19 +175,31 @@ public class DispatcherService implements Runnable {
     }
 
     /**
-     * Returns direct reference to the dispatcherThread.
-     * @return Direct reference to dispatcherThread.
+     * Put a session on the MorgueQueue.
+     *
+     * @param ses Session scheduled for deletion.
      */
-    @NotNull
-    public Thread getThread() {
-        return dispatcherThread;
+    void putOnQueue(Session ses) {
+        morgueQueue.add(ses);
+    }
+
+    /**
+     * Start the dispatcherThread.
+     */
+    void startThread() {
+        dispatcherThread = new Thread(this);
+        dispatcherThread.start();
     }
 
     /**
      * Returns the port the dispatcher is listening to.
-     * @return Returns the port the network is receiving from.
+     *
+     * @return Returns the port the network is receiving from if exists, else returns '-2'.
      */
     public int getPort() {
-        return socket.getPort();
+        if (socket == null) {
+            return -2;
+        }
+        return socket.getLocalPort();
     }
 }

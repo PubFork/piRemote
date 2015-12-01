@@ -7,10 +7,6 @@ import android.util.Log;
 import MessageObject.Message;
 import NetworkConstants.NetworkConstants;
 
-/**
- * created by fabian on 13.11.15
- */
-
 public class KeepAliveService implements Runnable {
 
     @NonNull
