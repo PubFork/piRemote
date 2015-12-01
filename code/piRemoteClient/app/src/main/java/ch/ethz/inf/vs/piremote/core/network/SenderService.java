@@ -34,6 +34,13 @@ public class SenderService implements Runnable {
     @Nullable
     private Thread senderThread;
 
+    private final String INFO_TAG = "# Sender #";
+    private final String DEBUG_TAG = "# Sender DEBUG #";
+    private final String ERROR_TAG = "# Sender ERROR #";
+    private final String WTF_TAG = "# Sender WTF #";
+    private final String WARN_TAG = "# Sender WARN #";
+    private final String VERBOSE_TAG = "# Sender VERBOSE #";
+
     /**
      * Default constructor for the SenderService. The service has to be started explicitly.
      *
@@ -45,6 +52,7 @@ public class SenderService implements Runnable {
         socket = clientNetwork.getSocket();
         port = clientNetwork.getPort();
         network.setSenderConstructed();
+        Log.i(INFO_TAG, "Service constructed.");
     }
 
 
@@ -60,6 +68,7 @@ public class SenderService implements Runnable {
                 //TODO(Mickey): This is NOT??? blocking... WTF?!
                 // Take an Object from the Queue.
                 Object messageToSend = sendingQueue.take();
+                Log.v(VERBOSE_TAG, "Took an object to send.");
 
                 ByteArrayOutputStream byteStream = new ByteArrayOutputStream(NetworkConstants.PACKETSIZE);
                 ObjectOutputStream objectStream = new ObjectOutputStream(byteStream);
@@ -68,9 +77,13 @@ public class SenderService implements Runnable {
                 if (messageToSend instanceof Message) {
                     Message message = (Message) messageToSend;
                     objectStream.writeObject(message);
+                    Log.v(VERBOSE_TAG, "Message processed for sending.");
                 } else if (messageToSend instanceof Connection) {
                     Connection connection = (Connection) messageToSend;
                     objectStream.writeObject(connection);
+                    Log.v(VERBOSE_TAG, "Connection processed for sending.");
+                } else {
+                    Log.wtf(WTF_TAG, "Unknown object to send. Bad things will happen.");
                 }
                 objectStream.flush();
 
@@ -79,12 +92,15 @@ public class SenderService implements Runnable {
                 DatagramPacket packet = new DatagramPacket(sendBuffer, sendBuffer.length, inetAddress, port);
                 // Send the packet.
                 socket.send(packet);
+                Log.i(INFO_TAG, "Packet sent.");
+                Log.v(VERBOSE_TAG, "Packet sent.");
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Log.e(ERROR_TAG, "Received an interrupt while sending messages.", e.getCause());
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.e(ERROR_TAG, "IO error occurred while sending messages.", e.getCause());
             }
         }
+        Log.i(INFO_TAG, "Service ended.");
     }
 
 
@@ -104,5 +120,6 @@ public class SenderService implements Runnable {
     void startThread() {
         senderThread = new Thread(this);
         senderThread.start();
+        Log.i(INFO_TAG, "Service started.");
     }
 }

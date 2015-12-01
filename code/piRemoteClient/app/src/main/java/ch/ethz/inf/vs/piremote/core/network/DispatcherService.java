@@ -30,6 +30,13 @@ public class DispatcherService implements Runnable {
     @Nullable
     private Thread dispatcherThread;
 
+    private final String INFO_TAG = "# Dispatcher #";
+    private final String DEBUG_TAG = "# Dispatcher DEBUG #";
+    private final String ERROR_TAG = "# Dispatcher ERROR #";
+    private final String WTF_TAG = "# Dispatcher WTF #";
+    private final String WARN_TAG = "# Dispatcher WARN #";
+    private final String VERBOSE_TAG = "# Dispatcher VERBOSE #";
+
     /**
      * Default constructor for the DispatcherService.
      *
@@ -39,6 +46,7 @@ public class DispatcherService implements Runnable {
         clientNetwork = network;
         socket = clientNetwork.getSocket();
         network.setDispatcherConstructed();
+        Log.i(INFO_TAG, "Service constructed.");
     }
 
 
@@ -55,8 +63,10 @@ public class DispatcherService implements Runnable {
             // Receive packets while ClientNetwork is running.
             try {
                 // Receive an input and update the lastSeen value
+                Log.v(VERBOSE_TAG, "Waiting for packet from Server.");
                 socket.receive(packet);
                 lastSeen.set(System.currentTimeMillis());
+                Log.v(VERBOSE_TAG, "Received a message at " + lastSeen.get());
 
                 // Marshalling of the DatagramPacket back to an object
                 ByteArrayInputStream byteStream = new ByteArrayInputStream(receiveBuffer);
@@ -71,22 +81,29 @@ public class DispatcherService implements Runnable {
                     if ((clientUUID == null) || !clientUUID.equals(((Message) input).getUuid())) {
                         // The client doesn't have a UUID yet or it has an invalid UUID.
                         clientNetwork.setUuid(((Message) input).getUuid());
+                        Log.v(VERBOSE_TAG, "New UUID received.");
                     }
+                    Log.i(INFO_TAG, "Received a message, routing it through.");
+                    Log.v(VERBOSE_TAG, ((Message) input).toString());
                     clientNetwork.putOnMainQueue((Message) input);
                 } else {
                     // Unknown object received, this shouldn't happen
-                    throw new RuntimeException("Unknown input received from network!");
+                    Log.wtf(WTF_TAG, "Unknown input received from network.");
                 }
             } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+                Log.e(ERROR_TAG, "Unknown class has been passed through.");
             } catch (OptionalDataException e) {
+                Log.e(ERROR_TAG, "OptionalDataException.");
                 e.printStackTrace();
             } catch (InterruptedException e) {
+                Log.e(ERROR_TAG, "Received an interrupt while receiving messages.");
                 e.printStackTrace();
             } catch (IOException e) {
+                Log.e(ERROR_TAG, "IO error occurred while receiving messages.");
                 e.printStackTrace();
             }
         }
+        Log.i(INFO_TAG, "Service ended.");
     }
 
     /**

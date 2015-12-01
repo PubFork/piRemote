@@ -18,6 +18,13 @@ public class KeepAliveService implements Runnable {
     @Nullable
     private Thread keepAliveThread;
 
+    private final String INFO_TAG = "# KeepAlive #";
+    private final String DEBUG_TAG = "# KeepAlive DEBUG #";
+    private final String ERROR_TAG = "# KeepAlive ERROR #";
+    private final String WTF_TAG = "# KeepAlive WTF #";
+    private final String WARN_TAG = "# KeepAlive WARN #";
+    private final String VERBOSE_TAG = "# KeepAlive VERBOSE #";
+
 
     /**
      * Default constructor for the KeepAliveThread on the Client.
@@ -31,31 +38,38 @@ public class KeepAliveService implements Runnable {
         dispatcherService = dispatcher;
         senderService = sender;
         network.setKeepAliveConstructed();
+        Log.i(INFO_TAG, "Service constructed.");
     }
 
     @Override
     public void run() {
         while (clientNetwork.isRunning()) {
+            Log.v(VERBOSE_TAG, "Woke up.");
             long stillAlive = System.currentTimeMillis() - dispatcherService.getLastSeen();
             if (stillAlive < NetworkConstants.TIMEOUT) {
                 // If the server<->client link hasn't timed out yet, place a keep alive message on
                 // the sending queue.
                 Message keepAlive = new Message(clientNetwork.getUuid(), clientNetwork.getClientCore().getState());
                 clientNetwork.putOnSendingQueue(keepAlive);
-                Log.d("## KeepAlive ##", "Sending keep alive to server");
+                Log.d(DEBUG_TAG, "Sending keep alive to server");
+                Log.v(VERBOSE_TAG, "Sending keep alive to server");
             } else {
                 // Else let us reset our application's state.
                 clientNetwork.disconnectFromServer();
-                Log.d("## KeepAlive ##", "Server didn't answer, resetting application state.");
+                Log.d(DEBUG_TAG, "Server didn't answer, resetting application state.");
+                Log.v(VERBOSE_TAG, "Server didn't answer, resetting application state.");
             }
 
             // Wait INTERVAL time before checking for a need to resend a keep-alive.
             try {
+                Log.v(VERBOSE_TAG, "Going to sleep.");
                 Thread.sleep(NetworkConstants.INTERVAL);
             } catch (InterruptedException e) {
+                Log.e(ERROR_TAG, "Thread has been interrupted.");
                 e.printStackTrace();
             }
         }
+        Log.i(INFO_TAG, "Service ended.");
     }
 
     /**
@@ -64,5 +78,6 @@ public class KeepAliveService implements Runnable {
     void startThread() {
         keepAliveThread = new Thread(this);
         keepAliveThread.start();
+        Log.i(INFO_TAG, "Started Service");
     }
 }

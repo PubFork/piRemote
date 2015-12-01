@@ -51,6 +51,13 @@ public class ClientNetwork implements Runnable {
     @NonNull
     private final AtomicBoolean keepAliveConstructed = new AtomicBoolean(false);
 
+    private final String INFO_TAG = "# Network #";
+    private final String DEBUG_TAG = "# Network DEBUG #";
+    private final String ERROR_TAG = "# Network ERROR #";
+    private final String WTF_TAG = "# Network WTF #";
+    private final String WARN_TAG = "# Network WARN #";
+    private final String VERBOSE_TAG = "# Network VERBOSE #";
+
     /**
      * create a ClientNetwork object that has several threads. This constructor is called
      * from the ClientCore to build its network. This constructor also starts the threads!
@@ -64,29 +71,28 @@ public class ClientNetwork implements Runnable {
         defaultPort = port;
         clientCore = core;
         mainQueue = clientCore.getMainQueue();
+        Log.i(INFO_TAG, "Construction complete.");
     }
 
     @Override
     public void run() {
+        Log.v(VERBOSE_TAG, "Starting network. Finding port.");
         startSocket(defaultPort);
+        Log.v(VERBOSE_TAG, "Set up a port.");
         running.set(true);
 
         // Initialise the services of the network.
+        Log.v(VERBOSE_TAG, "Constructing services.");
         senderService = new SenderService(this);
         dispatcherService = new DispatcherService(this);
         keepAliveService = new KeepAliveService(this, dispatcherService, senderService);
 
         // Start the services of the network.
+        Log.v(VERBOSE_TAG, "Starting services.");
         senderService.startThread();
         keepAliveService.startThread();
         dispatcherService.startThread();
-
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        disconnectFromServer();
+        Log.i(INFO_TAG, "Startup completed.");
     }
 
     /**
@@ -307,7 +313,6 @@ public class ClientNetwork implements Runnable {
      */
     void setSenderConstructed() {
         senderConstructed.set(true);
-        Log.d("## Sender ##:", "Sender is constructed successfully");
     }
 
     /**
@@ -315,7 +320,6 @@ public class ClientNetwork implements Runnable {
      */
     void setDispatcherConstructed() {
         dispatcherConstructed.set(true);
-        Log.d("## Dispatcher ##:", "Dispatcher is constructed successfully");
     }
 
     /**
@@ -323,6 +327,5 @@ public class ClientNetwork implements Runnable {
      */
     void setKeepAliveConstructed() {
             keepAliveConstructed.set(true);
-        Log.d("## KeepAlive ##:", "KeepAlive is constructed successfully");
     }
 }
