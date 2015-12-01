@@ -91,16 +91,13 @@ public class DispatcherService implements Runnable {
                     Log.wtf(WTF_TAG, "Unknown input received from network.");
                 }
             } catch (ClassNotFoundException e) {
-                Log.e(ERROR_TAG, "Unknown class has been passed through.");
+                Log.e(ERROR_TAG, "Unknown class has been passed through." + e.getCause());
             } catch (OptionalDataException e) {
-                Log.e(ERROR_TAG, "OptionalDataException.");
-                e.printStackTrace();
+                Log.e(ERROR_TAG, "OptionalDataException." + e.getCause());
             } catch (InterruptedException e) {
-                Log.e(ERROR_TAG, "Received an interrupt while receiving messages.");
-                e.printStackTrace();
+                Log.e(ERROR_TAG, "Received an interrupt while receiving messages." + e.getCause());
             } catch (IOException e) {
-                Log.e(ERROR_TAG, "IO error occurred while receiving messages.");
-                e.printStackTrace();
+                Log.e(ERROR_TAG, "IO error occurred while receiving messages." + e.getCause());
             }
         }
         Log.i(INFO_TAG, "Service ended.");
@@ -121,5 +118,6 @@ public class DispatcherService implements Runnable {
     void startThread() {
         dispatcherThread = new Thread(this);
         dispatcherThread.start();
+        Log.i(INFO_TAG, "Service started.");
     }
 }

@@ -52,12 +52,10 @@ public class KeepAliveService implements Runnable {
                 Message keepAlive = new Message(clientNetwork.getUuid(), clientNetwork.getClientCore().getState());
                 clientNetwork.putOnSendingQueue(keepAlive);
                 Log.d(DEBUG_TAG, "Sending keep alive to server");
-                Log.v(VERBOSE_TAG, "Sending keep alive to server");
             } else {
                 // Else let us reset our application's state.
                 clientNetwork.disconnectFromServer();
                 Log.d(DEBUG_TAG, "Server didn't answer, resetting application state.");
-                Log.v(VERBOSE_TAG, "Server didn't answer, resetting application state.");
             }
 
             // Wait INTERVAL time before checking for a need to resend a keep-alive.
@@ -78,6 +76,6 @@ public class KeepAliveService implements Runnable {
     void startThread() {
         keepAliveThread = new Thread(this);
         keepAliveThread.start();
-        Log.i(INFO_TAG, "Started Service");
+        Log.i(INFO_TAG, "Service started.");
     }
 }
