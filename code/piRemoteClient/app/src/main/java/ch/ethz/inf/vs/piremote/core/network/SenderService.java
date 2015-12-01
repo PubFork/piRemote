@@ -77,7 +77,7 @@ public class SenderService implements Runnable {
                 if (messageToSend instanceof Message) {
                     Message message = (Message) messageToSend;
                     objectStream.writeObject(message);
-                    Log.v(VERBOSE_TAG, "Message processed for sending.");
+                    Log.v(VERBOSE_TAG, "Message processed for sending." + message.toString());
                 } else if (messageToSend instanceof Connection) {
                     Connection connection = (Connection) messageToSend;
                     objectStream.writeObject(connection);
