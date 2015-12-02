@@ -7,6 +7,7 @@ import java.util.UUID;
 
 /**
  * Created by sandro on 11.11.15.
+ * Client side of TrafficLight application
  */
 public class TrafficLight extends AbstractApplication {
     @Override
@@ -33,6 +34,7 @@ public class TrafficLight extends AbstractApplication {
     @Override
     public void onFilePicked(File file, UUID senderUUID) {
         System.out.println("TrafficLight: Picked file: "+file.getName()+". Requesting close.");
+        sendString(file.getName(), senderUUID);
         closeFilePicker(senderUUID);
     }
 

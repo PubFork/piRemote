@@ -75,6 +75,48 @@ public abstract class AbstractApplication {
         ServerCore.sendMessage(ServerCore.makeMessage(destination, new Close()));
     }
 
+    public void sendInt(int i, UUID destinationUUID){
+        // Use to send a message containing an int to one specific client
+        IntMessage payload = new IntMessage();
+        payload.i = i;
+        ServerCore.sendMessage(ServerCore.makeMessage(destinationUUID, payload));
+    }
+
+    public void sendInt(int i){
+        // Use to send a broadcast message containing an int
+        IntMessage payload = new IntMessage();
+        payload.i = i;
+        ServerCore.sendMessage(ServerCore.makeMessage(payload));
+    }
+
+    public void sendDouble(double d, UUID destinationUUID){
+        // Use to send a message containing a double to one specific client
+        DoubleMessage payload = new DoubleMessage();
+        payload.d = d;
+        ServerCore.sendMessage(ServerCore.makeMessage(destinationUUID, payload));
+    }
+
+    public void sendDouble(double d){
+        // Use to send a broadcast message containing a double
+        DoubleMessage payload = new DoubleMessage();
+        payload.d = d;
+        ServerCore.sendMessage(ServerCore.makeMessage(payload));
+    }
+
+    public void sendString(String str, UUID destinationUUID){
+        // Use to send a message containing a String to one specific client
+        StringMessage payload = new StringMessage();
+        payload.str = str;
+        ServerCore.sendMessage(ServerCore.makeMessage(destinationUUID, payload));
+    }
+
+    public void sendString(String str){
+        // Use to send a broadcast message containing a double
+        StringMessage payload = new StringMessage();
+        payload.str = str;
+        ServerCore.sendMessage(ServerCore.makeMessage(payload));
+    }
+
     public abstract void onApplicationStart();                                                // Called right after creation of the application
     public abstract void onApplicationStop();                                                 // Called right before the destruction of the application
     public abstract void onApplicationStateChange(ApplicationCsts.ApplicationState newState); // Called right BEFORE application switches to another state
