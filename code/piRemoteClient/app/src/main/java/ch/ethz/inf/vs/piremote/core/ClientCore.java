@@ -172,14 +172,7 @@ public class ClientCore extends Service {
      */
     protected void sendMessage(Message msg){
         if (msg == null) return;
-        if (clientNetwork.getSendingQueue() != null) {
-            try {
-                clientNetwork.getSendingQueue().put(msg);
-            } catch (InterruptedException e) {
-                System.out.println("Failed to enqueue message for sending!");
-                e.printStackTrace();
-            }
-        }
+        clientNetwork.putOnSendingQueue(msg);
     }
 
     /**

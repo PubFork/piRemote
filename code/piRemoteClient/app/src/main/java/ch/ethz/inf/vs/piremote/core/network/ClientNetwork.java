@@ -204,7 +204,7 @@ public class ClientNetwork implements Runnable {
      *
      * @param obj Object to put onto the queue.
      */
-    void putOnSendingQueue(Object obj) {
+    public void putOnSendingQueue(Object obj) {
         int putOnQueue = 1;
         while (putOnQueue != 0) {
             putOnQueue = addToSendingQueue(obj);
