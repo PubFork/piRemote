@@ -102,7 +102,7 @@ public class MainActivity extends AbstractActivity {
     /**
      * Disconnect from the Raspberry Pi and terminate all running threads.
      */
-    void disconnetFromPi() {
+    private void disconnectFromPi() {
         // TODO: stopService();
         clientCore.onDestroy();
     }
@@ -154,6 +154,8 @@ public class MainActivity extends AbstractActivity {
 
     /**
      * Test for a valid serverAddress by converting it into an InetAddress.
+     * @param serverAddress String representation of the input for the server address
+     * @return true if the input represents a valid ip address
      */
     private boolean validAddress(String serverAddress) {
         try {
@@ -166,11 +168,13 @@ public class MainActivity extends AbstractActivity {
 
     /**
      * Test for a valid serverPort.
+     * @param serverPort String representation of the input for the server port
+     * @return true if the input represents a valid port
      */
-    private boolean validPort(String serverPort){
+    private boolean validPort(String serverPort) {
         try {
             mServerPort = Integer.parseInt(serverPort);
-        } catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
         return 0 <= mServerPort && mServerPort < 65536;

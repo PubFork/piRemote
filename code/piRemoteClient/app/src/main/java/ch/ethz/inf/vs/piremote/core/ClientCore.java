@@ -10,11 +10,7 @@ import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import MessageObject.Message;
-import MessageObject.PayloadObject.Close;
-import MessageObject.PayloadObject.Offer;
-import MessageObject.PayloadObject.Payload;
-import MessageObject.PayloadObject.Pick;
-import MessageObject.PayloadObject.ServerStateChange;
+import MessageObject.PayloadObject.*;
 import SharedConstants.CoreCsts.ServerState;
 import StateObject.State;
 import ch.ethz.inf.vs.piremote.core.network.ClientNetwork;
@@ -109,6 +105,7 @@ public class ClientCore extends Service {
             // Create new application and start its execution.
             application = ApplicationFactory.makeApplication(serverState);
             application.onApplicationStart(msg.getApplicationState()); // Update UI.
+            application.applicationState = msg.getApplicationState();
         }
 
         // ServerState is consistent. Look at the payload for additional information.

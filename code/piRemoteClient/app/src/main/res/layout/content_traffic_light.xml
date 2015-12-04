@@ -41,7 +41,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/button_orange"
-        android:layout_alignEnd="@+id/text_path"
+        android:layout_alignEnd="@+id/picked_path"
         android:layout_alignParentStart="true"
         android:background="#f90000"
         android:checked="false"
@@ -64,7 +64,7 @@
         android:text="@string/button_pick" />
 
     <TextView
-        android:id="@+id/text_path"
+        android:id="@+id/picked_path"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"

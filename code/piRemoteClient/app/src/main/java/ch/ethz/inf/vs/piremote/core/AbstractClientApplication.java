@@ -70,7 +70,7 @@ public abstract class AbstractClientApplication {
      * Creates and sends an int message to the server.
      * @param i Message Payload
      */
-    private void sendInt(int i) {
+    public void sendInt(int i) {
         clientCore.sendMessage(clientCore.makeMessage(new IntMessage(i)));
     }
 
@@ -78,7 +78,7 @@ public abstract class AbstractClientApplication {
      * Creates and sends a double message to the server.
      * @param d Message Payload
      */
-    private void sendDouble(double d) {
+    public void sendDouble(double d) {
         clientCore.sendMessage(clientCore.makeMessage(new DoubleMessage(d)));
     }
 
@@ -86,7 +86,7 @@ public abstract class AbstractClientApplication {
      * Creates and sends a string message to the server.
      * @param str Message Payload
      */
-    private void sendString(String str) {
+    public void sendString(String str) {
         clientCore.sendMessage(clientCore.makeMessage(new StringMessage(str)));
     }
 
@@ -94,7 +94,7 @@ public abstract class AbstractClientApplication {
      * Called right after a new application is created.
      * @param startState initial ApplicationState
      */
-    public abstract void onApplicationStart(ApplicationState startState);
+    public abstract void onApplicationStart(ApplicationState startState); // No need to update applicationState in onApplicationStart().
 
     /**
      * Called before an application is destroyed.
@@ -105,7 +105,7 @@ public abstract class AbstractClientApplication {
      * Called just before an application switches to another state. Update UI.
      * @param newState ApplicationState we change to
      */
-    public abstract void onApplicationStateChange(ApplicationState newState);
+    public abstract void onApplicationStateChange(ApplicationState newState); // No need to update applicationState in onApplicationStateChange().
 
     /**
      * Called when an int message arrives.
