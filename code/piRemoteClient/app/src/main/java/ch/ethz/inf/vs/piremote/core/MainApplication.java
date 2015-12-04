@@ -11,7 +11,7 @@ import SharedConstants.ApplicationCsts.ApplicationState;
  *
  * The MainActivity is also represented by an application.
  */
-public class MainApplication extends AbstractApplication {
+public class MainApplication extends AbstractClientApplication {
 
     @Override
     public void onApplicationStart(ApplicationState startState) {
@@ -30,11 +30,6 @@ public class MainApplication extends AbstractApplication {
     @Override
     public void onApplicationStateChange(ApplicationState newState) {
         applicationState = newState;
-    }
-
-    @Override
-    public void onFilePicked(File file) {
-
     }
 
     @Override

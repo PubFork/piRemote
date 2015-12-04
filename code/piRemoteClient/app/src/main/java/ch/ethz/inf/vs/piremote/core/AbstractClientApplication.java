@@ -1,7 +1,5 @@
 package ch.ethz.inf.vs.piremote.core;
 
-import java.io.File;
-
 import MessageObject.Message;
 import MessageObject.PayloadObject.*;
 import SharedConstants.ApplicationCsts.ApplicationState;
@@ -11,7 +9,7 @@ import SharedConstants.ApplicationCsts.ApplicationState;
  *
  * This abstract client application provides a way to access all applications on the client part in a uniform manner.
  */
-public abstract class AbstractApplication {
+public abstract class AbstractClientApplication {
 
     protected ApplicationState applicationState;
 
@@ -22,13 +20,13 @@ public abstract class AbstractApplication {
      * Inspect the received message and react to it. We can be sure that the application is still running on the server.
      * @param msg Message the ClientCore forwarded
      */
-    public void processMessage(Message msg) {
+    protected void processMessage(Message msg) {
 
         // First, we need to check the ApplicationState.
-        if(!checkApplicationState(msg)){
+        if(!consistentApplicationState(msg)){
             // Inconsistent state: Change the applicationState before looking at the payload.
+            onApplicationStateChange(msg.getApplicationState()); // Update UI.
             applicationState = msg.getApplicationState();
-            onApplicationStateChange(applicationState); // Update UI.
         }
 
         // ApplicationState is consistent. Look at the payload for additional information.
@@ -46,10 +44,10 @@ public abstract class AbstractApplication {
     }
 
     /**
-     * Test whether the actual ApplicationState in the Message corresponds to the expected ApplicationState stored in the AbstractApplication.
-     * @param msg Message object for which we have to check the server state
+     * Test whether the actual ApplicationState in the Message corresponds to the expected ApplicationState stored in the AbstractClientApplication.
+     * @param msg Message object for which we have to check the application state
      */
-    private boolean checkApplicationState(Message msg) {
+    private boolean consistentApplicationState(Message msg) {
         return applicationState != null
                 && msg != null
                 && msg.getApplicationState() != null
@@ -57,68 +55,57 @@ public abstract class AbstractApplication {
     }
 
     /**
-     * Is called by a client application to request an ApplicationState change.
-     * @param newState the ApplicationState the application wants to change to
+     * Allows the ClientCore to read the current application state.
+     * @return ApplicationState of current application
      */
-    protected void changeApplicationState(ApplicationState newState) {
-        // Do not yet change the applicationState locally, but rather wait for a state update (confirmation) from the server.
-        clientCore.sendMessage(clientCore.makeMessage(new ApplicationStateChange(newState))); // Send request to the server
-    }
-
-    /**
-     * The client application picks a file, which we forward to the server.
-     * @param path represents the picked path, may be either a directory or a file
-     */
-    protected void pickFile(String path) {
-        clientCore.sendMessage(clientCore.makeMessage(new Pick(path))); // Send request to the server
-    }
-
-    /**
-     * Use this to read the current application state.
-     * Should be invoked by ClientCore only.
-     */
-    public ApplicationState getApplicationState() {
+    protected ApplicationState getApplicationState() {
         return applicationState;
     }
 
-    public AbstractActivity getActivity() {
-        return activity;
-    }
-
     public void setActivity(AbstractActivity activity) {
-        AbstractApplication.activity = activity;
-    }
-
-    public ClientCore getClientCore() {
-        return clientCore;
-    }
-
-    public void setClientCore(ClientCore clientCore) {
-        this.clientCore = clientCore;
+        AbstractClientApplication.activity = activity;
     }
 
     /**
-     * Called when a new application is created.
+     * Creates and sends an int message to the server.
+     * @param i Message Payload
+     */
+    private void sendInt(int i) {
+        clientCore.sendMessage(clientCore.makeMessage(new IntMessage(i)));
+    }
+
+    /**
+     * Creates and sends a double message to the server.
+     * @param d Message Payload
+     */
+    private void sendDouble(double d) {
+        clientCore.sendMessage(clientCore.makeMessage(new DoubleMessage(d)));
+    }
+
+    /**
+     * Creates and sends a string message to the server.
+     * @param str Message Payload
+     */
+    private void sendString(String str) {
+        clientCore.sendMessage(clientCore.makeMessage(new StringMessage(str)));
+    }
+
+    /**
+     * Called right after a new application is created.
      * @param startState initial ApplicationState
      */
     public abstract void onApplicationStart(ApplicationState startState);
 
     /**
-     * Called when an application is destroyed.
+     * Called before an application is destroyed.
      */
     public abstract void onApplicationStop();
 
     /**
-     * Called when an application switches to another state. Update UI.
+     * Called just before an application switches to another state. Update UI.
      * @param newState ApplicationState we change to
      */
     public abstract void onApplicationStateChange(ApplicationState newState);
-
-    /**
-     * Called when the FilePicker on the server sends a picked file.
-     * @param file File which was requested by the application
-     */
-    public abstract void onFilePicked(File file);
 
     /**
      * Called when an int message arrives.

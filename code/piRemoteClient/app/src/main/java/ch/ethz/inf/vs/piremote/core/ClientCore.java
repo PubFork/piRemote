@@ -7,16 +7,14 @@ import android.os.IBinder;
 
 import java.net.InetAddress;
 import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import MessageObject.Message;
 import MessageObject.PayloadObject.Close;
 import MessageObject.PayloadObject.Offer;
 import MessageObject.PayloadObject.Payload;
+import MessageObject.PayloadObject.Pick;
 import MessageObject.PayloadObject.ServerStateChange;
-import SharedConstants.ApplicationCsts.ApplicationState;
 import SharedConstants.CoreCsts.ServerState;
 import StateObject.State;
 import ch.ethz.inf.vs.piremote.core.network.ClientNetwork;
@@ -26,17 +24,18 @@ import ch.ethz.inf.vs.piremote.core.network.ClientNetwork;
  */
 public class ClientCore extends Service {
 
+    // The ClientNetwork delivers incoming messages to the ClientCore by putting them into the queue.
     private final LinkedBlockingQueue<Message> mainQueue = new LinkedBlockingQueue<>();
 
-    protected ServerState serverState;
+    private ServerState serverState;
 
-    // There is ALWAYS an application running: Main and AppChooser are also AbstractApplications.
-    protected AbstractApplication application;
+    // There is ALWAYS a running application on the client: MainActivity and AppChooserActivity are also AbstractClientApplications.
+    private AbstractClientApplication application;
 
     // Keep track of all activities in the background
     private ClientNetwork clientNetwork;
 
-    public void createClientCore(InetAddress mAddress, int mPort, AbstractApplication mApplication) {
+    public void createClientCore(InetAddress mAddress, int mPort, AbstractClientApplication mApplication) {
 
         // We guarantee that there is always an application running.
         application = mApplication;
@@ -96,18 +95,16 @@ public class ClientCore extends Service {
     }
 
     /**
-     * Inspect the ServerState of the received message and react to it. In most cases we have to forward it to the application currently running.
+     * Inspect the received message and react to it. In most cases we have to forward it to the application currently running.
      * @param msg Message the Dispatcher put into the mainQueue
      */
-    public void processMessage(Message msg) {
+    private void processMessage(Message msg) {
 
         // First, we need to check the ServerState.
-        if(!checkServerState(msg)){
+        if(!consistentServerState(msg)){
             // Inconsistent state: Change the serverState before looking at the payload.
-            serverState = msg.getServerState();
-
-            // Destroy the running application
-            application.onApplicationStop();
+            application.onApplicationStop(); // Destroy the running application
+            serverState = msg.getServerState(); // Update state
 
             // Create new application and start its execution.
             application = ApplicationFactory.makeApplication(serverState);
@@ -130,21 +127,13 @@ public class ClientCore extends Service {
     }
 
     /**
-     * Use this to read the current state (server and application state) of the client.
-     * @return state object containing both the current server and application state
-     */
-    public State getState() {
-        return new State(getServerState(), application.getApplicationState());
-    }
-
-    /**
      * Test whether the actual ServerState in the Message corresponds to the expected ServerState stored in the ClientCore.
      * @param msg Message object for which we have to check the server state
      */
-    private boolean checkServerState(Message msg) {
+    private boolean consistentServerState(Message msg) {
         return msg != null
                 && msg.getServerState() != null
-                && msg.getServerState().equals(getServerState());
+                && msg.getServerState().equals(serverState);
     }
 
     /**
@@ -157,20 +146,28 @@ public class ClientCore extends Service {
     }
 
     /**
+     * The client application picks a file, which we forward to the server.
+     * @param path represents the picked path, may be either a directory or a file
+     */
+    private void pickFile(String path) {
+        sendMessage(makeMessage(new Pick(path))); // Send request to the server
+    }
+
+    /**
      * Start FilePicker displaying a list of directories and files to choose from. Adjust UI accordingly.
      * @param paths list of offered directories and files
      */
-    protected void startFilePicker(List<String> paths) {
+    private void startFilePicker(List<String> paths) {
     }
 
     /**
      * Close FilePicker. Adjust UI accordingly.
      */
-    protected void closeFilePicker() {
+    private void closeFilePicker() {
     }
 
     /**
-     * Enqueue the Message on the sendingQueue of the SenderService.
+     * Put the Message on the sendingQueue of the SenderService.
      * @param msg Message object which the client wants to send to the server
      */
     protected void sendMessage(Message msg){
@@ -186,14 +183,6 @@ public class ClientCore extends Service {
     }
 
     /**
-     * Builds a session state update.
-     * @return Message object containing the server and application state
-     */
-    protected Message makeMessage(){
-        return new Message(clientNetwork.getUuid(), getState());
-    }
-
-    /**
      * Builds a message with the given payload that includes the session state.
      * @param payload Payload object to be sent to the server
      * @return Message object containing the specified payload and also the server and application state
@@ -202,19 +191,15 @@ public class ClientCore extends Service {
         return new Message(clientNetwork.getUuid(), getState(), payload);
     }
 
+    /**
+     * Use this to read the current state (server and application state) of the client.
+     * @return state object containing both the current server and application state
+     */
+    public State getState() {
+        return new State(serverState, application.getApplicationState());
+    }
+
     public LinkedBlockingQueue<Message> getMainQueue() {
         return mainQueue;
-    }
-
-    public ServerState getServerState() {
-        return serverState;
-    }
-
-    public AbstractApplication getAbstractApplication() {
-        return application;
-    }
-
-    public void setApplication(AbstractApplication application) {
-        this.application = application;
     }
 }

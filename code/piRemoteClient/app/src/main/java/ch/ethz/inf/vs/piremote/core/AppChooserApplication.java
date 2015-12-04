@@ -11,7 +11,7 @@ import SharedConstants.ApplicationCsts.ApplicationState;
  *
  * The Application Chooser is also represented by an application.
  */
-public class AppChooserApplication extends AbstractApplication {
+public class AppChooserApplication extends AbstractClientApplication {
 
     @Override
     public void onApplicationStart(ApplicationState startState) {
@@ -30,11 +30,6 @@ public class AppChooserApplication extends AbstractApplication {
     @Override
     public void onApplicationStateChange(ApplicationState newState) {
         applicationState = newState;
-    }
-
-    @Override
-    public void onFilePicked(File file) {
-
     }
 
     @Override

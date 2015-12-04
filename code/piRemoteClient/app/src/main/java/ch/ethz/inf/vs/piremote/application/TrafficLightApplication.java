@@ -1,20 +1,18 @@
 package ch.ethz.inf.vs.piremote.application;
 
-import android.content.Intent;
 import android.util.Log;
 
 import java.io.File;
 
-import SharedConstants.ApplicationCsts;
 import SharedConstants.ApplicationCsts.ApplicationState;
-import ch.ethz.inf.vs.piremote.core.AbstractApplication;
+import ch.ethz.inf.vs.piremote.core.AbstractClientApplication;
 
 /**
  * Created by andrina on 19/11/15.
  *
  * Application for demonstration purposes.
  */
-public class TrafficLightApplication extends AbstractApplication {
+public class TrafficLightApplication extends AbstractClientApplication {
 
     public final String AID = "TrafficLightAppl";
 
@@ -31,10 +29,6 @@ public class TrafficLightApplication extends AbstractApplication {
     @Override
     public void onApplicationStateChange(ApplicationState newState) {
         Log.d(AID, "Changing to state " + newState);
-    }
-
-    @Override
-    public void onFilePicked(File file) {
     }
 
     @Override

@@ -10,7 +10,7 @@ import ch.ethz.inf.vs.piremote.application.TrafficLightApplication;
  */
 public class ApplicationFactory {
 
-    public static AbstractApplication makeApplication(ServerState applicationToStart) {
+    public static AbstractClientApplication makeApplication(ServerState applicationToStart) {
         switch (applicationToStart) {
             case TRAFFIC_LIGHT:
                 return new TrafficLightApplication();
