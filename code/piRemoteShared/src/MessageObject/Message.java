@@ -101,8 +101,6 @@ public class Message implements Serializable {
         str+="-> ApplicationState: "+applicationState+"\n";
         if(hasPayload()){
             str+="-> Payload of type "+payload.getClass().toString()+":\n";
-            if(payload instanceof ApplicationStateChange)
-                str+="--> newApplicationState: "+((ApplicationStateChange) payload).newApplicationState;
             if(payload instanceof ServerStateChange)
                 str+="--> newServerState: "+((ServerStateChange) payload).newServerState;
             if(payload instanceof IntMessage)
