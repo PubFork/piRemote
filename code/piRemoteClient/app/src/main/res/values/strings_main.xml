@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome">Enter IP and port of your Raspberry Pi</string>
+    <string name="server_address">Address</string>
+    <string name="server_port">Port</string>
+
+    <string name="button_connect">Connect</string>
+    <string name="toast_connecting">Connecting</string>
+
+    <string name="error_field_required">This field is required.</string>
+    <string name="error_invalid_address">Invalid IP Address</string>
+    <string name="error_invalid_port">Invalid Port</string>
+</resources>

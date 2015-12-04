@@ -14,66 +14,63 @@
     tools:showIn="@layout/activity_traffic_light">
 
     <ToggleButton
+        android:id="@+id/button_green"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New ToggleButton"
-        android:id="@+id/greenButton"
         android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentStart="true"
         android:layout_marginBottom="85dp"
         android:background="#1a9c00"
-        android:textColor="#ffffff"
         android:checked="false"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true" />
+        android:textColor="#ffffff" />
 
     <ToggleButton
+        android:id="@+id/button_orange"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New ToggleButton"
-        android:id="@+id/orangeButton"
-        android:layout_above="@+id/greenButton"
-        android:background="#e06900"
-        android:textColor="#ffffff"
-        android:checked="false"
+        android:layout_above="@+id/button_green"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:background="#e06900"
+        android:checked="false"
+        android:textColor="#ffffff" />
 
     <ToggleButton
+        android:id="@+id/button_red"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New ToggleButton"
-        android:id="@+id/redButton"
-        android:layout_above="@+id/orangeButton"
-        android:background="#f90000"
-        android:textColor="#ffffff"
-        android:checked="false"
+        android:layout_above="@+id/button_orange"
+        android:layout_alignEnd="@+id/text_path"
         android:layout_alignParentStart="true"
-        android:layout_alignEnd="@+id/path" />
+        android:background="#f90000"
+        android:checked="false"
+        android:textColor="#ffffff" />
 
     <Button
+        android:id="@+id/button_back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="back"
-        android:id="@+id/backButton"
+        android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true" />
+        android:text="@string/button_back" />
 
     <Button
+        android:id="@+id/button_pick"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="pick"
-        android:id="@+id/pickButton"
-        android:layout_alignTop="@+id/backButton"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/button_back"
+        android:text="@string/button_pick" />
 
     <TextView
+        android:id="@+id/text_path"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="(no file picked)"
-        android:id="@+id/path"
-        android:layout_below="@+id/backButton"
-        android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
-        android:textAlignment="textEnd" />
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/button_back"
+        android:text="@string/no_file_picked"
+        android:textAlignment="textEnd"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 </RelativeLayout>

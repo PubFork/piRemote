@@ -4,14 +4,5 @@
     <string name="title_activity_abstract">AbstractActivity</string>
     <string name="title_activity_traffic_light">Traffic Light</string>
 
-    <string name="welcome">Enter IP and port of your Raspberry Pi</string>
-    <string name="server_address">Address</string>
-    <string name="server_port">Port</string>
-    <string name="button_connect">Connect</string>
-
-    <string name="error_field_required">This field is required.</string>
-    <string name="error_invalid_address">Invalid IP Address</string>
-    <string name="error_invalid_port">Invalid Port</string>
-
-    <string name="toast_connecting">Connecting</string>
+    <string name="button_back">Back</string>
 </resources>
