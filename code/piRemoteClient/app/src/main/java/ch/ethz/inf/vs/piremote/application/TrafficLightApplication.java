@@ -1,6 +1,5 @@
 package ch.ethz.inf.vs.piremote.application;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -12,6 +11,7 @@ import android.widget.ToggleButton;
 import SharedConstants.ApplicationCsts;
 import SharedConstants.ApplicationCsts.TrafficLightApplicationState;
 import SharedConstants.ApplicationCsts.ApplicationState;
+import SharedConstants.CoreCsts;
 import ch.ethz.inf.vs.piremote.R;
 import ch.ethz.inf.vs.piremote.core.AbstractClientApplication;
 
@@ -42,15 +42,13 @@ public class TrafficLightApplication extends AbstractClientApplication {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-//        application.setActivity(this); // TODO: NULL
-
         mBackButton = (Button) findViewById(R.id.button_back);
         mBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
-                // TODO
-                // serverStateChange to NONE ?
+                // Request to stop current application
+                sendServerStateChange(CoreCsts.ServerState.NONE);
             }
         });
 
@@ -62,7 +60,7 @@ public class TrafficLightApplication extends AbstractClientApplication {
                 // TEST ONLY
                 setContentView(R.layout.overlay_file_picker);
                 // TEST ONLY
-                sendIntMessage(ApplicationCsts.TL_PICK_FILE);
+                sendInt(ApplicationCsts.TL_PICK_FILE);
             }
         });
 
@@ -74,7 +72,7 @@ public class TrafficLightApplication extends AbstractClientApplication {
             @Override
             public void onClick(View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
-                sendIntMessage(ApplicationCsts.GO_RED);
+                sendInt(ApplicationCsts.GO_RED);
             }
         });
 
@@ -83,7 +81,7 @@ public class TrafficLightApplication extends AbstractClientApplication {
             @Override
             public void onClick(View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
-                sendIntMessage(ApplicationCsts.GO_ORANGE);
+                sendInt(ApplicationCsts.GO_ORANGE);
             }
         });
 
@@ -92,7 +90,7 @@ public class TrafficLightApplication extends AbstractClientApplication {
             @Override
             public void onClick(View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
-                sendIntMessage(ApplicationCsts.GO_GREEN);
+                sendInt(ApplicationCsts.GO_GREEN);
             }
         });
     }
@@ -156,13 +154,5 @@ public class TrafficLightApplication extends AbstractClientApplication {
     public void onReceiveString(String str) {
         Log.d(DEBUG_TAG, "Received a string. " + str);
         mPathView.setText(str); //
-    }
-
-    /**
-     * Send a constant int message to the server.
-     * @param i Message Payload
-     */
-    private void sendIntMessage(int i) {
-        sendInt(i);
     }
 }

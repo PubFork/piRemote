@@ -3,6 +3,7 @@ package ch.ethz.inf.vs.piremote.core;
 import android.app.IntentService;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 
 import java.net.InetAddress;
@@ -11,8 +12,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import MessageObject.Message;
 import MessageObject.PayloadObject.*;
+import SharedConstants.ApplicationCsts.*;
 import SharedConstants.CoreCsts.ServerState;
 import StateObject.State;
+import ch.ethz.inf.vs.piremote.application.TrafficLightApplication;
 import ch.ethz.inf.vs.piremote.core.network.ClientNetwork;
 
 /**
@@ -36,6 +39,7 @@ public class ClientCore extends IntentService {
     private final String WARN_TAG = "# Core WARN #";
     private final String VERBOSE_TAG = "# Core VERBOSE #";
 
+    // Default constructor is called implicitly when starting the service.
     public ClientCore() {
         super("clientCore");
     }
@@ -53,11 +57,6 @@ public class ClientCore extends IntentService {
 
             Log.v(VERBOSE_TAG, "Received address: " + address);
             Log.v(VERBOSE_TAG, "Received port: " + port);
-/*
-            // We guarantee that there is always an application running.
-            // application = getApplicationContext().; TODO!
-            application.clientCore = this;
-*/
 
             if (address == null) {
                 Log.w(WARN_TAG, "Could not read the ip address from the Intent. Return from service.");
@@ -87,6 +86,12 @@ public class ClientCore extends IntentService {
     }
 
     @Override
+    public IBinder onBind(Intent intent) {
+        IBinder binder; // TODO
+        return super.onBind(intent); // return binder;
+    }
+
+    @Override
     public void onDestroy() {
         clientNetwork.disconnectFromServer(); // Stop background threads
         super.onDestroy();
@@ -104,18 +109,30 @@ public class ClientCore extends IntentService {
             // Inconsistent state: Change the serverState before looking at the payload.
             serverState = msg.getServerState(); // Update state
 
-/*
-            application.onApplicationStop(); // Destroy the running application ... Called before an application is destroyed.
-            // Create new application and start its execution.
-            application = ApplicationFactory.makeApplication(serverState);
-            application.onApplicationStart(msg.getApplicationState()); // Update UI. ... Called right after a new application is created.
-*/
+            Class newApplication; // Start activity depending on the server state denoting which application to start.
+            switch (serverState) {
+                case TRAFFIC_LIGHT:
+                    newApplication = TrafficLightApplication.class;
+                    break;
+                case NONE:
+                    newApplication = AppChooserActivity.class; // No application is running: The client may choose an application to run.
+                    break;
+                case SERVER_DOWN:
+                default:
+                    newApplication = MainActivity.class; // Server timed out: Disconnect and switch back to the MainActivity.
+                    break;
+            }
+            Intent applicationStartIntent = new Intent(this, newApplication);
 
-            // If the application is already running on the server, wee need to switch to the dictated state.
-/*
-            application.onApplicationStateChange(msg.getApplicationState());
-            application.applicationState = msg.getApplicationState();
-*/
+            // If the application is already running on the server, wee need to forward the dictated state.
+            switch (serverState) {
+                case TRAFFIC_LIGHT:
+                    applicationStartIntent.putExtra(AppConstants.EXTRA_STATE, (TrafficLightApplicationState) msg.getApplicationState());
+                    break;
+                default:
+                    break;
+            }
+            startActivity(applicationStartIntent); // Calls onDestroy() of current activity and onCreate() of the new activity. TODO
         }
 
         // ServerState is consistent. Look at the payload for additional information.
@@ -188,11 +205,13 @@ public class ClientCore extends IntentService {
      * Put the Message on the sendingQueue of the SenderService.
      * @param msg Message object which the client wants to send to the server
      */
-    protected void sendMessage(Message msg){
+    protected void sendMessage(Message msg) {
         if (msg == null) {
             Log.w(WARN_TAG, "Wanted to send an uninitialized message.");
             return;
         }
+        msg.setUuid(clientNetwork.getUuid());
+        msg.setServerState(serverState);
         Log.d(DEBUG_TAG, "Send message. " + msg);
         clientNetwork.putOnSendingQueue(msg);
     }
@@ -202,7 +221,7 @@ public class ClientCore extends IntentService {
      * @param payload Payload object to be sent to the server
      * @return Message object containing the specified payload and also the server and application state
      */
-    protected Message makeMessage(Payload payload){
+    protected Message makeMessage(Payload payload) {
         return new Message(clientNetwork.getUuid(), getState(), payload);
     }
 
@@ -211,7 +230,7 @@ public class ClientCore extends IntentService {
      * @return state object containing both the current server and application state
      */
     public State getState() {
-//        return new State(serverState, application.getApplicationState());
+//        return new State(serverState, application.getApplicationState()); TODO: how do we manage that the core has access to both server and application state?
         return new State(serverState, null);
     }
 

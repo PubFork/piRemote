@@ -17,7 +17,8 @@ public class AppConstants {
     protected static final String SERVER_ADDRESS = "10.0.2.2"; // This address is for the emulator.
     protected static final String SERVER_PORT = "4446";
 
-    // Constant strings for the keys of the extras (key-value-pairs) on the Intent starting the ClientCore Service.
+    // Constant strings for the keys of the extras (key-value-pairs) on Intents between ClientCore and Activities.
     protected static final String EXTRA_ADDRESS = "piremote.extra.ADDRESS";
     protected static final String EXTRA_PORT = "piremote.extra.PORT";
+    protected static final String EXTRA_STATE = "piremote.extra.STATE";
 }
