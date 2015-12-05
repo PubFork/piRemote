@@ -72,9 +72,9 @@ public class MainActivity extends AbstractClientApplication {
         super.onResume();
 
         // Restore preferences
-        settings = getSharedPreferences(ServiceConstants.SETTINGS_FILENAME, 0);
-        mAddressView.setText(settings.getString(ServiceConstants.SERVER_ADDRESS_STR, ServiceConstants.SERVER_ADDRESS));
-        mPortView.setText(settings.getString(ServiceConstants.SERVER_PORT_STR, ServiceConstants.SERVER_PORT));
+        settings = getSharedPreferences(AppConstants.SETTINGS_FILENAME, 0);
+        mAddressView.setText(settings.getString(AppConstants.SERVER_ADDRESS_STR, AppConstants.SERVER_ADDRESS));
+        mPortView.setText(settings.getString(AppConstants.SERVER_PORT_STR, AppConstants.SERVER_PORT));
     }
 
     @Override
@@ -83,8 +83,8 @@ public class MainActivity extends AbstractClientApplication {
 
         // Store preference changes
         SharedPreferences.Editor editor = settings.edit();
-        editor.putString(ServiceConstants.SERVER_ADDRESS_STR, mAddressView.getText().toString());
-        editor.putString(ServiceConstants.SERVER_PORT_STR, mPortView.getText().toString());
+        editor.putString(AppConstants.SERVER_ADDRESS_STR, mAddressView.getText().toString());
+        editor.putString(AppConstants.SERVER_PORT_STR, mPortView.getText().toString());
         editor.apply();
     }
 
@@ -126,8 +126,8 @@ public class MainActivity extends AbstractClientApplication {
 
             // set up the intent and put some arguments to it
             clientCoreIntent = new Intent(this, ClientCore.class);
-            clientCoreIntent.putExtra(ServiceConstants.EXTRA_ADDRESS, mServerAddress);
-            clientCoreIntent.putExtra(ServiceConstants.EXTRA_PORT, mServerPort);
+            clientCoreIntent.putExtra(AppConstants.EXTRA_ADDRESS, mServerAddress);
+            clientCoreIntent.putExtra(AppConstants.EXTRA_PORT, mServerPort);
             Log.v(VERBOSE_TAG, "Created intent to start service.");
 
             startService(clientCoreIntent);

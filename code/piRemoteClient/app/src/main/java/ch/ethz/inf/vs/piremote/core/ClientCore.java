@@ -1,10 +1,8 @@
 package ch.ethz.inf.vs.piremote.core;
 
 import android.app.IntentService;
-import android.app.Service;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.util.Log;
 
 import java.net.InetAddress;
@@ -15,7 +13,6 @@ import MessageObject.Message;
 import MessageObject.PayloadObject.*;
 import SharedConstants.CoreCsts.ServerState;
 import StateObject.State;
-import ch.ethz.inf.vs.piremote.R;
 import ch.ethz.inf.vs.piremote.core.network.ClientNetwork;
 
 /**
@@ -51,8 +48,8 @@ public class ClientCore extends IntentService {
 
         if (arguments != null) {
             // read the arguments out of the intent
-            InetAddress address = (InetAddress) arguments.get(ServiceConstants.EXTRA_ADDRESS);
-            int port = (int) arguments.get(ServiceConstants.EXTRA_PORT);
+            InetAddress address = (InetAddress) arguments.get(AppConstants.EXTRA_ADDRESS);
+            int port = (int) arguments.get(AppConstants.EXTRA_PORT);
 
             Log.v(VERBOSE_TAG, "Received address: " + address);
             Log.v(VERBOSE_TAG, "Received port: " + port);

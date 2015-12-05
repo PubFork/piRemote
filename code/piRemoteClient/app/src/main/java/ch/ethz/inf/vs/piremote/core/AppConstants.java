@@ -4,8 +4,9 @@ import android.content.SharedPreferences;
 
 /**
  * Created by andrina on 05/12/15.
+ * Constants shared between different components of the Android app.
  */
-public class ServiceConstants {
+public class AppConstants {
 
     // Constant strings for the access to the shared preferences.
     protected static final String SETTINGS_FILENAME = "ServerSettings";
