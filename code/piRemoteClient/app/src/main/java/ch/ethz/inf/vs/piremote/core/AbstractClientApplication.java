@@ -1,5 +1,7 @@
 package ch.ethz.inf.vs.piremote.core;
 
+import android.support.v7.app.AppCompatActivity;
+
 import MessageObject.Message;
 import MessageObject.PayloadObject.*;
 import SharedConstants.ApplicationCsts.ApplicationState;
@@ -9,11 +11,10 @@ import SharedConstants.ApplicationCsts.ApplicationState;
  *
  * This abstract client application provides a way to access all applications on the client part in a uniform manner.
  */
-public abstract class AbstractClientApplication {
+public abstract class AbstractClientApplication extends AppCompatActivity {
 
     protected ApplicationState applicationState;
 
-    protected static AbstractActivity activity; // reference to current Activity
     protected ClientCore clientCore;
 
     /**
@@ -60,10 +61,6 @@ public abstract class AbstractClientApplication {
      */
     protected ApplicationState getApplicationState() {
         return applicationState;
-    }
-
-    public void setActivity(AbstractActivity activity) {
-        AbstractClientApplication.activity = activity;
     }
 
     /**

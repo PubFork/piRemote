@@ -13,9 +13,13 @@ import android.widget.Toast;
 
 import java.net.InetAddress;
 
+import SharedConstants.ApplicationCsts;
 import ch.ethz.inf.vs.piremote.R;
 
-public class MainActivity extends AbstractActivity {
+/**
+ * The MainActivity is also represented by an application.
+ */
+public class MainActivity extends AbstractClientApplication {
 
     private static ClientCore clientCore;
     private InetAddress mServerAddress;
@@ -77,6 +81,41 @@ public class MainActivity extends AbstractActivity {
         editor.apply();
     }
 
+    @Override
+    public void onApplicationStart(ApplicationCsts.ApplicationState startState) {
+
+        // Create Intent to adapt UI for the new application.
+/*
+        Intent startApplication = new Intent(activity.getBaseContext(), MainActivity.class);
+        activity.startActivity(startApplication);
+*/
+    }
+
+    @Override
+    public void onApplicationStop() {
+
+    }
+
+    @Override
+    public void onApplicationStateChange(ApplicationCsts.ApplicationState newState) {
+
+    }
+
+    @Override
+    public void onReceiveInt(int i) {
+
+    }
+
+    @Override
+    public void onReceiveDouble(double d) {
+
+    }
+
+    @Override
+    public void onReceiveString(String str) {
+
+    }
+
     /**
      * Attempts to connect to the Raspberry Pi using the address and port specified.
      * If the entered server information is invalid, errors are displayed and no actual connection attempt is made.
@@ -84,8 +123,10 @@ public class MainActivity extends AbstractActivity {
     private void connectToPi() {
         if(validServerInformation()){
 
+/*
             application = new MainApplication(); // create application for main
             application.setActivity(this); // set reference to current activity
+*/
 
             // set up the intent and put some arguments to it
             Intent clientCoreIntent = new Intent(this, ClientCore.class);

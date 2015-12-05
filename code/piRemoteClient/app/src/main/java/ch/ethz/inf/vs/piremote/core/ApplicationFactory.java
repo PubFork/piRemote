@@ -15,10 +15,10 @@ public class ApplicationFactory {
             case TRAFFIC_LIGHT:
                 return new TrafficLightApplication();
             case NONE:
-                return new AppChooserApplication(); // No application is running: The client may choose an application to run.
+                return new AppChooserActivity(); // No application is running: The client may choose an application to run.
             case SERVER_DOWN:
             default:
-                return new MainApplication(); // Server timed out: Disconnect and switch back to the MainActivity.
+                return new MainActivity(); // Server timed out: Disconnect and switch back to the MainActivity.
         }
     }
 }

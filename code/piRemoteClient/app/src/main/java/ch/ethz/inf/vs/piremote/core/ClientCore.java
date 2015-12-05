@@ -54,7 +54,7 @@ public class ClientCore extends Service {
             int port = (Integer) arguments.get("port");
 
             // create the client core
-            createClientCore(address, port, MainActivity.application);
+//            createClientCore(address, port, MainActivity.application);
         } else {
 
         }
