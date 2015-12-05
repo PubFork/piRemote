@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -40,6 +41,10 @@ public class MainActivity extends AbstractClientApplication {
     private static final String SERVER_ADDRESS = "10.0.2.2"; // This address is for the emulator.
     private static final String SERVER_PORT = "4446";
 
+    private final String DEBUG_TAG = "# Main #";
+    private final String ERROR_TAG = "# Main ERROR #";
+    private final String VERBOSE_TAG = "# Main VERBOSE #";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +60,7 @@ public class MainActivity extends AbstractClientApplication {
         mConnectButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
                 connectToPi();
             }
         });
@@ -83,6 +89,7 @@ public class MainActivity extends AbstractClientApplication {
 
     @Override
     public void onApplicationStart(ApplicationCsts.ApplicationState startState) {
+        Log.d(DEBUG_TAG, "Starting up, going to state: " + startState);
 
         // Create Intent to adapt UI for the new application.
 /*
@@ -93,27 +100,27 @@ public class MainActivity extends AbstractClientApplication {
 
     @Override
     public void onApplicationStop() {
-
+        Log.d(DEBUG_TAG, "Exiting.");
     }
 
     @Override
     public void onApplicationStateChange(ApplicationCsts.ApplicationState newState) {
-
+        Log.d(DEBUG_TAG, "Changing to state: " + newState);
     }
 
     @Override
     public void onReceiveInt(int i) {
-
+        Log.d(DEBUG_TAG, "Received an int. " + i);
     }
 
     @Override
     public void onReceiveDouble(double d) {
-
+        Log.d(DEBUG_TAG, "Received a double. " + d);
     }
 
     @Override
     public void onReceiveString(String str) {
-
+        Log.d(DEBUG_TAG, "Received a string. " + str);
     }
 
     /**
@@ -132,11 +139,13 @@ public class MainActivity extends AbstractClientApplication {
             Intent clientCoreIntent = new Intent(this, ClientCore.class);
             clientCoreIntent.putExtra("address", mServerAddress);
             clientCoreIntent.putExtra("port", mServerPort);
+            Log.v(VERBOSE_TAG, "Created intent to start service.");
 
             // display "connecting"
             Toast.makeText(this, R.string.toast_connecting, Toast.LENGTH_SHORT).show();
 
             startService(clientCoreIntent);
+            Log.v(VERBOSE_TAG, "Started service.");
         }
     }
 

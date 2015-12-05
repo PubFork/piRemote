@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 
 import java.net.InetAddress;
 import java.util.List;
@@ -41,6 +42,11 @@ public class ClientCore extends Service {
         clientNetwork = new ClientNetwork(mAddress, mPort, this);
     }
 
+    private final String DEBUG_TAG = "# Core #";
+    private final String ERROR_TAG = "# Core ERROR #";
+    private final String WARN_TAG = "# Core WARN #";
+    private final String VERBOSE_TAG = "# Core VERBOSE #";
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         int result = super.onStartCommand(intent, flags, startId);
@@ -70,19 +76,16 @@ public class ClientCore extends Service {
         application = ApplicationFactory.makeApplication(serverState);
         application.onApplicationStart(null);
         // TEST ONLY
-/*
+
         // TODO: while isRunning() do some stuff
         while (clientNetwork.isRunning()) {
             try {
                 Message msg = mainQueue.take();
                 processMessage(msg);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Log.e(ERROR_TAG, "Unable to take message from the queue. ", e.getCause());
             }
         }
-*/
-
-
         return result;
     }
 
@@ -107,6 +110,7 @@ public class ClientCore extends Service {
 
         // First, we need to check the ServerState.
         if(!consistentServerState(msg)){
+            Log.d(DEBUG_TAG, "Inconsistent server state.");
             // Inconsistent state: Change the serverState before looking at the payload.
             application.onApplicationStop(); // Destroy the running application
             serverState = msg.getServerState(); // Update state
@@ -120,6 +124,7 @@ public class ClientCore extends Service {
         // ServerState is consistent. Look at the payload for additional information.
         if (msg.hasPayload()) {
             Payload receivedPayload = msg.getPayload();
+            Log.d(DEBUG_TAG, "Process message with payload. " + receivedPayload);
 
             if (receivedPayload instanceof Offer) {
                 startFilePicker(((Offer) receivedPayload).paths);
@@ -147,6 +152,7 @@ public class ClientCore extends Service {
      * @param newState the ServerState the application wants to change to
      */
     protected void changeServerState(ServerState newState) {
+        Log.d(DEBUG_TAG, "Request to change the sever state to: " + newState);
         // Do not yet change the serverState locally, but rather wait for a state update (confirmation) from the server.
         sendMessage(makeMessage(new ServerStateChange(newState))); // Send request to the server
     }
@@ -156,6 +162,7 @@ public class ClientCore extends Service {
      * @param path represents the picked path, may be either a directory or a file
      */
     private void pickFile(String path) {
+        Log.d(DEBUG_TAG, "Picked path. " + path);
         sendMessage(makeMessage(new Pick(path))); // Send request to the server
     }
 
@@ -164,12 +171,14 @@ public class ClientCore extends Service {
      * @param paths list of offered directories and files
      */
     private void startFilePicker(List<String> paths) {
+        Log.d(DEBUG_TAG, "Start file picker. " + paths);
     }
 
     /**
      * Close FilePicker. Adjust UI accordingly.
      */
     private void closeFilePicker() {
+        Log.d(DEBUG_TAG, "Request to close the file picker from the server.");
     }
 
     /**
@@ -177,7 +186,11 @@ public class ClientCore extends Service {
      * @param msg Message object which the client wants to send to the server
      */
     protected void sendMessage(Message msg){
-        if (msg == null) return;
+        if (msg == null) {
+            Log.w(WARN_TAG, "Wanted to send an uninitialized message.");
+            return;
+        }
+        Log.d(DEBUG_TAG, "Send message. " + msg);
         clientNetwork.putOnSendingQueue(msg);
     }
 

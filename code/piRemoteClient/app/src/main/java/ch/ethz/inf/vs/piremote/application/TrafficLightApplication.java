@@ -22,15 +22,16 @@ import ch.ethz.inf.vs.piremote.core.AbstractClientApplication;
  */
 public class TrafficLightApplication extends AbstractClientApplication {
 
-    public final String AID = "TrafficLightApp";
-
     // UI references
     private Button mBackButton;
     private Button mPickButton;
     private TextView mPathView;
-    ToggleButton mRedButton;
-    ToggleButton mOrangeButton;
-    ToggleButton mGreenButton;
+    private ToggleButton mRedButton;
+    private ToggleButton mOrangeButton;
+    private ToggleButton mGreenButton;
+
+    private final String DEBUG_TAG = "# TLApp #";
+    private final String ERROR_TAG = "# TLApp ERROR #";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +46,7 @@ public class TrafficLightApplication extends AbstractClientApplication {
         mBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
                 // TODO
                 // serverStateChange to NONE ?
             }
@@ -54,6 +56,7 @@ public class TrafficLightApplication extends AbstractClientApplication {
         mPickButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
                 sendIntMessage(ApplicationCsts.TL_PICK_FILE);
             }
         });
@@ -65,6 +68,7 @@ public class TrafficLightApplication extends AbstractClientApplication {
         mRedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
                 sendIntMessage(ApplicationCsts.GO_RED);
             }
         });
@@ -73,6 +77,7 @@ public class TrafficLightApplication extends AbstractClientApplication {
         mOrangeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
                 sendIntMessage(ApplicationCsts.GO_ORANGE);
             }
         });
@@ -81,6 +86,7 @@ public class TrafficLightApplication extends AbstractClientApplication {
         mGreenButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
                 sendIntMessage(ApplicationCsts.GO_GREEN);
             }
         });
@@ -92,7 +98,7 @@ public class TrafficLightApplication extends AbstractClientApplication {
      */
     @Override
     public void onApplicationStart(ApplicationState startState) {
-        Log.d(AID, "Starting up, going to state " + startState);
+        Log.d(DEBUG_TAG, "Starting up, going to state: " + startState);
 
         // Create Intent to adapt UI for the new application.
 /*
@@ -101,86 +107,81 @@ public class TrafficLightApplication extends AbstractClientApplication {
 */
 
         // Test whether the startState is set: Cast and also switch/case statement cannot handle null objects.
-        if (startState == null) {
-            return;
-        }
-
-        // Toggle the button that represents our state.
-        TrafficLightApplicationState startTLState = (TrafficLightApplicationState) startState;
-        switch (startTLState) {
-            case RED:
-                mRedButton.setChecked(true);
-                break;
-            case ORANGE:
-                mOrangeButton.setChecked(true);
-                break;
-            case GREEN:
-                mGreenButton.setChecked(true);
-                break;
+        if (startState != null) {
+            // Toggle the button that represents our state.
+            TrafficLightApplicationState startTLState = (TrafficLightApplicationState) startState;
+            switch (startTLState) {
+                case RED:
+                    mRedButton.setChecked(true);
+                    break;
+                case ORANGE:
+                    mOrangeButton.setChecked(true);
+                    break;
+                case GREEN:
+                    mGreenButton.setChecked(true);
+                    break;
+            }
         }
     }
 
     @Override
     public void onApplicationStop() {
-        Log.d(AID, "Exiting.");
+        Log.d(DEBUG_TAG, "Exiting.");
     }
 
     @Override
     public void onApplicationStateChange(ApplicationState newState) {
-        Log.d(AID, "Changing to state " + newState);
+        Log.d(DEBUG_TAG, "Changing to state: " + newState);
 
         // Test whether the applicationState is set: Cast and also switch/case statement cannot handle null objects.
-        if (applicationState == null) {
-            return;
-        }
-
-        // Untoggle the button that represents our old state.
-        TrafficLightApplicationState oldTLState = (TrafficLightApplicationState) applicationState;
-        switch (oldTLState) {
-            case RED:
-                mRedButton.setChecked(false);
-                break;
-            case ORANGE:
-                mOrangeButton.setChecked(false);
-                break;
-            case GREEN:
-                mGreenButton.setChecked(false);
-                break;
+        if (applicationState != null) {
+            // Untoggle the button that represents our old state.
+            TrafficLightApplicationState oldTLState = (TrafficLightApplicationState) applicationState;
+            switch (oldTLState) {
+                case RED:
+                    mRedButton.setChecked(false);
+                    break;
+                case ORANGE:
+                    mOrangeButton.setChecked(false);
+                    break;
+                case GREEN:
+                    mGreenButton.setChecked(false);
+                    break;
+            }
         }
 
         // Test whether the newState is set: Cast and also switch/case statement cannot handle null objects.
-        if (newState == null) {
-            return;
-        }
-
-        // Toggle the button that represents our new state.
-        TrafficLightApplicationState newTLState = (TrafficLightApplicationState) newState;
-        switch (newTLState) {
-            case RED:
-                mRedButton.setChecked(true);
-                break;
-            case ORANGE:
-                mOrangeButton.setChecked(true);
-                break;
-            case GREEN:
-                mGreenButton.setChecked(true);
-                break;
+        if (newState != null) {
+            // Toggle the button that represents our new state.
+            TrafficLightApplicationState newTLState = (TrafficLightApplicationState) newState;
+            switch (newTLState) {
+                case RED:
+                    mRedButton.setChecked(true);
+                    break;
+                case ORANGE:
+                    mOrangeButton.setChecked(true);
+                    break;
+                case GREEN:
+                    mGreenButton.setChecked(true);
+                    break;
+            }
         }
     }
 
     @Override
     public void onReceiveInt(int i) {
-
+        Log.d(DEBUG_TAG, "Received an int. " + i);
     }
 
     @Override
     public void onReceiveDouble(double d) {
-
+        Log.d(DEBUG_TAG, "Received a double. " + d);
     }
 
     @Override
     public void onReceiveString(String str) {
-
+        Log.d(DEBUG_TAG, "Received a string. " + str);
+        mPathView.setText(str); //
     }
 
     /**

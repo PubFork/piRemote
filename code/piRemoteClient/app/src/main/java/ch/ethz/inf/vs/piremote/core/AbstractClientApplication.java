@@ -1,6 +1,7 @@
 package ch.ethz.inf.vs.piremote.core;
 
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import MessageObject.Message;
 import MessageObject.PayloadObject.*;
@@ -17,6 +18,9 @@ public abstract class AbstractClientApplication extends AppCompatActivity {
 
     protected ClientCore clientCore;
 
+    private final String DEBUG_TAG = "# AbstractApp #";
+    private final String VERBOSE_TAG = "# AbstractApp VERBOSE #";
+
     /**
      * Inspect the received message and react to it. We can be sure that the application is still running on the server.
      * @param msg Message the ClientCore forwarded
@@ -25,6 +29,7 @@ public abstract class AbstractClientApplication extends AppCompatActivity {
 
         // First, we need to check the ApplicationState.
         if(!consistentApplicationState(msg)){
+            Log.d(DEBUG_TAG, "Inconsistent application state.");
             // Inconsistent state: Change the applicationState before looking at the payload.
             onApplicationStateChange(msg.getApplicationState()); // Update UI.
             applicationState = msg.getApplicationState();
@@ -68,6 +73,7 @@ public abstract class AbstractClientApplication extends AppCompatActivity {
      * @param i Message Payload
      */
     public void sendInt(int i) {
+        Log.d(DEBUG_TAG, "Send an int. " + i);
         clientCore.sendMessage(clientCore.makeMessage(new IntMessage(i))); // TODO: NULL
     }
 
@@ -76,6 +82,7 @@ public abstract class AbstractClientApplication extends AppCompatActivity {
      * @param d Message Payload
      */
     public void sendDouble(double d) {
+        Log.d(DEBUG_TAG, "Send a double. " + d);
         clientCore.sendMessage(clientCore.makeMessage(new DoubleMessage(d)));
     }
 
@@ -84,6 +91,7 @@ public abstract class AbstractClientApplication extends AppCompatActivity {
      * @param str Message Payload
      */
     public void sendString(String str) {
+        Log.d(DEBUG_TAG, "Send a string. " + str);
         clientCore.sendMessage(clientCore.makeMessage(new StringMessage(str)));
     }
 
