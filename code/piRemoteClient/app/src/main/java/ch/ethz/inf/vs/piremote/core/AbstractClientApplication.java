@@ -71,7 +71,7 @@ public abstract class AbstractClientApplication {
      * @param i Message Payload
      */
     public void sendInt(int i) {
-        clientCore.sendMessage(clientCore.makeMessage(new IntMessage(i)));
+        clientCore.sendMessage(clientCore.makeMessage(new IntMessage(i))); // TODO: NULL
     }
 
     /**

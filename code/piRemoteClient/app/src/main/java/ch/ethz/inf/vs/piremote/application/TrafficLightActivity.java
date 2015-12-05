@@ -28,7 +28,7 @@ public class TrafficLightActivity extends AbstractActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        application.setActivity(this);
+        application.setActivity(this); // TODO: NULL
 
         mBackButton = (Button) findViewById(R.id.button_back);
         mBackButton.setOnClickListener(new View.OnClickListener() {

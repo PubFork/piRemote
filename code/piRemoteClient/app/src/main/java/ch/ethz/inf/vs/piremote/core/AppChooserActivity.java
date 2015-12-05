@@ -21,7 +21,7 @@ public class AppChooserActivity extends AbstractActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        application.setActivity(this);
+        application.setActivity(this); // TODO: NULL
 
         // Get an array of all the available applications (given by the ServerState enumeration) and store their names.
         final String[] applicationNames = new String[serverStates.length];
@@ -54,7 +54,13 @@ public class AppChooserActivity extends AbstractActivity {
                 // TEST ONLY
                 break;
             default:
-                application.clientCore.changeServerState(serverStates[position]);
+                // TEST ONLY
+                // Switch to back to main
+                application.onApplicationStop();
+                application = ApplicationFactory.makeApplication(serverStates[position]);
+                application.onApplicationStart(null);
+                // TEST ONLY
+                // application.clientCore.changeServerState(serverStates[position]);
                 break;
         }
     }

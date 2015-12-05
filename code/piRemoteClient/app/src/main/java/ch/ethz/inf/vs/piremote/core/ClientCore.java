@@ -63,6 +63,14 @@ public class ClientCore extends Service {
         clientNetwork.startNetwork();
         clientNetwork.connectToServer();
 
+        // TEST ONLY
+        // Switch to app chooser
+        serverState = ServerState.NONE;
+        application.onApplicationStop();
+        application = ApplicationFactory.makeApplication(serverState);
+        application.onApplicationStart(null);
+        // TEST ONLY
+/*
         // TODO: while isRunning() do some stuff
         while (clientNetwork.isRunning()) {
             try {
@@ -72,6 +80,7 @@ public class ClientCore extends Service {
                 e.printStackTrace();
             }
         }
+*/
 
 
         return result;

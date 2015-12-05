@@ -28,6 +28,11 @@ public class TrafficLightApplication extends AbstractClientApplication {
         Intent startApplication = new Intent(activity.getBaseContext(), TrafficLightActivity.class);
         activity.startActivity(startApplication); // sets activity to current
 
+        // Test whether the startState is set: Cast and also switch/case statement cannot handle null objects.
+        if (startState == null) {
+            return;
+        }
+
         // Toggle the button that represents our state.
         TrafficLightApplicationState startTLState = (TrafficLightApplicationState) startState;
         switch (startTLState) {
@@ -52,6 +57,11 @@ public class TrafficLightApplication extends AbstractClientApplication {
     public void onApplicationStateChange(ApplicationState newState) {
         Log.d(AID, "Changing to state " + newState);
 
+        // Test whether the applicationState is set: Cast and also switch/case statement cannot handle null objects.
+        if (applicationState == null) {
+            return;
+        }
+
         // Untoggle the button that represents our old state.
         TrafficLightApplicationState oldTLState = (TrafficLightApplicationState) applicationState;
         switch (oldTLState) {
@@ -64,6 +74,11 @@ public class TrafficLightApplication extends AbstractClientApplication {
             case GREEN:
                 ((TrafficLightActivity) activity).mGreenButton.setChecked(false);
                 break;
+        }
+
+        // Test whether the newState is set: Cast and also switch/case statement cannot handle null objects.
+        if (newState == null) {
+            return;
         }
 
         // Toggle the button that represents our new state.
