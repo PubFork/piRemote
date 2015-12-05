@@ -1,5 +1,6 @@
 package ch.ethz.inf.vs.piremote.core;
 
+import android.app.IntentService;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,7 +21,7 @@ import ch.ethz.inf.vs.piremote.core.network.ClientNetwork;
 /**
  * Core part of the client running in the background and processing all incoming messages.
  */
-public class ClientCore extends Service {
+public class ClientCore extends IntentService {
 
     // The ClientNetwork delivers incoming messages to the ClientCore by putting them into the queue.
     private final LinkedBlockingQueue<Message> mainQueue = new LinkedBlockingQueue<>();
@@ -48,9 +49,12 @@ public class ClientCore extends Service {
     private final String WARN_TAG = "# Core WARN #";
     private final String VERBOSE_TAG = "# Core VERBOSE #";
 
+    public ClientCore() {
+        super("clientCore");
+    }
+
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        int result = super.onStartCommand(intent, flags, startId);
+    protected void onHandleIntent(Intent intent) {
 
         // get the arguments from the intent
         Bundle arguments = intent.getExtras();
@@ -58,29 +62,21 @@ public class ClientCore extends Service {
         if (arguments != null) {
             // read the arguments out of the intent
             InetAddress address = (InetAddress) arguments.get("address");
-            int port = (Integer) arguments.get("port");
+            int port = (int) arguments.get("port");
+            AbstractClientApplication application = (AbstractClientApplication) arguments.get("application"); // TODO cannot put Application as Extra to Intent
 
             // create the client core
-//            createClientCore(address, port, MainActivity.application);
+            createClientCore(address, port, application);
         } else {
-
+            Log.w(WARN_TAG, "Unable to read arguments from Intent. Return from service.");
+            return;
         }
 
         // start the network and connect to the server
         clientNetwork.startNetwork();
         clientNetwork.connectToServer();
 
-        // TEST ONLY
-        // Switch to app chooser
-/*
-        serverState = ServerState.NONE;
-        application.onApplicationStop();
-        application = ApplicationFactory.makeApplication(serverState);
-        application.onApplicationStart(null);
-*/
-        // TEST ONLY
-
-        // TODO: while isRunning() do some stuff
+        // handle messages on the mainQueue that arrived over the network
         while (clientNetwork.isRunning()) {
             try {
                 Message msg = mainQueue.take();
@@ -89,20 +85,12 @@ public class ClientCore extends Service {
                 Log.e(ERROR_TAG, "Unable to take message from the queue. ", e.getCause());
             }
         }
-        return result;
     }
 
     @Override
     public void onDestroy() {
         clientNetwork.disconnectFromServer(); // Stop background threads
-
         super.onDestroy();
-    }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service. Return null to disallow binding.
-        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     /**

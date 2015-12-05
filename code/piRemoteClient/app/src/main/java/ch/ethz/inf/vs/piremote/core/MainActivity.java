@@ -26,6 +26,8 @@ public class MainActivity extends AbstractClientApplication {
     private InetAddress mServerAddress;
     private int mServerPort;
 
+    private static Intent clientCoreIntent;
+
     // UI references
     private EditText mAddressView;
     private EditText mPortView;
@@ -66,6 +68,11 @@ public class MainActivity extends AbstractClientApplication {
                 connectToPi();
             }
         });
+
+        // We want to stop the background processes whenever we return to the MainActivity and started them before by connecting to the server.
+        if (clientCore != null) { // TODO maybe use clientCoreIntent != null
+            disconnectFromPi();
+        }
     }
 
     @Override
@@ -124,13 +131,10 @@ public class MainActivity extends AbstractClientApplication {
 
             // display "connecting"
             Toast.makeText(this, R.string.toast_connecting, Toast.LENGTH_SHORT).show();
-/*
-            application = new MainApplication(); // create application for main
-            application.setActivity(this); // set reference to current activity
-*/
 
+            clientCore = new ClientCore(); // TODO
             // set up the intent and put some arguments to it
-            Intent clientCoreIntent = new Intent(this, ClientCore.class);
+            clientCoreIntent = new Intent(this, ClientCore.class);
             clientCoreIntent.putExtra(SERVER_ADDRESS_STR, mServerAddress);
             clientCoreIntent.putExtra(SERVER_PORT_STR, mServerPort);
             Log.v(VERBOSE_TAG, "Created intent to start service.");
@@ -144,8 +148,10 @@ public class MainActivity extends AbstractClientApplication {
      * Disconnect from the Raspberry Pi and terminate all running threads.
      */
     private void disconnectFromPi() {
-        // TODO: stopService();
-        clientCore.onDestroy();
+        Log.v(VERBOSE_TAG, "Attempting to stop service.");
+        stopService(clientCoreIntent); // Calls onDestroy() which takes care of cleaning up all resources the service used.
+        clientCore = null; // TODO maybe set clientCoreInten = null;
+        Log.v(VERBOSE_TAG, "Stopped service.");
     }
 
     /**
