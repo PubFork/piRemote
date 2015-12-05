@@ -22,7 +22,7 @@ import ch.ethz.inf.vs.piremote.R;
  */
 public class MainActivity extends AbstractClientApplication {
 
-    private static ClientCore clientCore;
+//    private static ClientCore clientCore;
     private InetAddress mServerAddress;
     private int mServerPort;
 
@@ -33,15 +33,7 @@ public class MainActivity extends AbstractClientApplication {
     private EditText mPortView;
 
     // Store server address and port entered
-    private static SharedPreferences settings;
-    // Constant strings for the access to the shared preferences
-    private static final String SETTINGS_FILENAME = "ServerSettings";
-    private static final String SERVER_ADDRESS_STR = "address";
-    private static final String SERVER_PORT_STR = "port";
-
-    // TODO: default information for server address and port
-    private static final String SERVER_ADDRESS = "10.0.2.2"; // This address is for the emulator.
-    private static final String SERVER_PORT = "4446";
+    private SharedPreferences settings;
 
     private final String DEBUG_TAG = "# Main #";
     private final String ERROR_TAG = "# Main ERROR #";
@@ -80,9 +72,9 @@ public class MainActivity extends AbstractClientApplication {
         super.onResume();
 
         // Restore preferences
-        settings = getSharedPreferences(SETTINGS_FILENAME, 0);
-        mAddressView.setText(settings.getString(SERVER_ADDRESS_STR, SERVER_ADDRESS));
-        mPortView.setText(settings.getString(SERVER_PORT_STR, SERVER_PORT));
+        settings = getSharedPreferences(ServiceConstants.SETTINGS_FILENAME, 0);
+        mAddressView.setText(settings.getString(ServiceConstants.SERVER_ADDRESS_STR, ServiceConstants.SERVER_ADDRESS));
+        mPortView.setText(settings.getString(ServiceConstants.SERVER_PORT_STR, ServiceConstants.SERVER_PORT));
     }
 
     @Override
@@ -91,8 +83,8 @@ public class MainActivity extends AbstractClientApplication {
 
         // Store preference changes
         SharedPreferences.Editor editor = settings.edit();
-        editor.putString(SERVER_ADDRESS_STR, mAddressView.getText().toString());
-        editor.putString(SERVER_PORT_STR, mPortView.getText().toString());
+        editor.putString(ServiceConstants.SERVER_ADDRESS_STR, mAddressView.getText().toString());
+        editor.putString(ServiceConstants.SERVER_PORT_STR, mPortView.getText().toString());
         editor.apply();
     }
 
@@ -132,11 +124,10 @@ public class MainActivity extends AbstractClientApplication {
             // display "connecting"
             Toast.makeText(this, R.string.toast_connecting, Toast.LENGTH_SHORT).show();
 
-            clientCore = new ClientCore(); // TODO
             // set up the intent and put some arguments to it
             clientCoreIntent = new Intent(this, ClientCore.class);
-            clientCoreIntent.putExtra(SERVER_ADDRESS_STR, mServerAddress);
-            clientCoreIntent.putExtra(SERVER_PORT_STR, mServerPort);
+            clientCoreIntent.putExtra(ServiceConstants.EXTRA_ADDRESS, mServerAddress);
+            clientCoreIntent.putExtra(ServiceConstants.EXTRA_PORT, mServerPort);
             Log.v(VERBOSE_TAG, "Created intent to start service.");
 
             startService(clientCoreIntent);

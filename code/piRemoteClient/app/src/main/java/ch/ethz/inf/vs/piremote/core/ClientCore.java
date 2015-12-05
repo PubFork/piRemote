@@ -29,20 +29,10 @@ public class ClientCore extends IntentService {
     private ServerState serverState;
 
     // There is ALWAYS a running application on the client: MainActivity and AppChooserActivity are also AbstractClientApplications.
-    private AbstractClientApplication application;
+//    private static AbstractClientApplication application;
 
     // Keep track of all activities in the background
     private ClientNetwork clientNetwork;
-
-    public void createClientCore(InetAddress mAddress, int mPort, AbstractClientApplication mApplication) {
-
-        // We guarantee that there is always an application running.
-        application = mApplication;
-        application.clientCore = this;
-
-        // Create a ClientNetwork object, which takes care of starting all other threads running in the background.
-        clientNetwork = new ClientNetwork(mAddress, mPort, this);
-    }
 
     private final String DEBUG_TAG = "# Core #";
     private final String ERROR_TAG = "# Core ERROR #";
@@ -61,12 +51,24 @@ public class ClientCore extends IntentService {
 
         if (arguments != null) {
             // read the arguments out of the intent
-            InetAddress address = (InetAddress) arguments.get("address");
-            int port = (int) arguments.get("port");
-            AbstractClientApplication application = (AbstractClientApplication) arguments.get("application"); // TODO cannot put Application as Extra to Intent
+            InetAddress address = (InetAddress) arguments.get(ServiceConstants.EXTRA_ADDRESS);
+            int port = (int) arguments.get(ServiceConstants.EXTRA_PORT);
 
-            // create the client core
-            createClientCore(address, port, application);
+            Log.v(VERBOSE_TAG, "Received address: " + address);
+            Log.v(VERBOSE_TAG, "Received port: " + port);
+/*
+            // We guarantee that there is always an application running.
+            // application = getApplicationContext().; TODO!
+            application.clientCore = this;
+*/
+
+            if (address == null) {
+                Log.w(WARN_TAG, "Could not read the ip address from the Intent. Return from service.");
+                return;
+            }
+
+            // Create a ClientNetwork object, which takes care of starting all other threads running in the background.
+            clientNetwork = new ClientNetwork(address, port, this);
         } else {
             Log.w(WARN_TAG, "Unable to read arguments from Intent. Return from service.");
             return;
@@ -113,8 +115,10 @@ public class ClientCore extends IntentService {
 */
 
             // If the application is already running on the server, wee need to switch to the dictated state.
+/*
             application.onApplicationStateChange(msg.getApplicationState());
             application.applicationState = msg.getApplicationState();
+*/
         }
 
         // ServerState is consistent. Look at the payload for additional information.
@@ -130,7 +134,9 @@ public class ClientCore extends IntentService {
         }
 
         // Forward the message to the application so that it can check the state.
+/*
         application.processMessage(msg);
+*/
     }
 
     /**
@@ -208,7 +214,8 @@ public class ClientCore extends IntentService {
      * @return state object containing both the current server and application state
      */
     public State getState() {
-        return new State(serverState, application.getApplicationState());
+//        return new State(serverState, application.getApplicationState());
+        return new State(serverState, null);
     }
 
     public LinkedBlockingQueue<Message> getMainQueue() {
