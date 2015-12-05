@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ch.ethz.inf.vs.piremote" >
 
-    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -30,7 +30,7 @@
                 android:value=".core.MainActivity" />
         </activity>
         <activity
-            android:name=".application.TrafficLightActivity"
+            android:name=".application.TrafficLightApplication"
             android:label="@string/title_activity_traffic_light"
             android:parentActivityName=".core.AppChooserActivity"
             android:theme="@style/AppTheme.NoActionBar" >

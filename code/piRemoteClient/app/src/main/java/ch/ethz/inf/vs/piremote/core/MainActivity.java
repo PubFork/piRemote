@@ -48,6 +48,8 @@ public class MainActivity extends AbstractClientApplication {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(DEBUG_TAG, "Starting up.");
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -88,18 +90,8 @@ public class MainActivity extends AbstractClientApplication {
     }
 
     @Override
-    public void onApplicationStart(ApplicationCsts.ApplicationState startState) {
-        Log.d(DEBUG_TAG, "Starting up, going to state: " + startState);
-
-        // Create Intent to adapt UI for the new application.
-/*
-        Intent startApplication = new Intent(activity.getBaseContext(), MainActivity.class);
-        activity.startActivity(startApplication);
-*/
-    }
-
-    @Override
-    public void onApplicationStop() {
+    protected void onDestroy() {
+        super.onDestroy();
         Log.d(DEBUG_TAG, "Exiting.");
     }
 
@@ -130,6 +122,8 @@ public class MainActivity extends AbstractClientApplication {
     private void connectToPi() {
         if(validServerInformation()){
 
+            // display "connecting"
+            Toast.makeText(this, R.string.toast_connecting, Toast.LENGTH_SHORT).show();
 /*
             application = new MainApplication(); // create application for main
             application.setActivity(this); // set reference to current activity
@@ -137,12 +131,9 @@ public class MainActivity extends AbstractClientApplication {
 
             // set up the intent and put some arguments to it
             Intent clientCoreIntent = new Intent(this, ClientCore.class);
-            clientCoreIntent.putExtra("address", mServerAddress);
-            clientCoreIntent.putExtra("port", mServerPort);
+            clientCoreIntent.putExtra(SERVER_ADDRESS_STR, mServerAddress);
+            clientCoreIntent.putExtra(SERVER_PORT_STR, mServerPort);
             Log.v(VERBOSE_TAG, "Created intent to start service.");
-
-            // display "connecting"
-            Toast.makeText(this, R.string.toast_connecting, Toast.LENGTH_SHORT).show();
 
             startService(clientCoreIntent);
             Log.v(VERBOSE_TAG, "Started service.");

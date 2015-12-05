@@ -96,17 +96,6 @@ public abstract class AbstractClientApplication extends AppCompatActivity {
     }
 
     /**
-     * Called right after a new application is created.
-     * @param startState initial ApplicationState
-     */
-    public abstract void onApplicationStart(ApplicationState startState); // No need to update applicationState in onApplicationStart().
-
-    /**
-     * Called before an application is destroyed.
-     */
-    public abstract void onApplicationStop();
-
-    /**
      * Called just before an application switches to another state. Update UI.
      * @param newState ApplicationState we change to
      */

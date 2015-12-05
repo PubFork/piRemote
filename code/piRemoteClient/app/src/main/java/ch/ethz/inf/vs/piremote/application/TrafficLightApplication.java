@@ -36,6 +36,8 @@ public class TrafficLightApplication extends AbstractClientApplication {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(DEBUG_TAG, "Starting up.");
+
         setContentView(R.layout.activity_traffic_light);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -57,6 +59,9 @@ public class TrafficLightApplication extends AbstractClientApplication {
             @Override
             public void onClick(View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
+                // TEST ONLY
+                setContentView(R.layout.overlay_file_picker);
+                // TEST ONLY
                 sendIntMessage(ApplicationCsts.TL_PICK_FILE);
             }
         });
@@ -92,40 +97,9 @@ public class TrafficLightApplication extends AbstractClientApplication {
         });
     }
 
-    /**
-     * If the application is already running on the server, we need to adapt to the dictated state.
-     * @param startState initial ApplicationState
-     */
     @Override
-    public void onApplicationStart(ApplicationState startState) {
-        Log.d(DEBUG_TAG, "Starting up, going to state: " + startState);
-
-        // Create Intent to adapt UI for the new application.
-/*
-        Intent startApplication = new Intent(activity.getBaseContext(), TrafficLightActivity.class);
-        activity.startActivity(startApplication); // sets activity to current
-*/
-
-        // Test whether the startState is set: Cast and also switch/case statement cannot handle null objects.
-        if (startState != null) {
-            // Toggle the button that represents our state.
-            TrafficLightApplicationState startTLState = (TrafficLightApplicationState) startState;
-            switch (startTLState) {
-                case RED:
-                    mRedButton.setChecked(true);
-                    break;
-                case ORANGE:
-                    mOrangeButton.setChecked(true);
-                    break;
-                case GREEN:
-                    mGreenButton.setChecked(true);
-                    break;
-            }
-        }
-    }
-
-    @Override
-    public void onApplicationStop() {
+    protected void onDestroy() {
+        super.onDestroy();
         Log.d(DEBUG_TAG, "Exiting.");
     }
 

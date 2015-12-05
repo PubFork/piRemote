@@ -14,6 +14,7 @@ import MessageObject.Message;
 import MessageObject.PayloadObject.*;
 import SharedConstants.CoreCsts.ServerState;
 import StateObject.State;
+import ch.ethz.inf.vs.piremote.R;
 import ch.ethz.inf.vs.piremote.core.network.ClientNetwork;
 
 /**
@@ -71,10 +72,12 @@ public class ClientCore extends Service {
 
         // TEST ONLY
         // Switch to app chooser
+/*
         serverState = ServerState.NONE;
         application.onApplicationStop();
         application = ApplicationFactory.makeApplication(serverState);
         application.onApplicationStart(null);
+*/
         // TEST ONLY
 
         // TODO: while isRunning() do some stuff
@@ -112,12 +115,17 @@ public class ClientCore extends Service {
         if(!consistentServerState(msg)){
             Log.d(DEBUG_TAG, "Inconsistent server state.");
             // Inconsistent state: Change the serverState before looking at the payload.
-            application.onApplicationStop(); // Destroy the running application
             serverState = msg.getServerState(); // Update state
 
+/*
+            application.onApplicationStop(); // Destroy the running application ... Called before an application is destroyed.
             // Create new application and start its execution.
             application = ApplicationFactory.makeApplication(serverState);
-            application.onApplicationStart(msg.getApplicationState()); // Update UI.
+            application.onApplicationStart(msg.getApplicationState()); // Update UI. ... Called right after a new application is created.
+*/
+
+            // If the application is already running on the server, wee need to switch to the dictated state.
+            application.onApplicationStateChange(msg.getApplicationState());
             application.applicationState = msg.getApplicationState();
         }
 
@@ -172,6 +180,8 @@ public class ClientCore extends Service {
      */
     private void startFilePicker(List<String> paths) {
         Log.d(DEBUG_TAG, "Start file picker. " + paths);
+        // TODO
+        // application.setContentView(R.layout.overlay_file_picker);
     }
 
     /**
@@ -179,6 +189,8 @@ public class ClientCore extends Service {
      */
     private void closeFilePicker() {
         Log.d(DEBUG_TAG, "Request to close the file picker from the server.");
+        // TODO
+        // application.setContentView(R.layout.activity_traffic_light);
     }
 
     /**

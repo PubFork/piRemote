@@ -26,6 +26,8 @@ public class AppChooserActivity extends AbstractClientApplication {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(DEBUG_TAG, "Starting up.");
+
         setContentView(R.layout.activity_application_chooser);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -52,18 +54,8 @@ public class AppChooserActivity extends AbstractClientApplication {
     }
 
     @Override
-    public void onApplicationStart(ApplicationCsts.ApplicationState startState) {
-        Log.d(DEBUG_TAG, "Starting up, going to state: " + startState);
-
-        // Create Intent to adapt UI for the new application.
-/*
-        Intent startApplication = new Intent(activity.getBaseContext(), AppChooserActivity.class);
-        activity.startActivity(startApplication);
-*/
-    }
-
-    @Override
-    public void onApplicationStop() {
+    protected void onDestroy() {
+        super.onDestroy();
         Log.d(DEBUG_TAG, "Exiting.");
     }
 
