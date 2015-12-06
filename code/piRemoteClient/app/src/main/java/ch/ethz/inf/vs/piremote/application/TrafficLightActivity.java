@@ -14,6 +14,7 @@ import SharedConstants.ApplicationCsts.ApplicationState;
 import SharedConstants.CoreCsts;
 import ch.ethz.inf.vs.piremote.R;
 import ch.ethz.inf.vs.piremote.core.AbstractClientActivity;
+import ch.ethz.inf.vs.piremote.core.AppConstants;
 
 /**
  * Created by andrina on 19/11/15.
@@ -32,6 +33,7 @@ public class TrafficLightActivity extends AbstractClientActivity {
 
     private final String DEBUG_TAG = "# TLApp #";
     private final String ERROR_TAG = "# TLApp ERROR #";
+    private final String WARN_TAG = "# TLApp WARN #";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +96,26 @@ public class TrafficLightActivity extends AbstractClientActivity {
                 sendInt(ApplicationCsts.GO_GREEN);
             }
         });
+
+        ApplicationState startState = (ApplicationState) getIntent().getSerializableExtra(AppConstants.EXTRA_STATE);
+        // Test whether the startState is set: Cast and also switch/case statement cannot handle null objects.
+        if (startState != null) {
+            // Toggle the button that represents our start state.
+            TrafficLightApplicationState newTLState = (TrafficLightApplicationState) startState;
+            switch (newTLState) {
+                case RED:
+                    mRedButton.setChecked(true);
+                    break;
+                case ORANGE:
+                    mOrangeButton.setChecked(true);
+                    break;
+                case GREEN:
+                    mGreenButton.setChecked(true);
+                    break;
+            }
+        } else {
+            Log.w(WARN_TAG, "Unable to read arguments from Intent. Cannot set initial state.");
+        }
     }
 
     @Override
