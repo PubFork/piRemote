@@ -1,9 +1,5 @@
 package ch.ethz.inf.vs.piremote.core;
 
-import android.app.IntentService;
-import android.content.Intent;
-import android.os.Bundle;
-import android.os.IBinder;
 import android.util.Log;
 
 import java.net.InetAddress;
@@ -12,24 +8,20 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import MessageObject.Message;
 import MessageObject.PayloadObject.*;
-import SharedConstants.ApplicationCsts.*;
 import SharedConstants.CoreCsts.ServerState;
 import StateObject.State;
-import ch.ethz.inf.vs.piremote.application.TrafficLightApplication;
+import ch.ethz.inf.vs.piremote.application.TrafficLightActivity;
 import ch.ethz.inf.vs.piremote.core.network.ClientNetwork;
 
 /**
  * Core part of the client running in the background and processing all incoming messages.
  */
-public class ClientCore extends IntentService {
+public class ClientCore implements Runnable {
 
     // The ClientNetwork delivers incoming messages to the ClientCore by putting them into the queue.
     private final LinkedBlockingQueue<Message> mainQueue = new LinkedBlockingQueue<>();
 
     private ServerState serverState;
-
-    // There is ALWAYS a running application on the client: MainActivity and AppChooserActivity are also AbstractClientApplications.
-//    private static AbstractClientApplication application;
 
     // Keep track of all activities in the background
     private ClientNetwork clientNetwork;
@@ -39,37 +31,13 @@ public class ClientCore extends IntentService {
     private final String WARN_TAG = "# Core WARN #";
     private final String VERBOSE_TAG = "# Core VERBOSE #";
 
-    // Default constructor is called implicitly when starting the service.
-    public ClientCore() {
-        super("clientCore");
+    public ClientCore(InetAddress mServerAddress, int mServerPort) {
+        clientNetwork = new ClientNetwork(mServerAddress, mServerPort, this);
+        Log.v(VERBOSE_TAG, "Created clientNetwork: " + clientNetwork);
     }
 
     @Override
-    protected void onHandleIntent(Intent intent) {
-
-        // get the arguments from the intent
-        Bundle arguments = intent.getExtras();
-
-        if (arguments != null) {
-            // read the arguments out of the intent
-            InetAddress address = (InetAddress) arguments.get(AppConstants.EXTRA_ADDRESS);
-            int port = (int) arguments.get(AppConstants.EXTRA_PORT);
-
-            Log.v(VERBOSE_TAG, "Received address: " + address);
-            Log.v(VERBOSE_TAG, "Received port: " + port);
-
-            if (address == null) {
-                Log.w(WARN_TAG, "Could not read the ip address from the Intent. Return from service.");
-                return;
-            }
-
-            // Create a ClientNetwork object, which takes care of starting all other threads running in the background.
-            clientNetwork = new ClientNetwork(address, port, this);
-        } else {
-            Log.w(WARN_TAG, "Unable to read arguments from Intent. Return from service.");
-            return;
-        }
-
+    public void run() {
         // start the network and connect to the server
         clientNetwork.startNetwork();
         clientNetwork.connectToServer();
@@ -85,16 +53,8 @@ public class ClientCore extends IntentService {
         }
     }
 
-    @Override
-    public IBinder onBind(Intent intent) {
-        IBinder binder; // TODO
-        return super.onBind(intent); // return binder;
-    }
-
-    @Override
     public void onDestroy() {
-        clientNetwork.disconnectFromServer(); // Stop background threads
-        super.onDestroy();
+        clientNetwork.disconnectFromServer(); // Stop background threads TODO
     }
 
     /**
@@ -108,31 +68,8 @@ public class ClientCore extends IntentService {
             Log.d(DEBUG_TAG, "Inconsistent server state.");
             // Inconsistent state: Change the serverState before looking at the payload.
             serverState = msg.getServerState(); // Update state
-
-            Class newApplication; // Start activity depending on the server state denoting which application to start.
-            switch (serverState) {
-                case TRAFFIC_LIGHT:
-                    newApplication = TrafficLightApplication.class;
-                    break;
-                case NONE:
-                    newApplication = AppChooserActivity.class; // No application is running: The client may choose an application to run.
-                    break;
-                case SERVER_DOWN:
-                default:
-                    newApplication = MainActivity.class; // Server timed out: Disconnect and switch back to the MainActivity.
-                    break;
-            }
-            Intent applicationStartIntent = new Intent(this, newApplication);
-
-            // If the application is already running on the server, wee need to forward the dictated state.
-            switch (serverState) {
-                case TRAFFIC_LIGHT:
-                    applicationStartIntent.putExtra(AppConstants.EXTRA_STATE, (TrafficLightApplicationState) msg.getApplicationState());
-                    break;
-                default:
-                    break;
-            }
-            startActivity(applicationStartIntent); // Calls onDestroy() of current activity and onCreate() of the new activity. TODO
+            // TODO
+            // startActivityFromThread(serverState);
         }
 
         // ServerState is consistent. Look at the payload for additional information.
@@ -148,9 +85,8 @@ public class ClientCore extends IntentService {
         }
 
         // Forward the message to the application so that it can check the state.
-/*
-        application.processMessage(msg);
-*/
+        // TODO
+        // processMessageFromThread(msg);
     }
 
     /**
@@ -189,7 +125,7 @@ public class ClientCore extends IntentService {
     private void startFilePicker(List<String> paths) {
         Log.d(DEBUG_TAG, "Start file picker. " + paths);
         // TODO
-        // application.setContentView(R.layout.overlay_file_picker);
+        // updateFilePickerFromThread(paths);
     }
 
     /**
@@ -198,7 +134,7 @@ public class ClientCore extends IntentService {
     private void closeFilePicker() {
         Log.d(DEBUG_TAG, "Request to close the file picker from the server.");
         // TODO
-        // application.setContentView(R.layout.activity_traffic_light);
+        // updateFilePickerFromThread(null);
     }
 
     /**

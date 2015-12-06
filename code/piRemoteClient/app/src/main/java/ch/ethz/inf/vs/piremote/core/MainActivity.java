@@ -20,13 +20,10 @@ import ch.ethz.inf.vs.piremote.R;
 /**
  * The MainActivity is also represented by an application.
  */
-public class MainActivity extends AbstractClientApplication {
+public class MainActivity extends AbstractClientActivity {
 
-//    private static ClientCore clientCore;
     private InetAddress mServerAddress;
     private int mServerPort;
-
-    private static Intent clientCoreIntent;
 
     // UI references
     private EditText mAddressView;
@@ -44,7 +41,8 @@ public class MainActivity extends AbstractClientApplication {
         super.onCreate(savedInstanceState);
         Log.d(DEBUG_TAG, "Starting up.");
 
-        setContentView(R.layout.activity_main);
+        defaultActivityView = R.layout.activity_main;
+        setContentView(defaultActivityView);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -62,7 +60,7 @@ public class MainActivity extends AbstractClientApplication {
         });
 
         // We want to stop the background processes whenever we return to the MainActivity and started them before by connecting to the server.
-        if (clientCore != null) { // TODO maybe use clientCoreIntent != null
+        if (((CoreApplication) getApplication()).getCoreThread().isAlive()) {
             disconnectFromPi();
         }
     }
@@ -124,14 +122,12 @@ public class MainActivity extends AbstractClientApplication {
             // display "connecting"
             Toast.makeText(this, R.string.toast_connecting, Toast.LENGTH_SHORT).show();
 
-            // set up the intent and put some arguments to it
-            clientCoreIntent = new Intent(this, ClientCore.class);
-            clientCoreIntent.putExtra(AppConstants.EXTRA_ADDRESS, mServerAddress);
-            clientCoreIntent.putExtra(AppConstants.EXTRA_PORT, mServerPort);
-            Log.v(VERBOSE_TAG, "Created intent to start service.");
+            clientCore = new ClientCore(mServerAddress, mServerPort);
+            ((CoreApplication) getApplication()).setCoreThread(new Thread(clientCore));
+            Log.v(VERBOSE_TAG, "Created thread.");
 
-            startService(clientCoreIntent);
-            Log.v(VERBOSE_TAG, "Started service.");
+            ((CoreApplication) getApplication()).getCoreThread().start();
+            Log.v(VERBOSE_TAG, "Started thread.");
         }
     }
 
@@ -140,8 +136,7 @@ public class MainActivity extends AbstractClientApplication {
      */
     private void disconnectFromPi() {
         Log.v(VERBOSE_TAG, "Attempting to stop service.");
-        stopService(clientCoreIntent); // Calls onDestroy() which takes care of cleaning up all resources the service used.
-        clientCore = null; // TODO maybe set clientCoreInten = null;
+        // ((CoreApplication) getApplication()).getCoreThread() TODO
         Log.v(VERBOSE_TAG, "Stopped service.");
     }
 

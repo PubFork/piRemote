@@ -4,32 +4,73 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import java.util.List;
+
 import MessageObject.Message;
 import MessageObject.PayloadObject.*;
 import SharedConstants.ApplicationCsts.ApplicationState;
+import SharedConstants.ApplicationCsts.TrafficLightApplicationState;
 import SharedConstants.CoreCsts.ServerState;
+import StateObject.State;
+import ch.ethz.inf.vs.piremote.R;
+import ch.ethz.inf.vs.piremote.application.TrafficLightActivity;
 
 /**
  * Created by andrina on 19/11/15.
  *
  * This abstract client application provides a way to access all applications on the client part in a uniform manner.
  */
-public abstract class AbstractClientApplication extends AppCompatActivity {
+public abstract class AbstractClientActivity extends AppCompatActivity {
 
     protected ApplicationState applicationState;
+    protected int defaultActivityView;
 
-    private static Intent clientCoreIntent;
-
-//    protected ClientCore clientCore;
+    protected static ClientCore clientCore;
 
     private final String DEBUG_TAG = "# AbstractApp #";
     private final String VERBOSE_TAG = "# AbstractApp VERBOSE #";
+
+    public final void processMessageFromThread(final Message msg) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                processMessage(msg);
+            }});
+    }
+
+    public final void startActivityFromThread(final State state) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                startAbstractActivity(state);
+            }});
+    }
+
+    public final void updateFilePickerFromThread(final List<String> paths) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                updateFilePicker(paths);
+            }});
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        ((CoreApplication) getApplication()).setActivity(this);
+    }
+
+    @Override
+    protected void onStop() {
+        ((CoreApplication) getApplication()).setActivity(null);
+        super.onStop();
+    }
 
     /**
      * Inspect the received message and react to it. We can be sure that the application is still running on the server.
      * @param msg Message the ClientCore forwarded
      */
-    protected void processMessage(Message msg) {
+    private void processMessage(Message msg) {
 
         // First, we need to check the ApplicationState.
         if(!consistentApplicationState(msg)){
@@ -53,8 +94,48 @@ public abstract class AbstractClientApplication extends AppCompatActivity {
         }
     }
 
+    private void startAbstractActivity(State state) {
+        Class newApplication; // Start activity depending on the server state denoting which application to start.
+        switch (state.getServerState()) {
+            case TRAFFIC_LIGHT:
+                newApplication = TrafficLightActivity.class;
+                break;
+            case NONE:
+                newApplication = AppChooserActivity.class; // No application is running: The client may choose an application to run.
+                break;
+            case SERVER_DOWN:
+            default:
+                newApplication = MainActivity.class; // Server timed out: Disconnect and switch back to the MainActivity.
+                break;
+        }
+        Intent applicationStartIntent = new Intent(this, newApplication);
+
+        // If the application is already running on the server, wee need to forward the dictated state.
+        switch (state.getServerState()) {
+            case TRAFFIC_LIGHT:
+                applicationStartIntent.putExtra(AppConstants.EXTRA_STATE, (TrafficLightApplicationState) state.getApplicationState());
+                break;
+            default:
+                break;
+        }
+        startActivity(applicationStartIntent); // Calls onDestroy() of current activity and onCreate() of the new activity. TODO
+    }
+
+    private void updateFilePicker(List<String> paths) {
+        if (paths != null) {
+            // update file picker overlay
+            setContentView(R.layout.overlay_file_picker);
+            // TODO
+            // set list view
+            // register listener to call pickFile(path)
+        } else {
+            // close file picker
+            setContentView(defaultActivityView);
+        }
+    }
+
     /**
-     * Test whether the actual ApplicationState in the Message corresponds to the expected ApplicationState stored in the AbstractClientApplication.
+     * Test whether the actual ApplicationState in the Message corresponds to the expected ApplicationState stored in the AbstractClientActivity.
      * @param msg Message object for which we have to check the application state
      */
     private boolean consistentApplicationState(Message msg) {
@@ -79,8 +160,7 @@ public abstract class AbstractClientApplication extends AppCompatActivity {
     protected void sendServerStateChange(ServerState newState) {
         Log.d(DEBUG_TAG, "Request to change the sever state to: " + newState);
         // Do not yet change the serverState locally, but rather wait for a state update (confirmation) from the server.
-        Message msg = makeMessage(new ServerStateChange(newState));
-        forwardMessage(msg); // Send request to the server
+        forwardMessage(makeMessage(new ServerStateChange(newState))); // Send request to the server
     }
 
     /**
@@ -89,8 +169,7 @@ public abstract class AbstractClientApplication extends AppCompatActivity {
      */
     public void sendInt(int i) {
         Log.d(DEBUG_TAG, "Send an int. " + i);
-        Message msg = makeMessage(new IntMessage(i));
-        forwardMessage(msg); // Send request to the server
+        forwardMessage(makeMessage(new IntMessage(i))); // Send request to the server
     }
 
     /**
@@ -99,8 +178,7 @@ public abstract class AbstractClientApplication extends AppCompatActivity {
      */
     public void sendDouble(double d) {
         Log.d(DEBUG_TAG, "Send a double. " + d);
-        Message msg = makeMessage(new DoubleMessage(d));
-        forwardMessage(msg); // Send request to the server
+        forwardMessage(makeMessage(new DoubleMessage(d))); // Send request to the server
     }
 
     /**
@@ -109,8 +187,7 @@ public abstract class AbstractClientApplication extends AppCompatActivity {
      */
     public void sendString(String str) {
         Log.d(DEBUG_TAG, "Send a string. " + str);
-        Message msg = makeMessage(new StringMessage(str));
-        forwardMessage(msg); // Send request to the server
+        forwardMessage(makeMessage(new StringMessage(str))); // Send request to the server
     }
 
     /**
@@ -118,8 +195,9 @@ public abstract class AbstractClientApplication extends AppCompatActivity {
      * @param msg Message object which the client wants to send to the server
      */
     protected void forwardMessage(Message msg) {
-//        bindService(); TODO: core has to add uuid and serverState
-//        clientCore.sendMessage(msg);
+        clientCore.sendMessage(msg);
+        // TODO
+        // core has to add uuid and serverState
     }
 
     /**

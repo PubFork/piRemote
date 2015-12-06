@@ -1,6 +1,5 @@
 package ch.ethz.inf.vs.piremote.core;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -16,7 +15,7 @@ import ch.ethz.inf.vs.piremote.R;
 /**
  * The Application Chooser is also represented by an application.
  */
-public class AppChooserActivity extends AbstractClientApplication {
+public class AppChooserActivity extends AbstractClientActivity {
 
     private final ServerState[] serverStates = ServerState.values();
 
@@ -28,7 +27,8 @@ public class AppChooserActivity extends AbstractClientApplication {
         super.onCreate(savedInstanceState);
         Log.d(DEBUG_TAG, "Starting up.");
 
-        setContentView(R.layout.activity_application_chooser);
+        defaultActivityView = R.layout.activity_application_chooser;
+        setContentView(defaultActivityView);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -84,7 +84,7 @@ public class AppChooserActivity extends AbstractClientApplication {
             case SERVER_DOWN:
                 break;
             default:
-                // application.clientCore.changeServerState(serverStates[position]);
+                clientCore.changeServerState(serverStates[position]);
                 break;
         }
     }

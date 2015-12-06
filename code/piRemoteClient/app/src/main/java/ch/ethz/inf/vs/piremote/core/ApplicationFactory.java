@@ -1,7 +1,7 @@
 package ch.ethz.inf.vs.piremote.core;
 
 import SharedConstants.CoreCsts.ServerState;
-import ch.ethz.inf.vs.piremote.application.TrafficLightApplication;
+import ch.ethz.inf.vs.piremote.application.TrafficLightActivity;
 
 /**
  * Created by andrina on 19/11/15.
@@ -10,10 +10,10 @@ import ch.ethz.inf.vs.piremote.application.TrafficLightApplication;
  */
 public class ApplicationFactory {
 
-    public static AbstractClientApplication makeApplication(ServerState applicationToStart) {
+    public static AbstractClientActivity makeApplication(ServerState applicationToStart) {
         switch (applicationToStart) {
             case TRAFFIC_LIGHT:
-                return new TrafficLightApplication();
+                return new TrafficLightActivity();
             case NONE:
                 return new AppChooserActivity(); // No application is running: The client may choose an application to run.
             case SERVER_DOWN:

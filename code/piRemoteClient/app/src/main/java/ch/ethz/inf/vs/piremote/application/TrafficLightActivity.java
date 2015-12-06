@@ -13,14 +13,14 @@ import SharedConstants.ApplicationCsts.TrafficLightApplicationState;
 import SharedConstants.ApplicationCsts.ApplicationState;
 import SharedConstants.CoreCsts;
 import ch.ethz.inf.vs.piremote.R;
-import ch.ethz.inf.vs.piremote.core.AbstractClientApplication;
+import ch.ethz.inf.vs.piremote.core.AbstractClientActivity;
 
 /**
  * Created by andrina on 19/11/15.
  *
  * Application for demonstration purposes.
  */
-public class TrafficLightApplication extends AbstractClientApplication {
+public class TrafficLightActivity extends AbstractClientActivity {
 
     // UI references
     private Button mBackButton;
@@ -38,7 +38,8 @@ public class TrafficLightApplication extends AbstractClientApplication {
         super.onCreate(savedInstanceState);
         Log.d(DEBUG_TAG, "Starting up.");
 
-        setContentView(R.layout.activity_traffic_light);
+        defaultActivityView = R.layout.activity_traffic_light;
+        setContentView(defaultActivityView);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
