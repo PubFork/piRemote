@@ -144,8 +144,6 @@ public class ClientCore implements Runnable {
             Log.w(WARN_TAG, "Wanted to send an uninitialized message.");
             return;
         }
-        msg.setUuid(clientNetwork.getUuid());
-        msg.setServerState(serverState);
         Log.d(DEBUG_TAG, "Send message. " + msg);
         clientNetwork.putOnSendingQueue(msg);
     }
