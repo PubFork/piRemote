@@ -21,9 +21,11 @@ public class ClientCore implements Runnable {
     // The ClientNetwork delivers incoming messages to the ClientCore by putting them into the queue.
     private final LinkedBlockingQueue<Message> mainQueue = new LinkedBlockingQueue<>();
 
-    private ServerState serverState;
+    // TEST ONLY
+    protected ServerState serverState;
 
-    private CoreApplication coreApplication;
+    // TEST ONLY
+    protected CoreApplication coreApplication;
     // Keep track of all activities in the background
     private ClientNetwork clientNetwork;
 
@@ -43,6 +45,11 @@ public class ClientCore implements Runnable {
         // start the network and connect to the server
         clientNetwork.startNetwork();
         clientNetwork.connectToServer();
+
+        // TEST ONLY
+        serverState = ServerState.NONE;
+        coreApplication.startAbstractActivity(new State(ServerState.NONE, null));
+        // TEST ONLY
 
         // handle messages on the mainQueue that arrived over the network
         while (clientNetwork.isRunning()) {
@@ -85,6 +92,7 @@ public class ClientCore implements Runnable {
             }
         }
 
+        Log.v(VERBOSE_TAG, "Forward message to activity.");
         // Forward the message to the application so that it can check the state.
         coreApplication.processMessage(msg);
     }
@@ -162,6 +170,9 @@ public class ClientCore implements Runnable {
      * @return state object containing both the current server and application state
      */
     public State getState() {
+        if (coreApplication.getCurrentActivity() == null) {
+            return new State(serverState, null);
+        }
         return new State(serverState, coreApplication.getCurrentActivity().getApplicationState());
     }
 

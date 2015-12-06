@@ -29,6 +29,8 @@ public class MainActivity extends AbstractClientActivity {
     private EditText mAddressView;
     private EditText mPortView;
 
+    private static Thread coreThread;
+
     // Store server address and port entered
     private SharedPreferences settings;
 
@@ -59,8 +61,9 @@ public class MainActivity extends AbstractClientActivity {
             }
         });
 
+        coreThread = ((CoreApplication) getApplication()).getCoreThread();
         // We want to stop the background processes whenever we return to the MainActivity and started them before by connecting to the server.
-        if (((CoreApplication) getApplication()).getCoreThread().isAlive()) {
+        if (clientCore != null && coreThread.isAlive()) {
             disconnectFromPi();
         }
     }
@@ -78,6 +81,7 @@ public class MainActivity extends AbstractClientActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        Log.v(VERBOSE_TAG, "Save preferences.");
 
         // Store preference changes
         SharedPreferences.Editor editor = settings.edit();

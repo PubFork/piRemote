@@ -21,7 +21,6 @@ public class CoreApplication extends Application {
     private AbstractClientActivity currentActivity = null; // Reference to the activity that is currently in the foreground.
 
     private final String DEBUG_TAG = "# AndroidApp #";
-    private final String ERROR_TAG = "# AndroidApp ERROR #";
     private final String VERBOSE_TAG = "# AndroidApp VERBOSE #";
 
     @Override
@@ -36,23 +35,27 @@ public class CoreApplication extends Application {
         Log.d(DEBUG_TAG, "Exiting.");
     }
 
-    public synchronized void setActivity(AbstractClientActivity activity) {
+    public synchronized void setCurrentActivity(AbstractClientActivity activity) {
+        Log.v(VERBOSE_TAG, "Set current activity: " + currentActivity);
         this.currentActivity = activity;
     }
 
     protected synchronized void processMessage(Message msg) {
+        Log.v(VERBOSE_TAG, "Process message on current activity: " + currentActivity);
         if (currentActivity != null) {
             currentActivity.processMessageFromThread(msg);
         }
     }
 
     protected synchronized void startAbstractActivity(State state) {
+        Log.v(VERBOSE_TAG, "Start abstract activity on current activity: " + currentActivity);
         if (currentActivity != null) {
             currentActivity.startActivityFromThread(state);
         }
     }
 
     protected synchronized void updateFilePicker(List<String> paths) {
+        Log.v(VERBOSE_TAG, "Update file picker on current activity: " + currentActivity);
         if (currentActivity != null) {
             currentActivity.updateFilePickerFromThread(paths);
         }

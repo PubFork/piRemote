@@ -34,6 +34,7 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                Log.v(VERBOSE_TAG, "Process message");
                 processMessage(msg);
             }});
     }
@@ -42,27 +43,33 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                Log.v(VERBOSE_TAG, "Start abstract activity");
                 startAbstractActivity(state);
-            }});
+            }
+        });
     }
 
     public final void updateFilePickerFromThread(final List<String> paths) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                Log.v(VERBOSE_TAG, "Update file picker");
                 updateFilePicker(paths);
-            }});
+            }
+        });
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        ((CoreApplication) getApplication()).setActivity(this);
+        ((CoreApplication) getApplication()).setCurrentActivity(this);
+        Log.v(VERBOSE_TAG, "Set current activity.");
     }
 
     @Override
     protected void onStop() {
-        ((CoreApplication) getApplication()).setActivity(null);
+        ((CoreApplication) getApplication()).setCurrentActivity(null);
+        Log.v(VERBOSE_TAG, "Removed current activity.");
         super.onStop();
     }
 
@@ -118,7 +125,7 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
             default:
                 break;
         }
-        startActivity(applicationStartIntent); // Calls onDestroy() of current activity and onCreate() of the new activity. TODO CHECK
+        startActivity(applicationStartIntent); // Calls onStop() of current activity and onCreate()/onStart() of the new activity.
     }
 
     private void updateFilePicker(List<String> paths) {

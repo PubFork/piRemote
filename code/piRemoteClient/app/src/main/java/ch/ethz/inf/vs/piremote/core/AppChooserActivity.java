@@ -10,6 +10,7 @@ import android.widget.ListView;
 
 import SharedConstants.ApplicationCsts;
 import SharedConstants.CoreCsts.ServerState;
+import StateObject.State;
 import ch.ethz.inf.vs.piremote.R;
 
 /**
@@ -82,8 +83,16 @@ public class AppChooserActivity extends AbstractClientActivity {
             case NONE:
                 break;
             case SERVER_DOWN:
+                // TEST ONLY
+                clientCore.serverState = ServerState.SERVER_DOWN;
+                clientCore.coreApplication.startAbstractActivity(new State(ServerState.SERVER_DOWN, null));
+                // TEST ONLY
                 break;
             default:
+                // TEST ONLY
+                clientCore.serverState = serverStates[position];
+                clientCore.coreApplication.startAbstractActivity(new State(serverStates[position], null));
+                // TEST ONLY
                 clientCore.changeServerState(serverStates[position]);
                 break;
         }
