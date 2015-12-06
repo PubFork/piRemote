@@ -6,8 +6,6 @@ import android.util.Log;
 import java.util.List;
 
 import MessageObject.Message;
-import SharedConstants.ApplicationCsts.ApplicationState;
-import SharedConstants.CoreCsts.ServerState;
 import StateObject.State;
 
 /**
@@ -42,22 +40,26 @@ public class CoreApplication extends Application {
         this.currentActivity = activity;
     }
 
-    private synchronized void processMessage(Message msg) {
+    protected synchronized void processMessage(Message msg) {
         if (currentActivity != null) {
             currentActivity.processMessageFromThread(msg);
         }
     }
 
-    private synchronized void startAbstractActivity(State state) {
+    protected synchronized void startAbstractActivity(State state) {
         if (currentActivity != null) {
             currentActivity.startActivityFromThread(state);
         }
     }
 
-    private synchronized void updateFilePicker(List<String> paths) {
+    protected synchronized void updateFilePicker(List<String> paths) {
         if (currentActivity != null) {
             currentActivity.updateFilePickerFromThread(paths);
         }
+    }
+
+    public AbstractClientActivity getCurrentActivity() {
+        return currentActivity;
     }
 
     public Thread getCoreThread() {

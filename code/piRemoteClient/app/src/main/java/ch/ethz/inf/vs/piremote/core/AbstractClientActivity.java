@@ -73,7 +73,7 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
     private void processMessage(Message msg) {
 
         // First, we need to check the ApplicationState.
-        if(!consistentApplicationState(msg)){
+        if(!consistentApplicationState(msg)) {
             Log.d(DEBUG_TAG, "Inconsistent application state.");
             // Inconsistent state: Change the applicationState before looking at the payload.
             onApplicationStateChange(msg.getApplicationState()); // Update UI.
@@ -118,14 +118,14 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
             default:
                 break;
         }
-        startActivity(applicationStartIntent); // Calls onDestroy() of current activity and onCreate() of the new activity. TODO
+        startActivity(applicationStartIntent); // Calls onDestroy() of current activity and onCreate() of the new activity. TODO CHECK
     }
 
     private void updateFilePicker(List<String> paths) {
         if (paths != null) {
             // update file picker overlay
             setContentView(R.layout.overlay_file_picker);
-            // TODO
+            // TODO IMPLEMENT
             // set list view
             // register listener to call pickFile(path)
         } else {
@@ -160,61 +160,41 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
     protected void sendServerStateChange(ServerState newState) {
         Log.d(DEBUG_TAG, "Request to change the sever state to: " + newState);
         // Do not yet change the serverState locally, but rather wait for a state update (confirmation) from the server.
-        forwardMessage(makeMessage(new ServerStateChange(newState))); // Send request to the server
+        clientCore.sendMessage(clientCore.makeMessage(new ServerStateChange(newState)));
     }
 
     /**
-     * Creates an int message and forwards it to the core.
+     * Creates and sends an int message to the server.
      * @param i Message Payload
      */
     public void sendInt(int i) {
         Log.d(DEBUG_TAG, "Send an int. " + i);
-        forwardMessage(makeMessage(new IntMessage(i))); // Send request to the server
+        clientCore.sendMessage(clientCore.makeMessage(new IntMessage(i)));
     }
 
     /**
-     * Creates a double message and forwards it to the core.
+     * Creates and sends a double message to the server.
      * @param d Message Payload
      */
     public void sendDouble(double d) {
         Log.d(DEBUG_TAG, "Send a double. " + d);
-        forwardMessage(makeMessage(new DoubleMessage(d))); // Send request to the server
+        clientCore.sendMessage(clientCore.makeMessage(new DoubleMessage(d)));
     }
 
     /**
-     * Creates a string message and forwards it to the core.
+     * Creates and sends a string message to the core.
      * @param str Message Payload
      */
     public void sendString(String str) {
         Log.d(DEBUG_TAG, "Send a string. " + str);
-        forwardMessage(makeMessage(new StringMessage(str))); // Send request to the server
-    }
-
-    /**
-     * Forward the message to the core service.
-     * @param msg Message object which the client wants to send to the server
-     */
-    protected void forwardMessage(Message msg) {
-        clientCore.sendMessage(msg);
-        // TODO
-        // core has to add uuid and serverState
-    }
-
-    /**
-     * Builds a message with the given payload that includes the application state.
-     * This requires the ClientCore to add the uuid and the server state to the message later on.
-     * @param payload Payload object to be sent to the server
-     * @return Message object containing the specified payload and the application state
-     */
-    private Message makeMessage(Payload payload) {
-        return new Message(null, applicationState, payload);
+        clientCore.sendMessage(clientCore.makeMessage(new StringMessage(str)));
     }
 
     /**
      * Called just before an application switches to another state. Update UI.
      * @param newState ApplicationState we change to
      */
-    public abstract void onApplicationStateChange(ApplicationState newState); // No need to update applicationState in onApplicationStateChange(). TODO
+    public abstract void onApplicationStateChange(ApplicationState newState); // No need to update applicationState in onApplicationStateChange().
 
     /**
      * Called when an int message arrives.

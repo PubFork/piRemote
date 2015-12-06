@@ -23,6 +23,7 @@ public class ClientCore implements Runnable {
 
     private ServerState serverState;
 
+    private CoreApplication coreApplication;
     // Keep track of all activities in the background
     private ClientNetwork clientNetwork;
 
@@ -31,7 +32,8 @@ public class ClientCore implements Runnable {
     private final String WARN_TAG = "# Core WARN #";
     private final String VERBOSE_TAG = "# Core VERBOSE #";
 
-    public ClientCore(InetAddress mServerAddress, int mServerPort) {
+    public ClientCore(InetAddress mServerAddress, int mServerPort, CoreApplication mCoreApplication) {
+        coreApplication = mCoreApplication;
         clientNetwork = new ClientNetwork(mServerAddress, mServerPort, this);
         Log.v(VERBOSE_TAG, "Created clientNetwork: " + clientNetwork);
     }
@@ -54,7 +56,7 @@ public class ClientCore implements Runnable {
     }
 
     public void onDestroy() {
-        clientNetwork.disconnectFromServer(); // Stop background threads TODO
+        clientNetwork.disconnectFromServer(); // Stop background threads TODO THREAD
     }
 
     /**
@@ -64,12 +66,11 @@ public class ClientCore implements Runnable {
     private void processMessage(Message msg) {
 
         // First, we need to check the ServerState.
-        if(!consistentServerState(msg)){
+        if(!consistentServerState(msg)) {
             Log.d(DEBUG_TAG, "Inconsistent server state.");
             // Inconsistent state: Change the serverState before looking at the payload.
             serverState = msg.getServerState(); // Update state
-            // TODO
-            // startActivityFromThread(serverState);
+            coreApplication.startAbstractActivity(msg.getState());
         }
 
         // ServerState is consistent. Look at the payload for additional information.
@@ -85,8 +86,7 @@ public class ClientCore implements Runnable {
         }
 
         // Forward the message to the application so that it can check the state.
-        // TODO
-        // processMessageFromThread(msg);
+        coreApplication.processMessage(msg);
     }
 
     /**
@@ -124,8 +124,7 @@ public class ClientCore implements Runnable {
      */
     private void startFilePicker(List<String> paths) {
         Log.d(DEBUG_TAG, "Start file picker. " + paths);
-        // TODO
-        // updateFilePickerFromThread(paths);
+        coreApplication.updateFilePicker(paths);
     }
 
     /**
@@ -133,8 +132,7 @@ public class ClientCore implements Runnable {
      */
     private void closeFilePicker() {
         Log.d(DEBUG_TAG, "Request to close the file picker from the server.");
-        // TODO
-        // updateFilePickerFromThread(null);
+        coreApplication.updateFilePicker(null);
     }
 
     /**
@@ -166,8 +164,7 @@ public class ClientCore implements Runnable {
      * @return state object containing both the current server and application state
      */
     public State getState() {
-//        return new State(serverState, application.getApplicationState()); TODO: how do we manage that the core has access to both server and application state?
-        return new State(serverState, null);
+        return new State(serverState, coreApplication.getCurrentActivity().getApplicationState());
     }
 
     public LinkedBlockingQueue<Message> getMainQueue() {

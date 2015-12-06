@@ -122,7 +122,7 @@ public class MainActivity extends AbstractClientActivity {
             // display "connecting"
             Toast.makeText(this, R.string.toast_connecting, Toast.LENGTH_SHORT).show();
 
-            clientCore = new ClientCore(mServerAddress, mServerPort);
+            clientCore = new ClientCore(mServerAddress, mServerPort, (CoreApplication) getApplication());
             ((CoreApplication) getApplication()).setCoreThread(new Thread(clientCore));
             Log.v(VERBOSE_TAG, "Created thread.");
 
@@ -136,7 +136,7 @@ public class MainActivity extends AbstractClientActivity {
      */
     private void disconnectFromPi() {
         Log.v(VERBOSE_TAG, "Attempting to stop service.");
-        // ((CoreApplication) getApplication()).getCoreThread() TODO
+        // ((CoreApplication) getApplication()).getCoreThread() TODO THREAD
         Log.v(VERBOSE_TAG, "Stopped service.");
     }
 
