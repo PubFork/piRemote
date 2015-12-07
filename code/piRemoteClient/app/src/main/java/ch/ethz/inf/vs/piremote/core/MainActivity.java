@@ -28,8 +28,6 @@ public class MainActivity extends AbstractClientActivity {
     private EditText mAddressView;
     private EditText mPortView;
 
-    private static Thread coreThread;
-
     // Store server address and port entered
     private SharedPreferences settings;
 
@@ -67,7 +65,9 @@ public class MainActivity extends AbstractClientActivity {
         super.onRestart();
 
         // We want to stop the background processes whenever we return to the MainActivity and started them before by connecting to the server.
-        clientCore.destroyConnection();
+        if (clientCore != null) {
+            clientCore.destroyConnection();
+        }
     }
 
     @Override

@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 
 import java.util.List;
@@ -27,9 +28,15 @@ import ch.ethz.inf.vs.piremote.application.TrafficLightActivity;
 public abstract class AbstractClientActivity extends AppCompatActivity {
 
     protected ApplicationState applicationState;
-    protected int defaultActivityView;
 
     protected static ClientCore clientCore;
+
+    protected int defaultActivityView;
+    private boolean filePickerIsActive = false;
+
+    // UI references
+    private ListView mPathList;
+    private Button mBackButton;
 
     private final String DEBUG_TAG = "# AbstractApp #";
     private final String VERBOSE_TAG = "# AbstractApp VERBOSE #";
@@ -74,6 +81,7 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
     protected void onStop() {
         ((CoreApplication) getApplication()).resetCurrentActivity(this);
         Log.v(VERBOSE_TAG, "ONSTOP: Removed current activity." + this);
+        filePickerIsActive = false;
         super.onStop();
     }
 
@@ -134,27 +142,50 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
 
     private void updateFilePicker(List<String> paths) {
         if (paths != null) {
-            // update file picker overlay
-            setContentView(R.layout.overlay_file_picker);
+
+            if (!filePickerIsActive) {
+                // TODO FILE PICKER: update view and register listeners
+                // update view to file picker overlay
+                setContentView(R.layout.overlay_file_picker);
+
+                filePickerIsActive = true;
+            }
+            // TODO FILE PICKER: update list anyway
 
             // Get an array of all available files and directories.
-            final String[] pathNames = (String[]) paths.toArray();
+            final String[] pathNames = new String[paths.size()];
+            for (int i = 0; i < paths.size(); i++) {
+                // TODO FILE PICKER: only display the name of the file / directory and not the hole path ?
+                pathNames[i] = paths.get(i);
+            }
 
             // Display the available files and directories in a ListView.
-            ListView mApplicationList = (ListView) findViewById(R.id.list_paths);
-            mApplicationList.setAdapter(new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, pathNames));
+            mPathList = (ListView) findViewById(R.id.list_paths);
+            mPathList.setAdapter(new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, pathNames));
 
-            mApplicationList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            mPathList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     Log.d(DEBUG_TAG, "Clicked button: " + view.toString());
                     clientCore.pickFile(pathNames[position]); // Let the server know which file or directory the user picked.
                 }
             });
+
+            mBackButton = (Button) findViewById(R.id.button_back);
+            mBackButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    closeFilePicker();
+                }
+            });
         } else {
-            // close file picker
-            setContentView(defaultActivityView);
+            closeFilePicker(); // close the file picker if we get a null pointer
         }
+    }
+
+    private void closeFilePicker() {
+        setContentView(defaultActivityView); // TODO FILE PICKER: switch to original view
+        filePickerIsActive = false;
     }
 
     /**
@@ -215,9 +246,11 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
 
     /**
      * Called just before an application switches to another state. Update UI.
+     * The application has access to both, the old and the new ApplicationState.
+     * There is no need to update ApplicationState in onApplicationStateChange().
      * @param newState ApplicationState we change to
      */
-    public abstract void onApplicationStateChange(ApplicationState newState); // No need to update applicationState in onApplicationStateChange().
+    public abstract void onApplicationStateChange(ApplicationState newState);
 
     /**
      * Called when an int message arrives.
