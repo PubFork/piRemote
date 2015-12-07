@@ -38,7 +38,6 @@ class SenderService implements Runnable {
         network.setSenderConstructed();
     }
 
-
     @Override
     public void run() {
         // Open a new socket for outgoing communication with the clients on any free port.

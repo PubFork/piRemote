@@ -4,7 +4,6 @@ import MessageObject.Message;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
@@ -149,18 +148,6 @@ public class ServerNetwork implements Runnable {
             return -3;
         }
         return dispatcherService.getPort();
-    }
-
-    /**
-     * Returns the IP the network is receiving from.
-     *
-     * @return Returns the port the network is receiving from if it exists, else returns 'null'
-     */
-    public InetAddress getIp() {
-        if (dispatcherService == null) {
-            return null;
-        }
-        return dispatcherService.getIp();
     }
 
     /**

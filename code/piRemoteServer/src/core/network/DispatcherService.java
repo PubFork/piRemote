@@ -202,16 +202,4 @@ class DispatcherService implements Runnable {
         }
         return socket.getLocalPort();
     }
-
-    /**
-     * Returns the IP the dispatcher is listening on.
-     *
-     * @return Returns the IP the network is receiving from if exists, else returns 'null'.
-     */
-    public InetAddress getIp() {
-        if (socket == null) {
-            return null;
-        }
-        return socket.getLocalAddress();
-    }
 }
