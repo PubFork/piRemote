@@ -97,7 +97,11 @@ public class Message implements Serializable {
         String str = "Message ";
         if(!isBroadcast()) str+="ass. w. client "+uuid.toString()+".\n";
         else str+="(broadcast type).\n";
-        str+="-> ServerState: "+serverState.name()+"\n";
+        if (serverState != null) {
+            str+="-> ServerState: "+serverState.name()+"\n";
+        } else {
+            str+="-> ServerState: null\n";
+        }
         str+="-> ApplicationState: "+applicationState+"\n";
         if(hasPayload()){
             str+="-> Payload of type "+payload.getClass().toString()+":\n";
