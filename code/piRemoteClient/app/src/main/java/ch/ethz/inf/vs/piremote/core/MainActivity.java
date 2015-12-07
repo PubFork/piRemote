@@ -2,6 +2,7 @@ package ch.ethz.inf.vs.piremote.core;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
@@ -52,7 +53,7 @@ public class MainActivity extends AbstractClientActivity {
         Button mConnectButton = (Button) findViewById(R.id.button_connect);
         mConnectButton.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(@NonNull View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
                 Toast.makeText(getBaseContext(), R.string.toast_connecting, Toast.LENGTH_SHORT).show(); // display toast
                 startCore();
@@ -198,7 +199,7 @@ public class MainActivity extends AbstractClientActivity {
      * @param serverPort String representation of the input for the server port
      * @return true if the input represents a valid port
      */
-    private boolean validPort(String serverPort) {
+    private boolean validPort(@NonNull String serverPort) {
         try {
             mServerPort = Integer.parseInt(serverPort);
         } catch (Exception e) {

@@ -1,5 +1,7 @@
 package ch.ethz.inf.vs.piremote.core;
 
+import android.support.annotation.NonNull;
+
 import SharedConstants.CoreCsts.ServerState;
 import ch.ethz.inf.vs.piremote.application.TrafficLightActivity;
 
@@ -10,7 +12,8 @@ import ch.ethz.inf.vs.piremote.application.TrafficLightActivity;
  */
 public class ApplicationFactory {
 
-    public static AbstractClientActivity makeApplication(ServerState applicationToStart) {
+    @NonNull
+    public static AbstractClientActivity makeApplication(@NonNull ServerState applicationToStart) {
         switch (applicationToStart) {
             case TRAFFIC_LIGHT:
                 return new TrafficLightActivity();

@@ -1,6 +1,7 @@
 package ch.ethz.inf.vs.piremote.core;
 
 import android.app.Application;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.util.List;
@@ -18,6 +19,7 @@ public class CoreApplication extends Application {
     private Thread coreThread;
 
     // All activities that are components of piRemote extend the AbstractClientActivity.
+    @Nullable
     private AbstractClientActivity currentActivity = null; // Reference to the activity that is currently in the foreground.
 
     private final String DEBUG_TAG = "# AndroidApp #";
@@ -68,6 +70,7 @@ public class CoreApplication extends Application {
         }
     }
 
+    @Nullable
     public AbstractClientActivity getCurrentActivity() {
         return currentActivity;
     }

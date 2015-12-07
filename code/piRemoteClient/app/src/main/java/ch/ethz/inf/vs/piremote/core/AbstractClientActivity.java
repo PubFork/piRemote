@@ -1,6 +1,8 @@
 package ch.ethz.inf.vs.piremote.core;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -12,10 +14,12 @@ import android.widget.ListView;
 import java.util.List;
 
 import MessageObject.Message;
-import MessageObject.PayloadObject.*;
+import MessageObject.PayloadObject.DoubleMessage;
+import MessageObject.PayloadObject.IntMessage;
+import MessageObject.PayloadObject.Payload;
+import MessageObject.PayloadObject.StringMessage;
 import SharedConstants.ApplicationCsts.ApplicationState;
 import SharedConstants.ApplicationCsts.TrafficLightApplicationState;
-import SharedConstants.CoreCsts.ServerState;
 import StateObject.State;
 import ch.ethz.inf.vs.piremote.R;
 import ch.ethz.inf.vs.piremote.application.TrafficLightActivity;
@@ -41,7 +45,7 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
     private final String DEBUG_TAG = "# AbstractApp #";
     private final String VERBOSE_TAG = "# AbstractApp VERBOSE #";
 
-    public final void processMessageFromThread(final Message msg) {
+    public final void processMessageFromThread(@NonNull final Message msg) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -50,7 +54,7 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
             }});
     }
 
-    public final void startActivityFromThread(final State state) {
+    public final void startActivityFromThread(@NonNull final State state) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -89,7 +93,7 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
      * Inspect the received message and react to it. We can be sure that the application is still running on the server.
      * @param msg Message the ClientCore forwarded
      */
-    private void processMessage(Message msg) {
+    private void processMessage(@NonNull Message msg) {
 
         // First, we need to check the ApplicationState.
         if(!consistentApplicationState(msg)) {
@@ -113,7 +117,7 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
         }
     }
 
-    private void startAbstractActivity(State state) {
+    private void startAbstractActivity(@NonNull State state) {
         Class newApplication; // Start activity depending on the server state denoting which application to start.
         switch (state.getServerState()) {
             case TRAFFIC_LIGHT:
@@ -140,7 +144,7 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
         startActivity(applicationStartIntent); // Calls onStop() of current activity and onCreate()/onStart() of the new activity.
     }
 
-    private void updateFilePicker(List<String> paths) {
+    private void updateFilePicker(@Nullable List<String> paths) {
         if (paths != null) {
 
             if (!filePickerIsActive) {
@@ -165,7 +169,7 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
 
             mPathList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                public void onItemClick(AdapterView<?> parent, @NonNull View view, int position, long id) {
                     Log.d(DEBUG_TAG, "Clicked button: " + view.toString());
                     clientCore.pickFile(pathNames[position]); // Let the server know which file or directory the user picked.
                 }
@@ -192,7 +196,7 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
      * Test whether the actual ApplicationState in the Message corresponds to the expected ApplicationState stored in the AbstractClientActivity.
      * @param msg Message object for which we have to check the application state
      */
-    private boolean consistentApplicationState(Message msg) {
+    private boolean consistentApplicationState(@Nullable Message msg) {
         return applicationState != null
                 && msg != null
                 && msg.getApplicationState() != null

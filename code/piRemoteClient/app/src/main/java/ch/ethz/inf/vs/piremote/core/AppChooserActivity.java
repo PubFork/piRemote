@@ -1,6 +1,7 @@
 package ch.ethz.inf.vs.piremote.core;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -47,7 +48,7 @@ public class AppChooserActivity extends AbstractClientActivity {
 
         mApplicationList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> parent, @NonNull View view, int position, long id) {
                 Log.d(DEBUG_TAG, "Clicked button: " + view.toString());
                 Toast.makeText(getBaseContext(), R.string.toast_chooser, Toast.LENGTH_SHORT).show(); // display toast
                 chooseApplication(position+2);
@@ -57,7 +58,7 @@ public class AppChooserActivity extends AbstractClientActivity {
         Button mBackButton = (Button) findViewById(R.id.button_back);
         mBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(@NonNull View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
                 Toast.makeText(getBaseContext(), R.string.toast_back, Toast.LENGTH_SHORT).show(); // display toast
                 clientCore.destroyConnection();

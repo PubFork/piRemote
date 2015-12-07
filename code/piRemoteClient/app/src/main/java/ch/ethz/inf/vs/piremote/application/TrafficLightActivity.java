@@ -1,6 +1,8 @@
 package ch.ethz.inf.vs.piremote.application;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -49,7 +51,7 @@ public class TrafficLightActivity extends AbstractClientActivity {
         mBackButton = (Button) findViewById(R.id.button_back);
         mBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(@NonNull View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
                 Toast.makeText(getBaseContext(), R.string.toast_back, Toast.LENGTH_SHORT).show(); // display toast
                 // Request to stop current application
@@ -60,7 +62,7 @@ public class TrafficLightActivity extends AbstractClientActivity {
         mPickButton = (Button) findViewById(R.id.button_pick);
         mPickButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(@NonNull View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
                 Toast.makeText(getBaseContext(), R.string.toast_pick, Toast.LENGTH_SHORT).show(); // display toast
                 sendInt(ApplicationCsts.TL_PICK_FILE);
@@ -73,7 +75,7 @@ public class TrafficLightActivity extends AbstractClientActivity {
         mRedButton = (ToggleButton) findViewById(R.id.button_red);
         mRedButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(@NonNull View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
                 Toast.makeText(getBaseContext(), R.string.toast_TL, Toast.LENGTH_SHORT).show(); // display toast
                 sendInt(ApplicationCsts.GO_RED);
@@ -83,7 +85,7 @@ public class TrafficLightActivity extends AbstractClientActivity {
         mOrangeButton = (ToggleButton) findViewById(R.id.button_orange);
         mOrangeButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(@NonNull View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
                 Toast.makeText(getBaseContext(), R.string.toast_TL, Toast.LENGTH_SHORT).show(); // display toast
                 sendInt(ApplicationCsts.GO_ORANGE);
@@ -93,7 +95,7 @@ public class TrafficLightActivity extends AbstractClientActivity {
         mGreenButton = (ToggleButton) findViewById(R.id.button_green);
         mGreenButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(@NonNull View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
                 Toast.makeText(getBaseContext(), R.string.toast_TL, Toast.LENGTH_SHORT).show(); // display toast
                 sendInt(ApplicationCsts.GO_GREEN);
@@ -128,7 +130,7 @@ public class TrafficLightActivity extends AbstractClientActivity {
     }
 
     @Override
-    public void onApplicationStateChange(ApplicationState newState) {
+    public void onApplicationStateChange(@Nullable ApplicationState newState) {
         Log.d(DEBUG_TAG, "Changing from state _ to _: " + applicationState + newState);
 
         // Test whether the applicationState is set: Cast and also switch/case statement cannot handle null objects.

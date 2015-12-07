@@ -1,5 +1,7 @@
 package ch.ethz.inf.vs.piremote.core;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.net.InetAddress;
@@ -29,6 +31,7 @@ public class ClientCore implements Runnable {
 
     final CoreApplication coreApplication;
     // Keep track of all activities in the background
+    @NonNull
     private final ClientNetwork clientNetwork;
 
     private final AtomicBoolean connected = new AtomicBoolean(false);
@@ -38,7 +41,7 @@ public class ClientCore implements Runnable {
     private final String WARN_TAG = "# Core WARN #";
     private final String VERBOSE_TAG = "# Core VERBOSE #";
 
-    public ClientCore(InetAddress mServerAddress, int mServerPort, CoreApplication mCoreApplication) {
+    public ClientCore(@NonNull InetAddress mServerAddress, int mServerPort, CoreApplication mCoreApplication) {
         coreApplication = mCoreApplication;
         clientNetwork = new ClientNetwork(mServerAddress, mServerPort, this);
         Log.v(VERBOSE_TAG, "Created clientNetwork: " + clientNetwork);
@@ -74,7 +77,7 @@ public class ClientCore implements Runnable {
      * Inspect the received message and react to it. In most cases we have to forward it to the application currently running.
      * @param msg Message the Dispatcher put into the mainQueue
      */
-    private void processMessage(Message msg) {
+    private void processMessage(@NonNull Message msg) {
 
         // First, we need to check the ServerState.
         if(!consistentServerState(msg)) {
@@ -105,7 +108,7 @@ public class ClientCore implements Runnable {
      * Test whether the actual ServerState in the Message corresponds to the expected ServerState stored in the ClientCore.
      * @param msg Message object for which we have to check the server state
      */
-    private boolean consistentServerState(Message msg) {
+    private boolean consistentServerState(@Nullable Message msg) {
         return msg != null
                 && msg.getServerState() != null
                 && msg.getServerState().equals(serverState);
@@ -151,7 +154,7 @@ public class ClientCore implements Runnable {
      * Put the Message on the sendingQueue of the SenderService.
      * @param msg Message object which the client wants to send to the server
      */
-    void sendMessage(Message msg) {
+    void sendMessage(@Nullable Message msg) {
         if (msg == null) {
             Log.w(WARN_TAG, "Wanted to send an uninitialized message.");
             return;
@@ -165,6 +168,7 @@ public class ClientCore implements Runnable {
      * @param payload Payload object to be sent to the server
      * @return Message object containing the specified payload and also the server and application state
      */
+    @NonNull
     Message makeMessage(Payload payload) {
         return new Message(clientNetwork.getUuid(), getState(), payload);
     }
@@ -177,6 +181,7 @@ public class ClientCore implements Runnable {
      * Use this to read the current state (server and application state) of the client.
      * @return state object containing both the current server and application state
      */
+    @Nullable
     public State getState() {
         if (coreApplication.getCurrentActivity() == null) {
             return new State(serverState, null);
@@ -184,6 +189,7 @@ public class ClientCore implements Runnable {
         return new State(serverState, coreApplication.getCurrentActivity().getApplicationState());
     }
 
+    @NonNull
     public LinkedBlockingQueue<Message> getMainQueue() {
         return mainQueue;
     }
