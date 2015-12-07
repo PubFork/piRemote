@@ -120,4 +120,11 @@ public class DispatcherService implements Runnable {
         dispatcherThread.start();
         Log.i(INFO_TAG, "Service started.");
     }
+
+    /**
+     * Interrupt the dispatcherThread.
+     */
+    void interruptThread() {
+        dispatcherThread.interrupt();
+    }
 }

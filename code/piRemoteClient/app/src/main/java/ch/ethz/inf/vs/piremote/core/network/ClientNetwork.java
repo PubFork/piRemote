@@ -230,13 +230,18 @@ public class ClientNetwork implements Runnable {
 
         // Send disconnection request to the server.
         putOnSendingQueue(disconnectRequest);
+        // Send a poison pill to the server.
+        putOnSendingQueue(getSenderService());
+
+        running.set(false);
 
         // Notify ClientCore that the connection to the server has been terminated. Set the status
         // of the client appropriately.
         Message disconnectServer = new Message(uuid, CoreCsts.ServerState.SERVER_DOWN, null, null);
         mainQueue.add(disconnectServer);
-
-        running.set(false);
+        dispatcherService.interruptThread();
+        while (!getSendingQueue().isEmpty()) { }
+        socket.close();
         uuid = null;
     }
 

@@ -65,7 +65,6 @@ public class SenderService implements Runnable {
             // Try sending a message while ClientNetwork is running.
             //TODO(Mickey) Proper documentation on the program logic
             try {
-                //TODO(Mickey): This is NOT??? blocking... WTF?!
                 // Take an Object from the Queue.
                 Object messageToSend = sendingQueue.take();
                 Log.v(VERBOSE_TAG, "Took an object to send.");
@@ -82,6 +81,9 @@ public class SenderService implements Runnable {
                     Connection connection = (Connection) messageToSend;
                     objectStream.writeObject(connection);
                     Log.v(VERBOSE_TAG, "Connection processed for sending.");
+                } else if (messageToSend instanceof SenderService){
+                    // This is the poison pill used to signalise the end of the service.
+                    break;
                 } else {
                     Log.wtf(WTF_TAG, "Unknown object to send. Bad things will happen.");
                 }
