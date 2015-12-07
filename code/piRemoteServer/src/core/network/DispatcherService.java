@@ -192,7 +192,7 @@ class DispatcherService implements Runnable {
     }
 
     /**
-     * Returns the port the dispatcher is listening to.
+     * Returns the port the dispatcher is listening on.
      *
      * @return Returns the port the network is receiving from if exists, else returns '-2'.
      */
@@ -201,5 +201,17 @@ class DispatcherService implements Runnable {
             return -2;
         }
         return socket.getLocalPort();
+    }
+
+    /**
+     * Returns the IP the dispatcher is listening on.
+     *
+     * @return Returns the IP the network is receiving from if exists, else returns 'null'.
+     */
+    public InetAddress getIp() {
+        if (socket == null) {
+            return null;
+        }
+        return socket.getLocalAddress();
     }
 }
