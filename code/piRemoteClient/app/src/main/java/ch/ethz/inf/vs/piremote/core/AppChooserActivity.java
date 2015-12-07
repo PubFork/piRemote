@@ -34,9 +34,9 @@ public class AppChooserActivity extends AbstractClientActivity {
         setSupportActionBar(toolbar);
 
         // Get an array of all the available applications (given by the ServerState enumeration) and store their names.
-        final String[] applicationNames = new String[serverStates.length];
-        for (int i = 0; i < serverStates.length; i++) {
-            applicationNames[i] = serverStates[i].name();
+        final String[] applicationNames = new String[serverStates.length-2];
+        for (int i = 2; i < serverStates.length; i++) {
+            applicationNames[i-2] = serverStates[i].toString();
         }
 
         // Display the available applications in a ListView.
@@ -47,7 +47,7 @@ public class AppChooserActivity extends AbstractClientActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.d(DEBUG_TAG, "Clicked button: " + view.toString());
-                chooseApplication(position);
+                chooseApplication(position+2);
             }
         });
     }
