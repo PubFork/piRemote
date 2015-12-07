@@ -1,8 +1,5 @@
 <resources>
     <string name="app_name">PiRemote</string>
-    <string name="title_activity_application_chooser">Application Chooser</string>
-    <string name="title_activity_abstract">AbstractActivity</string>
-    <string name="title_activity_traffic_light">Traffic Light</string>
 
     <string name="button_back">Back</string>
     <string name="toast_back">Disconnecting</string>

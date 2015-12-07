@@ -203,25 +203,15 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
      * Allows the ClientCore to read the current application state.
      * @return ApplicationState of current application
      */
-    protected ApplicationState getApplicationState() {
+    ApplicationState getApplicationState() {
         return applicationState;
-    }
-
-    /**
-     * Is called by a client application to request a ServerState change.
-     * @param newState the ServerState the application wants to change to
-     */
-    protected void sendServerStateChange(ServerState newState) {
-        Log.d(DEBUG_TAG, "Request to change the sever state from _ to _: " + clientCore.serverState + newState);
-        // Do not yet change the serverState locally, but rather wait for a state update (confirmation) from the server.
-        clientCore.sendMessage(clientCore.makeMessage(new ServerStateChange(newState)));
     }
 
     /**
      * Creates and sends an int message to the server.
      * @param i Message Payload
      */
-    public void sendInt(int i) {
+    protected void sendInt(int i) {
         Log.d(DEBUG_TAG, "Send an int: " + i);
         clientCore.sendMessage(clientCore.makeMessage(new IntMessage(i)));
     }
@@ -250,23 +240,23 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
      * There is no need to update ApplicationState in onApplicationStateChange().
      * @param newState ApplicationState we change to
      */
-    public abstract void onApplicationStateChange(ApplicationState newState);
+    protected abstract void onApplicationStateChange(ApplicationState newState);
 
     /**
      * Called when an int message arrives.
      * @param i Message Payload
      */
-    public abstract void onReceiveInt(int i);
+    protected abstract void onReceiveInt(int i);
 
     /**
      * Called when a double message arrives.
      * @param d Message Payload
      */
-    public abstract void onReceiveDouble(double d);
+    protected abstract void onReceiveDouble(double d);
 
     /**
      * Called when a string message arrives.
      * @param str Message Payload
      */
-    public abstract void onReceiveString(String str);
+    protected abstract void onReceiveString(String str);
 }

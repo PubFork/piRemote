@@ -11,7 +11,6 @@ import MessageObject.Message;
 import MessageObject.PayloadObject.*;
 import SharedConstants.CoreCsts.ServerState;
 import StateObject.State;
-import ch.ethz.inf.vs.piremote.application.TrafficLightActivity;
 import ch.ethz.inf.vs.piremote.core.network.ClientNetwork;
 
 /**
@@ -22,13 +21,11 @@ public class ClientCore implements Runnable {
     // The ClientNetwork delivers incoming messages to the ClientCore by putting them into the queue.
     private final LinkedBlockingQueue<Message> mainQueue = new LinkedBlockingQueue<>();
 
-    // TEST ONLY
-    protected ServerState serverState;
+    private ServerState serverState;
 
-    // TEST ONLY
-    protected CoreApplication coreApplication;
+    final CoreApplication coreApplication;
     // Keep track of all activities in the background
-    private ClientNetwork clientNetwork;
+    private final ClientNetwork clientNetwork;
 
     private final AtomicBoolean connected = new AtomicBoolean(false);
 
@@ -119,7 +116,7 @@ public class ClientCore implements Runnable {
      * Is called by a client application to request a ServerState change.
      * @param newState the ServerState the application wants to change to
      */
-    protected void changeServerState(ServerState newState) {
+    public void changeServerState(ServerState newState) {
         Log.d(DEBUG_TAG, "Request to change the sever state from _ to _: " + serverState + newState);
         // Do not yet change the serverState locally, but rather wait for a state update (confirmation) from the server.
         sendMessage(makeMessage(new ServerStateChange(newState))); // Send request to the server
@@ -129,7 +126,7 @@ public class ClientCore implements Runnable {
      * The client application picks a file, which we forward to the server.
      * @param path represents the picked path, may be either a directory or a file
      */
-    protected void pickFile(String path) {
+    void pickFile(String path) {
         Log.d(DEBUG_TAG, "Picked path: " + path);
         sendMessage(makeMessage(new Pick(path))); // Send request to the server
     }
@@ -155,7 +152,7 @@ public class ClientCore implements Runnable {
      * Put the Message on the sendingQueue of the SenderService.
      * @param msg Message object which the client wants to send to the server
      */
-    protected void sendMessage(Message msg) {
+    void sendMessage(Message msg) {
         if (msg == null) {
             Log.w(WARN_TAG, "Wanted to send an uninitialized message.");
             return;
@@ -169,11 +166,11 @@ public class ClientCore implements Runnable {
      * @param payload Payload object to be sent to the server
      * @return Message object containing the specified payload and also the server and application state
      */
-    protected Message makeMessage(Payload payload) {
+    Message makeMessage(Payload payload) {
         return new Message(clientNetwork.getUuid(), getState(), payload);
     }
 
-    public boolean isConnected() {
+    private boolean isConnected() {
         return connected.get();
     }
 

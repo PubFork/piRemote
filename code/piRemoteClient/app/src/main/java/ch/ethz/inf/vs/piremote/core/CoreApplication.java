@@ -47,21 +47,21 @@ public class CoreApplication extends Application {
         }
     }
 
-    protected synchronized void processMessage(Message msg) {
+    synchronized void processMessage(Message msg) {
         Log.v(VERBOSE_TAG, "Process message on current activity: " + currentActivity);
         if (currentActivity != null) {
             currentActivity.processMessageFromThread(msg);
         }
     }
 
-    protected synchronized void startAbstractActivity(State state) {
+    synchronized void startAbstractActivity(State state) {
         Log.v(VERBOSE_TAG, "Start abstract activity on current activity: " + currentActivity);
         if (currentActivity != null) {
             currentActivity.startActivityFromThread(state);
         }
     }
 
-    protected synchronized void updateFilePicker(List<String> paths) {
+    synchronized void updateFilePicker(List<String> paths) {
         Log.v(VERBOSE_TAG, "Update file picker on current activity: " + currentActivity);
         if (currentActivity != null) {
             currentActivity.updateFilePickerFromThread(paths);
