@@ -5,4 +5,7 @@
     <string name="title_activity_traffic_light">Traffic Light</string>
 
     <string name="button_back">Back</string>
+    <string name="toast_back">Disconnecting</string>
+    <string name="toast_chooser">Selected an application</string>
+    <string name="toast_TL">Selected a color</string>
 </resources>

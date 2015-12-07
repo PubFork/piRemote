@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import SharedConstants.ApplicationCsts;
@@ -50,6 +51,7 @@ public class TrafficLightActivity extends AbstractClientActivity {
             @Override
             public void onClick(View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
+                Toast.makeText(getBaseContext(), R.string.toast_back, Toast.LENGTH_SHORT).show(); // display toast
                 // Request to stop current application
                 sendServerStateChange(CoreCsts.ServerState.NONE);
             }
@@ -60,6 +62,7 @@ public class TrafficLightActivity extends AbstractClientActivity {
             @Override
             public void onClick(View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
+                Toast.makeText(getBaseContext(), R.string.toast_pick, Toast.LENGTH_SHORT).show(); // display toast
                 // TEST ONLY
                 setContentView(R.layout.overlay_file_picker);
                 // TEST ONLY
@@ -75,6 +78,7 @@ public class TrafficLightActivity extends AbstractClientActivity {
             @Override
             public void onClick(View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
+                Toast.makeText(getBaseContext(), R.string.toast_TL, Toast.LENGTH_SHORT).show(); // display toast
                 sendInt(ApplicationCsts.GO_RED);
             }
         });
@@ -84,6 +88,7 @@ public class TrafficLightActivity extends AbstractClientActivity {
             @Override
             public void onClick(View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
+                Toast.makeText(getBaseContext(), R.string.toast_TL, Toast.LENGTH_SHORT).show(); // display toast
                 sendInt(ApplicationCsts.GO_ORANGE);
             }
         });
@@ -93,6 +98,7 @@ public class TrafficLightActivity extends AbstractClientActivity {
             @Override
             public void onClick(View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
+                Toast.makeText(getBaseContext(), R.string.toast_TL, Toast.LENGTH_SHORT).show(); // display toast
                 sendInt(ApplicationCsts.GO_GREEN);
             }
         });

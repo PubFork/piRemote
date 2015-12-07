@@ -56,6 +56,7 @@ public class MainActivity extends AbstractClientActivity {
             @Override
             public void onClick(View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
+                Toast.makeText(getBaseContext(), R.string.toast_connecting, Toast.LENGTH_SHORT).show(); // display toast
                 startCore();
             }
         });
@@ -123,11 +124,7 @@ public class MainActivity extends AbstractClientActivity {
      * If the entered server information is invalid, errors are displayed and no actual connection attempt is made.
      */
     private void startCore() {
-        if(validServerInformation()){
-
-            // display "connecting"
-            Toast.makeText(this, R.string.toast_connecting, Toast.LENGTH_SHORT).show();
-
+        if(validServerInformation()) {
             clientCore = new ClientCore(mServerAddress, mServerPort, (CoreApplication) getApplication());
             ((CoreApplication) getApplication()).setCoreThread(new Thread(clientCore));
             Log.v(VERBOSE_TAG, "Created core thread.");
@@ -140,7 +137,7 @@ public class MainActivity extends AbstractClientActivity {
     /**
      * Checks whether the address and port specified for the Raspberry Pi are valid.
      */
-    private boolean validServerInformation(){
+    private boolean validServerInformation() {
 
         // Reset errors
         mAddressView.setError(null);
