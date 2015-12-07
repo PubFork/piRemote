@@ -50,7 +50,7 @@ public class TrafficLightActivity extends AbstractClientActivity {
             @Override
             public void onClick(View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
-                // Request to stop current application TODO
+                // Request to stop current application
                 sendServerStateChange(CoreCsts.ServerState.NONE);
             }
         });

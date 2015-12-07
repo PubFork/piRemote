@@ -3,6 +3,10 @@ package ch.ethz.inf.vs.piremote.core;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import java.util.List;
 
@@ -132,9 +136,21 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
         if (paths != null) {
             // update file picker overlay
             setContentView(R.layout.overlay_file_picker);
-            // TODO IMPLEMENT
-            // set list view
-            // register listener to call pickFile(path)
+
+            // Get an array of all available files and directories.
+            final String[] pathNames = (String[]) paths.toArray();
+
+            // Display the available files and directories in a ListView.
+            ListView mApplicationList = (ListView) findViewById(R.id.list_paths);
+            mApplicationList.setAdapter(new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, pathNames));
+
+            mApplicationList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Log.d(DEBUG_TAG, "Clicked button: " + view.toString());
+                    clientCore.pickFile(pathNames[position]); // Let the server know which file or directory the user picked.
+                }
+            });
         } else {
             // close file picker
             setContentView(defaultActivityView);

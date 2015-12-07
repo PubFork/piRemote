@@ -121,7 +121,7 @@ public class ClientCore implements Runnable {
      * The client application picks a file, which we forward to the server.
      * @param path represents the picked path, may be either a directory or a file
      */
-    private void pickFile(String path) {
+    protected void pickFile(String path) {
         Log.d(DEBUG_TAG, "Picked path: " + path);
         sendMessage(makeMessage(new Pick(path))); // Send request to the server
     }

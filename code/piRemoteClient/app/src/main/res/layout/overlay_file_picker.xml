@@ -32,7 +32,7 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <ListView
-            android:id="@+id/list_application"
+            android:id="@+id/list_paths"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_above="@+id/button_back" />
