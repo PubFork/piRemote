@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 
 import SharedConstants.ApplicationCsts;
@@ -48,6 +49,15 @@ public class AppChooserActivity extends AbstractClientActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.d(DEBUG_TAG, "Clicked button: " + view.toString());
                 chooseApplication(position+2);
+            }
+        });
+
+        Button mBackButton = (Button) findViewById(R.id.button_back);
+        mBackButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
+                clientCore.destroyConnection();
             }
         });
     }

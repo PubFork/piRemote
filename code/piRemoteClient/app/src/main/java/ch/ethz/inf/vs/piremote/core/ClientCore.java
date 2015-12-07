@@ -5,6 +5,7 @@ import android.util.Log;
 import java.net.InetAddress;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import MessageObject.Message;
 import MessageObject.PayloadObject.*;
@@ -29,6 +30,8 @@ public class ClientCore implements Runnable {
     // Keep track of all activities in the background
     private ClientNetwork clientNetwork;
 
+    private final AtomicBoolean connected = new AtomicBoolean(false);
+
     private final String DEBUG_TAG = "# Core #";
     private final String ERROR_TAG = "# Core ERROR #";
     private final String WARN_TAG = "# Core WARN #";
@@ -46,6 +49,8 @@ public class ClientCore implements Runnable {
         clientNetwork.startNetwork();
         clientNetwork.connectToServer();
 
+        connected.set(true);
+
         // TEST ONLY
         serverState = ServerState.NONE;
         coreApplication.startAbstractActivity(new State(ServerState.NONE, null));
@@ -59,11 +64,14 @@ public class ClientCore implements Runnable {
             } catch (InterruptedException e) {
                 Log.e(ERROR_TAG, "Unable to take message from the queue. ", e.getCause());
             }
-        }
+        } // terminates as soon as the clientNetwork disconnects from the server
     }
 
-    public void onDestroy() {
-        clientNetwork.disconnectFromServer(); // Stop background threads TODO THREAD
+    public void destroyConnection() {
+        if (isConnected()) {
+            connected.set(false);
+            clientNetwork.disconnectFromServer(); // Stop background threads
+        }
     }
 
     /**
@@ -163,6 +171,10 @@ public class ClientCore implements Runnable {
      */
     protected Message makeMessage(Payload payload) {
         return new Message(clientNetwork.getUuid(), getState(), payload);
+    }
+
+    public boolean isConnected() {
+        return connected.get();
     }
 
     /**

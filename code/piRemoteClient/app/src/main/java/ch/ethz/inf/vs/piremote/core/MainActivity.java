@@ -1,6 +1,5 @@
 package ch.ethz.inf.vs.piremote.core;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -57,7 +56,7 @@ public class MainActivity extends AbstractClientActivity {
             @Override
             public void onClick(View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
-                connectToPi();
+                startCore();
             }
         });
     }
@@ -66,11 +65,8 @@ public class MainActivity extends AbstractClientActivity {
     protected void onRestart() {
         super.onRestart();
 
-        coreThread = ((CoreApplication) getApplication()).getCoreThread();
         // We want to stop the background processes whenever we return to the MainActivity and started them before by connecting to the server.
-        if (clientCore != null && coreThread.isAlive()) {
-            disconnectFromPi();
-        }
+        clientCore.destroyConnection();
     }
 
     @Override
@@ -126,7 +122,7 @@ public class MainActivity extends AbstractClientActivity {
      * Attempts to connect to the Raspberry Pi using the address and port specified.
      * If the entered server information is invalid, errors are displayed and no actual connection attempt is made.
      */
-    private void connectToPi() {
+    private void startCore() {
         if(validServerInformation()){
 
             // display "connecting"
@@ -139,15 +135,6 @@ public class MainActivity extends AbstractClientActivity {
             ((CoreApplication) getApplication()).getCoreThread().start();
             Log.v(VERBOSE_TAG, "Started core thread.");
         }
-    }
-
-    /**
-     * Disconnect from the Raspberry Pi and terminate all running threads.
-     */
-    private void disconnectFromPi() {
-        Log.v(VERBOSE_TAG, "Attempting to stop core thread.");
-        // ((CoreApplication) getApplication()).getCoreThread() TODO THREAD
-        Log.v(VERBOSE_TAG, "Stopped core thread.");
     }
 
     /**
