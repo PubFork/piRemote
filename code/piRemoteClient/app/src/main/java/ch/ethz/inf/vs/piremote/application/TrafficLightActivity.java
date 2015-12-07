@@ -10,8 +10,8 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import SharedConstants.ApplicationCsts;
-import SharedConstants.ApplicationCsts.TrafficLightApplicationState;
 import SharedConstants.ApplicationCsts.ApplicationState;
+import SharedConstants.ApplicationCsts.TrafficLightApplicationState;
 import SharedConstants.CoreCsts;
 import ch.ethz.inf.vs.piremote.R;
 import ch.ethz.inf.vs.piremote.core.AbstractClientActivity;
@@ -53,7 +53,7 @@ public class TrafficLightActivity extends AbstractClientActivity {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
                 Toast.makeText(getBaseContext(), R.string.toast_back, Toast.LENGTH_SHORT).show(); // display toast
                 // Request to stop current application
-                sendServerStateChange(CoreCsts.ServerState.NONE);
+                clientCore.changeServerState(CoreCsts.ServerState.NONE);
             }
         });
 
@@ -63,9 +63,6 @@ public class TrafficLightActivity extends AbstractClientActivity {
             public void onClick(View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
                 Toast.makeText(getBaseContext(), R.string.toast_pick, Toast.LENGTH_SHORT).show(); // display toast
-                // TEST ONLY
-                setContentView(R.layout.overlay_file_picker);
-                // TEST ONLY
                 sendInt(ApplicationCsts.TL_PICK_FILE);
             }
         });

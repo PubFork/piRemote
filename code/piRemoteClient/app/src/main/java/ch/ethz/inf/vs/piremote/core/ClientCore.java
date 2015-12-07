@@ -8,7 +8,11 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import MessageObject.Message;
-import MessageObject.PayloadObject.*;
+import MessageObject.PayloadObject.Close;
+import MessageObject.PayloadObject.Offer;
+import MessageObject.PayloadObject.Payload;
+import MessageObject.PayloadObject.Pick;
+import MessageObject.PayloadObject.ServerStateChange;
 import SharedConstants.CoreCsts.ServerState;
 import StateObject.State;
 import ch.ethz.inf.vs.piremote.core.network.ClientNetwork;
@@ -47,11 +51,6 @@ public class ClientCore implements Runnable {
         clientNetwork.connectToServer();
 
         connected.set(true);
-
-        // TEST ONLY
-        serverState = ServerState.NONE;
-        coreApplication.startAbstractActivity(new State(ServerState.NONE, null));
-        // TEST ONLY
 
         // handle messages on the mainQueue that arrived over the network
         while (clientNetwork.isRunning()) {
