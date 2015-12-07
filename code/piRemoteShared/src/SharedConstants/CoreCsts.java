@@ -11,7 +11,7 @@ public class CoreCsts implements Serializable {
     public enum ServerState {
         // Constants that indicate what application is currently running, use NONE if no application is running
         NONE("Application Chooser"),
-        SERVER_DOWN("Main"), // Message put into Client MainQueue by Client Dispatcher when the server times out
+        SERVER_DOWN("Connect Screen"), // Message put into Client MainQueue by Client Dispatcher when the server times out
         TRAFFIC_LIGHT("Traffic Light"),
         MULTIMEDIA("Multimedia");
 
