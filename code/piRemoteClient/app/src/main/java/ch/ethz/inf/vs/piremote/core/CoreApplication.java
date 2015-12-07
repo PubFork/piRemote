@@ -26,18 +26,25 @@ public class CoreApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d(DEBUG_TAG, "Starting up.");
+        Log.d(DEBUG_TAG, "ONCREATE: Starting up.");
     }
 
     @Override
     public void onTerminate() {
         super.onTerminate();
-        Log.d(DEBUG_TAG, "Exiting.");
+        Log.d(DEBUG_TAG, "ONTERMINATE: Exiting.");
     }
 
     public synchronized void setCurrentActivity(AbstractClientActivity activity) {
-        Log.v(VERBOSE_TAG, "Set current activity: " + currentActivity);
+        Log.v(VERBOSE_TAG, "Set current activity from _ to _: " + currentActivity + activity);
         this.currentActivity = activity;
+    }
+
+    public synchronized void resetCurrentActivity(AbstractClientActivity activity) {
+        Log.v(VERBOSE_TAG, "Reset current activity from _: " + activity);
+        if (currentActivity == activity) {
+            this.currentActivity = null;
+        }
     }
 
     protected synchronized void processMessage(Message msg) {

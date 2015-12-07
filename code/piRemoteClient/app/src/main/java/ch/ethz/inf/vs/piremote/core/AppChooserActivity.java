@@ -26,7 +26,7 @@ public class AppChooserActivity extends AbstractClientActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(DEBUG_TAG, "Starting up.");
+        Log.d(DEBUG_TAG, "ONCREATE: Starting up.");
 
         defaultActivityView = R.layout.activity_application_chooser;
         setContentView(defaultActivityView);
@@ -55,27 +55,27 @@ public class AppChooserActivity extends AbstractClientActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d(DEBUG_TAG, "Exiting.");
+        Log.d(DEBUG_TAG, "ONDESTROY: Exiting.");
     }
 
     @Override
     public void onApplicationStateChange(ApplicationCsts.ApplicationState newState) {
-        Log.d(DEBUG_TAG, "Changing to state: " + newState);
+        Log.d(DEBUG_TAG, "Changing from state _ to _: " + applicationState + newState);
     }
 
     @Override
     public void onReceiveInt(int i) {
-        Log.d(DEBUG_TAG, "Received an int. " + i);
+        Log.d(DEBUG_TAG, "Received an int: " + i);
     }
 
     @Override
     public void onReceiveDouble(double d) {
-        Log.d(DEBUG_TAG, "Received a double. " + d);
+        Log.d(DEBUG_TAG, "Received a double: " + d);
     }
 
     @Override
     public void onReceiveString(String str) {
-        Log.d(DEBUG_TAG, "Received a string. " + str);
+        Log.d(DEBUG_TAG, "Received a string: " + str);
     }
 
     private void chooseApplication(int position) {

@@ -34,7 +34,7 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Log.v(VERBOSE_TAG, "Process message");
+                Log.v(VERBOSE_TAG, "Process message: " + msg);
                 processMessage(msg);
             }});
     }
@@ -43,7 +43,7 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Log.v(VERBOSE_TAG, "Start abstract activity");
+                Log.v(VERBOSE_TAG, "Start abstract activity with server and application state, respectively: " + state.getServerState() + state.getApplicationState());
                 startAbstractActivity(state);
             }
         });
@@ -53,7 +53,7 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Log.v(VERBOSE_TAG, "Update file picker");
+                Log.v(VERBOSE_TAG, "Update file picker: " + paths);
                 updateFilePicker(paths);
             }
         });
@@ -63,13 +63,13 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         ((CoreApplication) getApplication()).setCurrentActivity(this);
-        Log.v(VERBOSE_TAG, "Set current activity.");
+        Log.v(VERBOSE_TAG, "ONSTART: Set current activity." + this);
     }
 
     @Override
     protected void onStop() {
-        ((CoreApplication) getApplication()).setCurrentActivity(null);
-        Log.v(VERBOSE_TAG, "Removed current activity.");
+        ((CoreApplication) getApplication()).resetCurrentActivity(this);
+        Log.v(VERBOSE_TAG, "ONSTOP: Removed current activity." + this);
         super.onStop();
     }
 
@@ -165,7 +165,7 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
      * @param newState the ServerState the application wants to change to
      */
     protected void sendServerStateChange(ServerState newState) {
-        Log.d(DEBUG_TAG, "Request to change the sever state to: " + newState);
+        Log.d(DEBUG_TAG, "Request to change the sever state from _ to _: " + clientCore.serverState + newState);
         // Do not yet change the serverState locally, but rather wait for a state update (confirmation) from the server.
         clientCore.sendMessage(clientCore.makeMessage(new ServerStateChange(newState)));
     }
@@ -175,7 +175,7 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
      * @param i Message Payload
      */
     public void sendInt(int i) {
-        Log.d(DEBUG_TAG, "Send an int. " + i);
+        Log.d(DEBUG_TAG, "Send an int: " + i);
         clientCore.sendMessage(clientCore.makeMessage(new IntMessage(i)));
     }
 
@@ -184,7 +184,7 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
      * @param d Message Payload
      */
     public void sendDouble(double d) {
-        Log.d(DEBUG_TAG, "Send a double. " + d);
+        Log.d(DEBUG_TAG, "Send a double: " + d);
         clientCore.sendMessage(clientCore.makeMessage(new DoubleMessage(d)));
     }
 
@@ -193,7 +193,7 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
      * @param str Message Payload
      */
     public void sendString(String str) {
-        Log.d(DEBUG_TAG, "Send a string. " + str);
+        Log.d(DEBUG_TAG, "Send a string: " + str);
         clientCore.sendMessage(clientCore.makeMessage(new StringMessage(str)));
     }
 

@@ -112,7 +112,7 @@ public class ClientCore implements Runnable {
      * @param newState the ServerState the application wants to change to
      */
     protected void changeServerState(ServerState newState) {
-        Log.d(DEBUG_TAG, "Request to change the sever state to: " + newState);
+        Log.d(DEBUG_TAG, "Request to change the sever state from _ to _: " + serverState + newState);
         // Do not yet change the serverState locally, but rather wait for a state update (confirmation) from the server.
         sendMessage(makeMessage(new ServerStateChange(newState))); // Send request to the server
     }
@@ -122,7 +122,7 @@ public class ClientCore implements Runnable {
      * @param path represents the picked path, may be either a directory or a file
      */
     private void pickFile(String path) {
-        Log.d(DEBUG_TAG, "Picked path. " + path);
+        Log.d(DEBUG_TAG, "Picked path: " + path);
         sendMessage(makeMessage(new Pick(path))); // Send request to the server
     }
 
@@ -131,7 +131,7 @@ public class ClientCore implements Runnable {
      * @param paths list of offered directories and files
      */
     private void startFilePicker(List<String> paths) {
-        Log.d(DEBUG_TAG, "Start file picker. " + paths);
+        Log.d(DEBUG_TAG, "Start file picker: " + paths);
         coreApplication.updateFilePicker(paths);
     }
 
@@ -152,7 +152,7 @@ public class ClientCore implements Runnable {
             Log.w(WARN_TAG, "Wanted to send an uninitialized message.");
             return;
         }
-        Log.d(DEBUG_TAG, "Send message. " + msg);
+        Log.d(DEBUG_TAG, "Send message: " + msg);
         clientNetwork.putOnSendingQueue(msg);
     }
 

@@ -38,7 +38,7 @@ public class TrafficLightActivity extends AbstractClientActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(DEBUG_TAG, "Starting up.");
+        Log.d(DEBUG_TAG, "ONCREATE: Starting up.");
 
         defaultActivityView = R.layout.activity_traffic_light;
         setContentView(defaultActivityView);
@@ -50,7 +50,7 @@ public class TrafficLightActivity extends AbstractClientActivity {
             @Override
             public void onClick(View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
-                // Request to stop current application
+                // Request to stop current application TODO
                 sendServerStateChange(CoreCsts.ServerState.NONE);
             }
         });
@@ -121,12 +121,12 @@ public class TrafficLightActivity extends AbstractClientActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d(DEBUG_TAG, "Exiting.");
+        Log.d(DEBUG_TAG, "ONDESTROY: Exiting.");
     }
 
     @Override
     public void onApplicationStateChange(ApplicationState newState) {
-        Log.d(DEBUG_TAG, "Changing to state: " + newState);
+        Log.d(DEBUG_TAG, "Changing from state _ to _: " + applicationState + newState);
 
         // Test whether the applicationState is set: Cast and also switch/case statement cannot handle null objects.
         if (applicationState != null) {
@@ -165,17 +165,17 @@ public class TrafficLightActivity extends AbstractClientActivity {
 
     @Override
     public void onReceiveInt(int i) {
-        Log.d(DEBUG_TAG, "Received an int. " + i);
+        Log.d(DEBUG_TAG, "Received an int: " + i);
     }
 
     @Override
     public void onReceiveDouble(double d) {
-        Log.d(DEBUG_TAG, "Received a double. " + d);
+        Log.d(DEBUG_TAG, "Received a double: " + d);
     }
 
     @Override
     public void onReceiveString(String str) {
-        Log.d(DEBUG_TAG, "Received a string. " + str);
+        Log.d(DEBUG_TAG, "Received a string: " + str);
         mPathView.setText(str); //
     }
 }

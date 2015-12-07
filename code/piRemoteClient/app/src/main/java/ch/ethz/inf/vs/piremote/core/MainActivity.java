@@ -41,7 +41,7 @@ public class MainActivity extends AbstractClientActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(DEBUG_TAG, "Starting up.");
+        Log.d(DEBUG_TAG, "ONCREATE: Starting up.");
 
         defaultActivityView = R.layout.activity_main;
         setContentView(defaultActivityView);
@@ -60,6 +60,11 @@ public class MainActivity extends AbstractClientActivity {
                 connectToPi();
             }
         });
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
 
         coreThread = ((CoreApplication) getApplication()).getCoreThread();
         // We want to stop the background processes whenever we return to the MainActivity and started them before by connecting to the server.
@@ -71,6 +76,7 @@ public class MainActivity extends AbstractClientActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        Log.v(VERBOSE_TAG, "ONRESUME: Restore preferences.");
 
         // Restore preferences
         settings = getSharedPreferences(AppConstants.SETTINGS_FILENAME, 0);
@@ -81,7 +87,7 @@ public class MainActivity extends AbstractClientActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        Log.v(VERBOSE_TAG, "Save preferences.");
+        Log.v(VERBOSE_TAG, "ONPAUSE: Save preferences.");
 
         // Store preference changes
         SharedPreferences.Editor editor = settings.edit();
@@ -93,27 +99,27 @@ public class MainActivity extends AbstractClientActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d(DEBUG_TAG, "Exiting.");
+        Log.d(DEBUG_TAG, "ONDESTROY: Exiting.");
     }
 
     @Override
     public void onApplicationStateChange(ApplicationCsts.ApplicationState newState) {
-        Log.d(DEBUG_TAG, "Changing to state: " + newState);
+        Log.d(DEBUG_TAG, "Changing from state _ to _: " + applicationState + newState);
     }
 
     @Override
     public void onReceiveInt(int i) {
-        Log.d(DEBUG_TAG, "Received an int. " + i);
+        Log.d(DEBUG_TAG, "Received an int: " + i);
     }
 
     @Override
     public void onReceiveDouble(double d) {
-        Log.d(DEBUG_TAG, "Received a double. " + d);
+        Log.d(DEBUG_TAG, "Received a double: " + d);
     }
 
     @Override
     public void onReceiveString(String str) {
-        Log.d(DEBUG_TAG, "Received a string. " + str);
+        Log.d(DEBUG_TAG, "Received a string: " + str);
     }
 
     /**
@@ -128,10 +134,10 @@ public class MainActivity extends AbstractClientActivity {
 
             clientCore = new ClientCore(mServerAddress, mServerPort, (CoreApplication) getApplication());
             ((CoreApplication) getApplication()).setCoreThread(new Thread(clientCore));
-            Log.v(VERBOSE_TAG, "Created thread.");
+            Log.v(VERBOSE_TAG, "Created core thread.");
 
             ((CoreApplication) getApplication()).getCoreThread().start();
-            Log.v(VERBOSE_TAG, "Started thread.");
+            Log.v(VERBOSE_TAG, "Started core thread.");
         }
     }
 
@@ -139,9 +145,9 @@ public class MainActivity extends AbstractClientActivity {
      * Disconnect from the Raspberry Pi and terminate all running threads.
      */
     private void disconnectFromPi() {
-        Log.v(VERBOSE_TAG, "Attempting to stop service.");
+        Log.v(VERBOSE_TAG, "Attempting to stop core thread.");
         // ((CoreApplication) getApplication()).getCoreThread() TODO THREAD
-        Log.v(VERBOSE_TAG, "Stopped service.");
+        Log.v(VERBOSE_TAG, "Stopped core thread.");
     }
 
     /**
