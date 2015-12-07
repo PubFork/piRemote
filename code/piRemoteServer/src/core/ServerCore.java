@@ -44,7 +44,7 @@ public class ServerCore{
 
         // Wait for network to be available
         while(serverNetwork.getPort() <= 0);
-        System.out.println("Listening on "+Integer.toString(serverNetwork.getPort()));
+        System.out.println("Listening on port "+Integer.toString(serverNetwork.getPort()));
 
         // TEST ONLY
         //ServerCoreTester st = new ServerCoreTester(mainQueue);
