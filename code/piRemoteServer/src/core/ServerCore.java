@@ -42,6 +42,10 @@ public class ServerCore{
         serverNetwork = new ServerNetwork(8015);
         serverNetwork.startNetwork();
 
+        // Wait for network to be available
+        while(serverNetwork.getPort() <= 0);
+        System.out.println("Listening on "+Integer.toString(serverNetwork.getPort()));
+
         // TEST ONLY
         //ServerCoreTester st = new ServerCoreTester(mainQueue);
         //st.phase1();
@@ -122,8 +126,9 @@ public class ServerCore{
             if(application != null) {
                 application.processMessage(msg);
             }else{
-                assert serverState== CoreCsts.ServerState.NONE;
-                System.out.println("OMG what is this client doin'??? It knows I have no app running and asks me to talk to it?!");
+                assert serverState == CoreCsts.ServerState.NONE;
+                if(msg.getServerState() != CoreCsts.ServerState.NONE)
+                    System.out.println("OMG what is this client doin'??? It knows I have no app running and asks me to talk to it?!");
             }
         }
         // TEST ONLY
