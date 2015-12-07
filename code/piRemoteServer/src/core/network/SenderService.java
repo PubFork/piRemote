@@ -58,18 +58,21 @@ class SenderService implements Runnable {
                 // Get the NetworkInfo about the client supposed to the receive the Message.
                 NetworkInfo networkInfo = serverNetwork.getSessionTable().get(messageToSend.getUuid());
 
-                // Serialise the message to send
-                ByteArrayOutputStream byteStream = new ByteArrayOutputStream(NetworkConstants.PACKETSIZE);
-                ObjectOutputStream objectStream = new ObjectOutputStream(byteStream);
-                objectStream.writeObject(messageToSend);
-                objectStream.flush();
+                if (networkInfo != null) {
 
-                // Create a buffer and the corresponding packet to be sent to address/port.
-                byte[] sendBuffer = byteStream.toByteArray();
-                DatagramPacket packet = new DatagramPacket(sendBuffer, sendBuffer.length, networkInfo.getIp(), networkInfo.getPort());
+                    // Serialise the message to send
+                    ByteArrayOutputStream byteStream = new ByteArrayOutputStream(NetworkConstants.PACKETSIZE);
+                    ObjectOutputStream objectStream = new ObjectOutputStream(byteStream);
+                    objectStream.writeObject(messageToSend);
+                    objectStream.flush();
 
-                // Send the packet.
-                socket.send(packet);
+                    // Create a buffer and the corresponding packet to be sent to address/port.
+                    byte[] sendBuffer = byteStream.toByteArray();
+                    DatagramPacket packet = new DatagramPacket(sendBuffer, sendBuffer.length, networkInfo.getIp(), networkInfo.getPort());
+
+                    // Send the packet.
+                    socket.send(packet);
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (IOException e) {
