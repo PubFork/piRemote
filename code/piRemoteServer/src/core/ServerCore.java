@@ -30,6 +30,7 @@ public class ServerCore{
     protected static CoreCsts.ServerState serverState;
     protected static AbstractApplication application;
     protected static boolean running;
+    protected static String filePickerBasePath;
     //public static int round=0; // TEST ONLY
 
     public static void main(String [ ] args) throws InterruptedException {
@@ -37,6 +38,7 @@ public class ServerCore{
         serverState = CoreCsts.ServerState.NONE;
         application = null;
         running = true;
+        filePickerBasePath = "";
 
         // Init Network component
         serverNetwork = new ServerNetwork(8015);
@@ -147,6 +149,11 @@ public class ServerCore{
         }
     }
 
+    public static void setFilePickerBasePath(String newBasePath){
+        // Setter for filePickerBasePath
+        filePickerBasePath=newBasePath;
+    }
+
     protected static boolean checkServerState(Message msg){
         // This returns whether or not the ServerState in the message corresponds to the actual ServerState.
         if(msg==null || msg.getServerState() == null) return false;
@@ -177,6 +184,7 @@ public class ServerCore{
         if(dir == null || !dir.isDirectory()) return null;
         File[] contents = dir.listFiles();
         if(contents != null) {
+            offerPayload.paths.add(filePickerBasePath+"/");
             for (File path : contents) {
                 String pathtoSend=path.getName();
                 if(path.isDirectory()) pathtoSend+="/";

@@ -66,8 +66,10 @@ public abstract class AbstractApplication {
         // path: Root path (must be directory!) to start file pick with
         // destination: UUID of the client to send the offer to
         File f = new File(path);
-        if(f.exists() && f.isDirectory()) ServerCore.sendMessage(ServerCore.makeOffer(destination,f));
-        else System.out.println("WARNING: <"+path+"> is not a valid directory on this machine!");
+        if(f.exists() && f.isDirectory()){
+            ServerCore.setFilePickerBasePath(path);
+            ServerCore.sendMessage(ServerCore.makeOffer(destination,f));
+        }else System.out.println("WARNING: <"+path+"> is not a valid directory on this machine!");
     }
 
     protected void closeFilePicker(UUID destination){
