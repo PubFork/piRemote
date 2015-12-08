@@ -18,7 +18,7 @@ public class TrafficLight extends AbstractApplication {
 
     @Override
     public void onApplicationStop() {
-
+        System.out.println("TrafficLight: Will now stop.");
     }
 
     @Override

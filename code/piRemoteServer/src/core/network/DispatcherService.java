@@ -80,6 +80,8 @@ class DispatcherService implements Runnable {
                 while (!morgueQueue.isEmpty()) {
                     Session temp = morgueQueue.take();
                     sessionTable.remove(temp.getUUID(), temp.getNetworkInfo());
+                    System.out.println("DispatcherService: Removed client due to timeout: "+temp.getUUID().toString());
+                    printSessionTable();
                 }
 
                 // Marshalling of the DatagramPacket back to an object
@@ -112,6 +114,8 @@ class DispatcherService implements Runnable {
                         // Explicit disconnect request from client received, remove the session.
                         UUID uuid = connection.getUuid();
                         sessionTable.remove(uuid);
+                        System.out.println("DispatcherService: Removed client due to disconnect: "+uuid.toString());
+                        printSessionTable();
                     }
                 } else {
                     // Something unknown has been received. This is really bad! Abort!
@@ -162,6 +166,9 @@ class DispatcherService implements Runnable {
         // Create a reply and store it on the sender's queue.
         Message newClient = new Message(clientUUID, ServerCore.getState());
         sendingQueue.add(newClient);
+
+        System.out.println("DispatcherService: Added new client: "+clientUUID.toString());
+        printSessionTable();
     }
 
     /**
@@ -201,5 +208,16 @@ class DispatcherService implements Runnable {
             return -2;
         }
         return socket.getLocalPort();
+    }
+
+    /**
+     * Prints session table.
+     * Use for debug
+     */
+    public void printSessionTable(){
+        System.out.println("Printing sessionTable:");
+        for(UUID uuid : sessionTable.keySet()){
+            System.out.println("   "+uuid.toString());
+        }
     }
 }
