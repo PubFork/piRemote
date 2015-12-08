@@ -99,7 +99,7 @@ class DispatcherService implements Runnable {
                         // Update lastSeen and put the message on the Core's queue.
                         sessionTable.get(uuid).updateLastSeen(lastSeen.get());
                         ServerCore.mainQueue.put(receivedMessage);
-                    } else {
+                    } else if (uuid != null){
                         // The client has likely timed out and doesn't have a valid UUID anymore, reassociate it.
                         addNewClient(packet.getAddress(), packet.getPort(), lastSeen);
                     }
