@@ -9,7 +9,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import SharedConstants.ApplicationCsts;
 import SharedConstants.ApplicationCsts.ApplicationState;
@@ -30,9 +29,10 @@ public class TrafficLightActivity extends AbstractClientActivity {
     private Button mBackButton;
     private Button mPickButton;
     private TextView mPathView;
-    private ToggleButton mRedButton;
-    private ToggleButton mOrangeButton;
-    private ToggleButton mGreenButton;
+    private TextView mStatusView;
+    private Button mRedButton;
+    private Button mOrangeButton;
+    private Button mGreenButton;
 
     private final String DEBUG_TAG = "# TLApp #";
     private final String ERROR_TAG = "# TLApp ERROR #";
@@ -72,7 +72,9 @@ public class TrafficLightActivity extends AbstractClientActivity {
         // Keep track of the text field to change the output text when a file was picked.
         mPathView = (TextView) findViewById(R.id.picked_path);
 
-        mRedButton = (ToggleButton) findViewById(R.id.button_red);
+        mStatusView = (TextView) findViewById(R.id.text_status);
+
+        mRedButton = (Button) findViewById(R.id.button_red);
         mRedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull View v) {
@@ -82,7 +84,7 @@ public class TrafficLightActivity extends AbstractClientActivity {
             }
         });
 
-        mOrangeButton = (ToggleButton) findViewById(R.id.button_orange);
+        mOrangeButton = (Button) findViewById(R.id.button_orange);
         mOrangeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull View v) {
@@ -92,7 +94,7 @@ public class TrafficLightActivity extends AbstractClientActivity {
             }
         });
 
-        mGreenButton = (ToggleButton) findViewById(R.id.button_green);
+        mGreenButton = (Button) findViewById(R.id.button_green);
         mGreenButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull View v) {
@@ -107,17 +109,7 @@ public class TrafficLightActivity extends AbstractClientActivity {
         if (startState != null) {
             // Toggle the button that represents our start state.
             TrafficLightApplicationState newTLState = (TrafficLightApplicationState) startState;
-            switch (newTLState) {
-                case RED:
-                    mRedButton.setChecked(true);
-                    break;
-                case ORANGE:
-                    mOrangeButton.setChecked(true);
-                    break;
-                case GREEN:
-                    mGreenButton.setChecked(true);
-                    break;
-            }
+            mStatusView.setText(newTLState.toString());
         } else {
             Log.w(WARN_TAG, "Unable to read arguments from Intent. Cannot set initial state.");
         }
@@ -133,38 +125,11 @@ public class TrafficLightActivity extends AbstractClientActivity {
     public void onApplicationStateChange(@Nullable ApplicationState newState) {
         Log.d(DEBUG_TAG, "Changing from state _ to _: " + applicationState + newState);
 
-        // Test whether the applicationState is set: Cast and also switch/case statement cannot handle null objects.
-        if (applicationState != null) {
-            // Untoggle the button that represents our old state.
-            TrafficLightApplicationState oldTLState = (TrafficLightApplicationState) applicationState;
-            switch (oldTLState) {
-                case RED:
-                    mRedButton.setChecked(false);
-                    break;
-                case ORANGE:
-                    mOrangeButton.setChecked(false);
-                    break;
-                case GREEN:
-                    mGreenButton.setChecked(false);
-                    break;
-            }
-        }
-
         // Test whether the newState is set: Cast and also switch/case statement cannot handle null objects.
         if (newState != null) {
             // Toggle the button that represents our new state.
             TrafficLightApplicationState newTLState = (TrafficLightApplicationState) newState;
-            switch (newTLState) {
-                case RED:
-                    mRedButton.setChecked(true);
-                    break;
-                case ORANGE:
-                    mOrangeButton.setChecked(true);
-                    break;
-                case GREEN:
-                    mGreenButton.setChecked(true);
-                    break;
-            }
+            mStatusView.setText(newTLState.toString());
         }
     }
 

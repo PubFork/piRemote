@@ -34,34 +34,42 @@
         android:paddingTop="@dimen/activity_vertical_margin"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <ToggleButton
+        <Button
             android:id="@+id/button_green"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="@dimen/abc_action_bar_default_height_material"
             android:background="#1a9c00"
-            android:checked="false"
-            android:textColor="#ffffff" />
+            android:textColor="#ffffff"
+            android:layout_centerHorizontal="true" />
 
-        <ToggleButton
+        <Button
             android:id="@+id/button_orange"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_above="@+id/button_green"
             android:background="#e06900"
-            android:checked="false"
-            android:textColor="#ffffff" />
+            android:textColor="#ffffff"
+            android:layout_centerHorizontal="true" />
 
-        <ToggleButton
+        <Button
             android:id="@+id/button_red"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_above="@+id/button_orange"
             android:background="#f90000"
-            android:checked="false"
             android:textColor="#ffffff"
-            android:layout_alignParentEnd="false" />
+            android:layout_alignParentEnd="false"
+            android:layout_centerHorizontal="true" />
+
+        <TextView
+            android:id="@+id/text_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/button_red"
+            android:layout_below="@+id/picked_path"
+            android:layout_marginTop="100dp" />
 
         <Button
             android:id="@+id/button_back"
