@@ -112,7 +112,7 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
             } else if (receivedPayload instanceof DoubleMessage) {
                 onReceiveDouble(((DoubleMessage) receivedPayload).d);
             } else if (receivedPayload instanceof StringMessage) {
-                onReceiveString(((StringMessage) receivedPayload).str);
+                 onReceiveString(((StringMessage) receivedPayload).str);
             }
         }
     }
