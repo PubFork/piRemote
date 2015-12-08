@@ -5,11 +5,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ListView;
 
 import java.util.List;
 
@@ -21,7 +16,6 @@ import MessageObject.PayloadObject.StringMessage;
 import SharedConstants.ApplicationCsts.ApplicationState;
 import SharedConstants.ApplicationCsts.TrafficLightApplicationState;
 import StateObject.State;
-import ch.ethz.inf.vs.piremote.R;
 import ch.ethz.inf.vs.piremote.application.TrafficLightActivity;
 
 /**
@@ -35,14 +29,11 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
 
     protected static ClientCore clientCore;
 
-    protected int defaultActivityView;
-    private boolean filePickerIsActive = false;
-
-    // UI references
-    private ListView mPathList;
-    private Button mBackButton;
+    @Nullable
+    private FilePicker fp;
 
     private final String DEBUG_TAG = "# AbstractApp #";
+    private final String ERROR_TAG = "#AbstractApp ERROR #";
     private final String VERBOSE_TAG = "# AbstractApp VERBOSE #";
 
     public final void processMessageFromThread(@NonNull final Message msg) {
@@ -69,7 +60,25 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
             @Override
             public void run() {
                 Log.v(VERBOSE_TAG, "Update file picker: " + paths);
-                updateFilePicker(paths);
+                if (fp == null) {
+                    fp = new FilePicker(); // TODO FILE PICKER: set base path
+                }
+                fp.updateFilePicker(paths);
+            }
+        });
+    }
+
+    public final void closeFilePickerFromThread() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Log.v(VERBOSE_TAG, "Close file picker.");
+                if (fp != null) {
+                    fp.closeFilePicker();
+                    fp = null; // Reset the state of the current file picker.
+                } else {
+                    Log.e(ERROR_TAG, "Request to close an inactive file picker.");
+                }
             }
         });
     }
@@ -85,7 +94,10 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
     protected void onStop() {
         ((CoreApplication) getApplication()).resetCurrentActivity(this);
         Log.v(VERBOSE_TAG, "ONSTOP: Removed current activity." + this);
-        filePickerIsActive = false;
+        if (fp != null) {
+            fp.closeFilePicker();
+            fp = null;
+        }
         super.onStop();
     }
 
@@ -142,54 +154,6 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
                 break;
         }
         startActivity(applicationStartIntent); // Calls onStop() of current activity and onCreate()/onStart() of the new activity.
-    }
-
-    private void updateFilePicker(@Nullable List<String> paths) {
-        if (paths != null) {
-
-            if (!filePickerIsActive) {
-                // TODO FILE PICKER: update view and register listeners
-                // update view to file picker overlay
-                setContentView(R.layout.overlay_file_picker);
-
-                filePickerIsActive = true;
-            }
-            // TODO FILE PICKER: update list anyway
-
-            // Get an array of all available files and directories.
-            final String[] pathNames = new String[paths.size()];
-            for (int i = 0; i < paths.size(); i++) {
-                // TODO FILE PICKER: only display the name of the file / directory and not the hole path ?
-                pathNames[i] = paths.get(i);
-            }
-
-            // Display the available files and directories in a ListView.
-            mPathList = (ListView) findViewById(R.id.list_paths);
-            mPathList.setAdapter(new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, pathNames));
-
-            mPathList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, @NonNull View view, int position, long id) {
-                    Log.d(DEBUG_TAG, "Clicked button: " + view.toString());
-                    clientCore.pickFile(pathNames[position]); // Let the server know which file or directory the user picked.
-                }
-            });
-
-            mBackButton = (Button) findViewById(R.id.button_back);
-            mBackButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    closeFilePicker();
-                }
-            });
-        } else {
-            closeFilePicker(); // close the file picker if we get a null pointer
-        }
-    }
-
-    private void closeFilePicker() {
-        setContentView(defaultActivityView); // TODO FILE PICKER: switch to original view
-        filePickerIsActive = false;
     }
 
     /**

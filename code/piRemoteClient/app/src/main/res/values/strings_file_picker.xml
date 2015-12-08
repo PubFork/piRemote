@@ -2,4 +2,7 @@
 <resources>
     <string name="button_pick">Pick</string>
     <string name="no_file_picked">(no file picked)</string>
+
+    <string name="title_dialog_file_picker">File Picker</string>
+    <string name="button_cancel">Cancel</string>
 </resources>

@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.net.InetAddress;
-import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -93,9 +92,12 @@ public class ClientCore implements Runnable {
             Log.d(DEBUG_TAG, "Process message with payload. " + receivedPayload);
 
             if (receivedPayload instanceof Offer) {
-                startFilePicker(((Offer) receivedPayload).paths);
+                Log.d(DEBUG_TAG, "Start file picker: " + ((Offer) receivedPayload).paths);
+                // Start FilePicker displaying a list of offered directories and files to choose from. Adjust UI accordingly.
+                coreApplication.updateFilePicker(((Offer) receivedPayload).paths);
             } else if (receivedPayload instanceof Close) {
-                closeFilePicker();
+                Log.d(DEBUG_TAG, "Request to close the file picker from the server.");
+                coreApplication.closeFilePicker(); // Close FilePicker. Adjust UI accordingly.
             }
         }
 
@@ -131,23 +133,6 @@ public class ClientCore implements Runnable {
     void pickFile(String path) {
         Log.d(DEBUG_TAG, "Picked path: " + path);
         sendMessage(makeMessage(new Pick(path))); // Send request to the server
-    }
-
-    /**
-     * Start FilePicker displaying a list of directories and files to choose from. Adjust UI accordingly.
-     * @param paths list of offered directories and files
-     */
-    private void startFilePicker(List<String> paths) {
-        Log.d(DEBUG_TAG, "Start file picker: " + paths);
-        coreApplication.updateFilePicker(paths);
-    }
-
-    /**
-     * Close FilePicker. Adjust UI accordingly.
-     */
-    private void closeFilePicker() {
-        Log.d(DEBUG_TAG, "Request to close the file picker from the server.");
-        coreApplication.updateFilePicker(null);
     }
 
     /**

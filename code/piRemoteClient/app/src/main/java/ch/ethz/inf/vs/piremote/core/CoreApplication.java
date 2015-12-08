@@ -1,6 +1,7 @@
 package ch.ethz.inf.vs.piremote.core;
 
 import android.app.Application;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -38,6 +39,9 @@ public class CoreApplication extends Application {
     }
 
     public synchronized void setCurrentActivity(AbstractClientActivity activity) {
+        if (activity instanceof FilePicker) {
+            return; // Don't register the file picker as the activity to be updated.
+        }
         Log.v(VERBOSE_TAG, "Set current activity from _ to _: " + currentActivity + activity);
         this.currentActivity = activity;
     }
@@ -49,14 +53,14 @@ public class CoreApplication extends Application {
         }
     }
 
-    synchronized void processMessage(Message msg) {
+    synchronized void processMessage(@NonNull Message msg) {
         Log.v(VERBOSE_TAG, "Process message on current activity: " + currentActivity);
         if (currentActivity != null) {
             currentActivity.processMessageFromThread(msg);
         }
     }
 
-    synchronized void startAbstractActivity(State state) {
+    synchronized void startAbstractActivity(@NonNull State state) {
         Log.v(VERBOSE_TAG, "Start abstract activity on current activity: " + currentActivity);
         if (currentActivity != null) {
             currentActivity.startActivityFromThread(state);
@@ -67,6 +71,13 @@ public class CoreApplication extends Application {
         Log.v(VERBOSE_TAG, "Update file picker on current activity: " + currentActivity);
         if (currentActivity != null) {
             currentActivity.updateFilePickerFromThread(paths);
+        }
+    }
+
+    synchronized void closeFilePicker() {
+        Log.v(VERBOSE_TAG, "Update file picker on current activity: " + currentActivity);
+        if (currentActivity != null) {
+            currentActivity.closeFilePickerFromThread();
         }
     }
 

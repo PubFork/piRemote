@@ -40,8 +40,7 @@ public class MainActivity extends AbstractClientActivity {
         super.onCreate(savedInstanceState);
         Log.d(DEBUG_TAG, "ONCREATE: Starting up.");
 
-        defaultActivityView = R.layout.activity_main;
-        setContentView(defaultActivityView);
+        setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 

@@ -32,8 +32,7 @@ public class AppChooserActivity extends AbstractClientActivity {
         super.onCreate(savedInstanceState);
         Log.d(DEBUG_TAG, "ONCREATE: Starting up.");
 
-        defaultActivityView = R.layout.activity_application_chooser;
-        setContentView(defaultActivityView);
+        setContentView(R.layout.activity_application_chooser);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
