@@ -111,7 +111,7 @@ public class ServerCore{
                     if(f.exists()){
                         if(f.isDirectory()){
                             // Directory picked
-                            sendMessage(makeOffer(msg.getUuid(), f));
+                            sendMessage(makeOffer(msg.getUuid(), f, false));
                         }else{
                             // File picked
                             if(application != null) application.onFilePicked(f,msg.getUuid());
@@ -177,14 +177,14 @@ public class ServerCore{
         }
     }
 
-    protected static Message makeOffer(@NotNull UUID recipient, @NotNull File dir){
+    protected static Message makeOffer(@NotNull UUID recipient, @NotNull File dir, boolean firstTime){
         // This takes a recipient and a File (must be a directory!) and returns a message with an Offer Payload
         //    containing a list of the contents in the specified directory.
         Offer offerPayload = new Offer();
         if(dir == null || !dir.isDirectory()) return null;
         File[] contents = dir.listFiles();
         if(contents != null) {
-            offerPayload.paths.add(filePickerBasePath+"/");
+            if(firstTime) offerPayload.paths.add(filePickerBasePath+"/");
             for (File path : contents) {
                 String pathtoSend=path.getName();
                 if(path.isDirectory()) pathtoSend+="/";
