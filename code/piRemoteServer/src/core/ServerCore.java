@@ -178,7 +178,9 @@ public class ServerCore{
         File[] contents = dir.listFiles();
         if(contents != null) {
             for (File path : contents) {
-                offerPayload.paths.add(path.getName());
+                String pathtoSend=path.getName();
+                if(path.isDirectory()) pathtoSend+="/";
+                offerPayload.paths.add(pathtoSend);
             }
             return makeMessage(recipient, offerPayload);
         }else{

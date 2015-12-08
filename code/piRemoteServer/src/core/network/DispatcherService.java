@@ -217,7 +217,7 @@ class DispatcherService implements Runnable {
     public void printSessionTable(){
         System.out.println("Printing sessionTable:");
         for(UUID uuid : sessionTable.keySet()){
-            System.out.println("   "+uuid.toString());
+            System.out.println("   "+uuid.toString()+ " @ "+sessionTable.get(uuid).getIp().toString());
         }
     }
 }
