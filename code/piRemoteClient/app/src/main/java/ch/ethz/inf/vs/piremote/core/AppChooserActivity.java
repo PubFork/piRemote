@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -99,5 +100,22 @@ public class AppChooserActivity extends AbstractClientActivity {
                 clientCore.changeServerState(serverStates[position]);
                 break;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        clientCore.destroyConnection();
+        Toast.makeText(this, "disconnected", Toast.LENGTH_SHORT).show();
+    }
+
+    // back key does not reset things
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            clientCore.destroyConnection();
+            Toast.makeText(this, "disconnected", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }
