@@ -47,21 +47,21 @@ public class ServerCoreTester {
 
         // Switch to red
         im = new IntMessage();
-        im.i = ApplicationCsts.GO_RED;
+        im.i = ApplicationCsts.TRAFFIC_GO_RED;
         mainQueue.put(new Message(
                 uuid,
                 CoreCsts.ServerState.TRAFFIC_LIGHT,
-                ApplicationCsts.TrafficLightApplicationState.GREEN,
+                ApplicationCsts.TrafficLightApplicationState.TRAFFIC_GREEN,
                 im
         ));
 
         // Switch to orange
         im = new IntMessage();
-        im.i = ApplicationCsts.GO_ORANGE;
+        im.i = ApplicationCsts.TRAFFIC_GO_ORANGE;
         mainQueue.put(new Message(
                 uuid,
                 CoreCsts.ServerState.TRAFFIC_LIGHT,
-                ApplicationCsts.TrafficLightApplicationState.RED,
+                ApplicationCsts.TrafficLightApplicationState.TRAFFIC_RED,
                 im
         ));
 
@@ -71,23 +71,23 @@ public class ServerCoreTester {
         mainQueue.put(new Message(
                 uuid,
                 CoreCsts.ServerState.TRAFFIC_LIGHT,
-                ApplicationCsts.TrafficLightApplicationState.ORANGE,
+                ApplicationCsts.TrafficLightApplicationState.TRAFFIC_ORANGE,
                 ssc
         ));
 
         // Consistency check: Switch to orange as above
         im = new IntMessage();
-        im.i = ApplicationCsts.GO_ORANGE;
+        im.i = ApplicationCsts.TRAFFIC_GO_ORANGE;
         mainQueue.put(new Message(
                 uuid,
                 CoreCsts.ServerState.TRAFFIC_LIGHT,
-                ApplicationCsts.TrafficLightApplicationState.RED,
+                ApplicationCsts.TrafficLightApplicationState.TRAFFIC_RED,
                 im
         ));
 
         // Consistency check: Switch to orange with correct ServerState (NullPointerException if forgot to handle this)
         im = new IntMessage();
-        im.i = ApplicationCsts.GO_ORANGE;
+        im.i = ApplicationCsts.TRAFFIC_GO_ORANGE;
         mainQueue.put(new Message(
                 uuid,
                 CoreCsts.ServerState.NONE,
@@ -121,27 +121,27 @@ public class ServerCoreTester {
         mainQueue.put(new Message(
                 uuid,
                 CoreCsts.ServerState.NONE,
-                ApplicationCsts.TrafficLightApplicationState.ORANGE,
+                ApplicationCsts.TrafficLightApplicationState.TRAFFIC_ORANGE,
                 ssc
         ));
 
         // Consistency check: Try to switch to red thinking it is orange (actually it is green)
         im = new IntMessage();
-        im.i = ApplicationCsts.GO_RED;
+        im.i = ApplicationCsts.TRAFFIC_GO_RED;
         mainQueue.put(new Message(
                 uuid,
                 CoreCsts.ServerState.TRAFFIC_LIGHT,
-                ApplicationCsts.TrafficLightApplicationState.ORANGE,
+                ApplicationCsts.TrafficLightApplicationState.TRAFFIC_ORANGE,
                 im
         ));
 
         // Initiate File Pick
         im = new IntMessage();
-        im.i = ApplicationCsts.TL_PICK_FILE;
+        im.i = ApplicationCsts.TRAFFIC_PICK_FILE;
         mainQueue.put(new Message(
                 uuid,
                 CoreCsts.ServerState.TRAFFIC_LIGHT,
-                ApplicationCsts.TrafficLightApplicationState.GREEN,
+                ApplicationCsts.TrafficLightApplicationState.TRAFFIC_GREEN,
                 im
         ));
 
@@ -151,7 +151,7 @@ public class ServerCoreTester {
         mainQueue.put(new Message(
                 uuid,
                 CoreCsts.ServerState.TRAFFIC_LIGHT,
-                ApplicationCsts.TrafficLightApplicationState.GREEN,
+                ApplicationCsts.TrafficLightApplicationState.TRAFFIC_GREEN,
                 pick
         ));
 
@@ -161,7 +161,7 @@ public class ServerCoreTester {
         mainQueue.put(new Message(
                 uuid,
                 CoreCsts.ServerState.TRAFFIC_LIGHT,
-                ApplicationCsts.TrafficLightApplicationState.GREEN,
+                ApplicationCsts.TrafficLightApplicationState.TRAFFIC_GREEN,
                 pick
         ));
 
@@ -171,7 +171,7 @@ public class ServerCoreTester {
         mainQueue.put(new Message(
                 uuid,
                 CoreCsts.ServerState.TRAFFIC_LIGHT,
-                ApplicationCsts.TrafficLightApplicationState.ORANGE,
+                ApplicationCsts.TrafficLightApplicationState.TRAFFIC_ORANGE,
                 ssc
         ));
 
@@ -181,7 +181,7 @@ public class ServerCoreTester {
         mainQueue.put(new Message(
                 uuid,
                 CoreCsts.ServerState.NONE,
-                ApplicationCsts.TrafficLightApplicationState.GREEN,
+                ApplicationCsts.TrafficLightApplicationState.TRAFFIC_GREEN,
                 pick
         ));
 

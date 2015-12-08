@@ -63,7 +63,7 @@ public class TrafficLightActivity extends AbstractClientActivity {
             @Override
             public void onClick(@NonNull View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
-                sendInt(ApplicationCsts.TL_PICK_FILE);
+                sendInt(ApplicationCsts.TRAFFIC_PICK_FILE);
             }
         });
 
@@ -77,7 +77,7 @@ public class TrafficLightActivity extends AbstractClientActivity {
             @Override
             public void onClick(@NonNull View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
-                sendInt(ApplicationCsts.GO_RED);
+                sendInt(ApplicationCsts.TRAFFIC_GO_RED);
             }
         });
 
@@ -86,7 +86,7 @@ public class TrafficLightActivity extends AbstractClientActivity {
             @Override
             public void onClick(@NonNull View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
-                sendInt(ApplicationCsts.GO_ORANGE);
+                sendInt(ApplicationCsts.TRAFFIC_GO_ORANGE);
             }
         });
 
@@ -95,7 +95,7 @@ public class TrafficLightActivity extends AbstractClientActivity {
             @Override
             public void onClick(@NonNull View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
-                sendInt(ApplicationCsts.GO_GREEN);
+                sendInt(ApplicationCsts.TRAFFIC_GO_GREEN);
             }
         });
 
