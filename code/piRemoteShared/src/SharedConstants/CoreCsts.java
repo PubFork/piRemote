@@ -13,7 +13,7 @@ public class CoreCsts implements Serializable {
         NONE("Application Chooser"),
         SERVER_DOWN("Connect Screen"), // Message put into Client MainQueue by Client Dispatcher when the server times out
         TRAFFIC_LIGHT("Traffic Light"),
-        MULTIMEDIA("Multimedia");
+        VIDEO("Play videos");
 
         private final String stateRepresentation;
 

@@ -43,8 +43,8 @@ public class ApplicationCsts implements Serializable {
     public static final int VIDEO_STOP = 2;
     public static final int VIDEO_JUMP_BACK = 3;
     public static final int VIDEO_JUMP_FORWARD = 4;
-    public static final int VIDEO_SLOWER = 5;
-    public static final int VIDEO_FASTER = 6;
+    public static final int VIDEO_SPEED_SLOWER = 5;
+    public static final int VIDEO_SPEED_FASTER = 6;
     public static final int VIDEO_VOLUME_INCREASE = 7;
     public static final int VIDEO_VOLUME_DECREASE = 8;
     public static final int VIDEO_PICK_FILE = 9;
