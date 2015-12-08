@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import java.net.InetAddress;
 
@@ -55,7 +54,6 @@ public class MainActivity extends AbstractClientActivity {
             @Override
             public void onClick(@NonNull View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
-                Toast.makeText(getBaseContext(), R.string.toast_connecting, Toast.LENGTH_SHORT).show(); // display toast
                 startCore();
             }
         });

@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import SharedConstants.ApplicationCsts;
 import SharedConstants.ApplicationCsts.ApplicationState;
@@ -53,7 +52,6 @@ public class TrafficLightActivity extends AbstractClientActivity {
             @Override
             public void onClick(@NonNull View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
-                Toast.makeText(getBaseContext(), R.string.toast_back, Toast.LENGTH_SHORT).show(); // display toast
                 // Request to stop current application
                 clientCore.changeServerState(CoreCsts.ServerState.NONE);
             }
@@ -64,7 +62,6 @@ public class TrafficLightActivity extends AbstractClientActivity {
             @Override
             public void onClick(@NonNull View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
-                Toast.makeText(getBaseContext(), R.string.toast_pick, Toast.LENGTH_SHORT).show(); // display toast
                 sendInt(ApplicationCsts.TL_PICK_FILE);
             }
         });
@@ -79,7 +76,6 @@ public class TrafficLightActivity extends AbstractClientActivity {
             @Override
             public void onClick(@NonNull View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
-                Toast.makeText(getBaseContext(), R.string.toast_TL, Toast.LENGTH_SHORT).show(); // display toast
                 sendInt(ApplicationCsts.GO_RED);
             }
         });
@@ -89,7 +85,6 @@ public class TrafficLightActivity extends AbstractClientActivity {
             @Override
             public void onClick(@NonNull View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
-                Toast.makeText(getBaseContext(), R.string.toast_TL, Toast.LENGTH_SHORT).show(); // display toast
                 sendInt(ApplicationCsts.GO_ORANGE);
             }
         });
@@ -99,7 +94,6 @@ public class TrafficLightActivity extends AbstractClientActivity {
             @Override
             public void onClick(@NonNull View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
-                Toast.makeText(getBaseContext(), R.string.toast_TL, Toast.LENGTH_SHORT).show(); // display toast
                 sendInt(ApplicationCsts.GO_GREEN);
             }
         });

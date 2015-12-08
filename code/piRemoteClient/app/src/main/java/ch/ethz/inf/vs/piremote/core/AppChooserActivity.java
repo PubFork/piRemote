@@ -9,7 +9,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import SharedConstants.ApplicationCsts;
 import SharedConstants.CoreCsts.ServerState;
@@ -50,7 +49,6 @@ public class AppChooserActivity extends AbstractClientActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, @NonNull View view, int position, long id) {
                 Log.d(DEBUG_TAG, "Clicked button: " + view.toString());
-                Toast.makeText(getBaseContext(), R.string.toast_chooser, Toast.LENGTH_SHORT).show(); // display toast
                 chooseApplication(position+2);
             }
         });
@@ -60,7 +58,6 @@ public class AppChooserActivity extends AbstractClientActivity {
             @Override
             public void onClick(@NonNull View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
-                Toast.makeText(getBaseContext(), R.string.toast_back, Toast.LENGTH_SHORT).show(); // display toast
                 clientCore.destroyConnection();
             }
         });
