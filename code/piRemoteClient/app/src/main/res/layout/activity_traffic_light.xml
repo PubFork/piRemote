@@ -22,17 +22,7 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <!-- Login progress -->
-    <ProgressBar
-        android:id="@+id/view_progress"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:visibility="gone" />
-
     <RelativeLayout
-        android:id="@+id/view_traffic_light"
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
@@ -44,67 +34,87 @@
         android:paddingTop="@dimen/activity_vertical_margin"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <Button
-            android:id="@+id/button_green"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="@dimen/abc_action_bar_default_height_material"
-            android:background="#1a9c00"
-            android:textColor="#ffffff"
-            android:layout_centerHorizontal="true" />
+            android:layout_centerHorizontal="true">
 
-        <Button
-            android:id="@+id/button_orange"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/button_green"
-            android:background="#e06900"
-            android:textColor="#ffffff"
-            android:layout_centerHorizontal="true" />
+            <ProgressBar
+                android:id="@+id/view_progress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="?android:attr/progressBarStyle"
+                android:visibility="gone" />
 
-        <Button
-            android:id="@+id/button_red"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/button_orange"
-            android:background="#f90000"
-            android:textColor="#ffffff"
-            android:layout_alignParentEnd="false"
-            android:layout_centerHorizontal="true" />
+        </LinearLayout>
 
-        <TextView
-            android:id="@+id/text_status"
+        <RelativeLayout
+            android:id="@+id/view_traffic_light"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/button_red"
-            android:layout_below="@+id/picked_path"
-            android:layout_marginTop="100dp" />
+            android:layout_height="match_parent">
 
-        <Button
-            android:id="@+id/button_back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:text="@string/button_back" />
+            <Button
+                android:id="@+id/button_green"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="@dimen/abc_action_bar_default_height_material"
+                android:background="#1a9c00"
+                android:textColor="#ffffff"
+                android:layout_centerHorizontal="true" />
 
-        <Button
-            android:id="@+id/button_pick"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:text="@string/button_pick"
-            android:layout_alignParentTop="true" />
+            <Button
+                android:id="@+id/button_orange"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/button_green"
+                android:background="#e06900"
+                android:textColor="#ffffff"
+                android:layout_centerHorizontal="true" />
 
-        <TextView
-            android:id="@+id/picked_path"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/button_pick"
-            android:text="@string/no_file_picked"
-            android:textAlignment="textEnd"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            <Button
+                android:id="@+id/button_red"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/button_orange"
+                android:background="#f90000"
+                android:textColor="#ffffff"
+                android:layout_alignParentEnd="false"
+                android:layout_centerHorizontal="true" />
+
+            <TextView
+                android:id="@+id/text_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/button_red"
+                android:layout_below="@+id/picked_path"
+                android:layout_marginTop="100dp" />
+
+            <Button
+                android:id="@+id/button_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:text="@string/button_back" />
+
+            <Button
+                android:id="@+id/button_pick"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:text="@string/button_pick"
+                android:layout_alignParentTop="true" />
+
+            <TextView
+                android:id="@+id/picked_path"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/button_pick"
+                android:text="@string/no_file_picked"
+                android:textAlignment="textEnd"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+        </RelativeLayout>
 
     </RelativeLayout>
 

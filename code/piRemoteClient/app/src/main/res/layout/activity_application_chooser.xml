@@ -22,17 +22,7 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <!-- Login progress -->
-    <ProgressBar
-        android:id="@+id/view_progress"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:visibility="gone" />
-
     <RelativeLayout
-        android:id="@+id/view_application_chooser"
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
@@ -44,20 +34,40 @@
         android:paddingTop="@dimen/activity_vertical_margin"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <ListView
-            android:id="@+id/list_applications"
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_above="@+id/button_disconnect" />
+            android:layout_centerHorizontal="true">
 
-        <Button
-            android:id="@+id/button_disconnect"
+            <ProgressBar
+                android:id="@+id/view_progress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="?android:attr/progressBarStyle"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/view_application_chooser"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="@dimen/abc_action_bar_default_height_material"
-            android:text="@string/button_disconnect" />
+            android:layout_height="match_parent">
+
+            <ListView
+                android:id="@+id/list_applications"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_above="@+id/button_disconnect" />
+
+            <Button
+                android:id="@+id/button_disconnect"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="@dimen/abc_action_bar_default_height_material"
+                android:text="@string/button_disconnect" />
+        </RelativeLayout>
 
     </RelativeLayout>
 
