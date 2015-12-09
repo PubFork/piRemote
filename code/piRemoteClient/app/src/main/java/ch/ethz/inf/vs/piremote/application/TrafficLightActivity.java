@@ -97,33 +97,20 @@ public class TrafficLightActivity extends AbstractClientActivity {
             }
         });
 
-        ApplicationState startState = (ApplicationState) getIntent().getSerializableExtra(AppConstants.EXTRA_STATE);
-        // Test whether the startState is set: Cast and also switch/case statement cannot handle null objects.
-        if (startState != null) {
-            // Toggle the button that represents our start state.
-            TrafficLightApplicationState newTLState = (TrafficLightApplicationState) startState;
-            mStatusView.setText(newTLState.toString());
+        TrafficLightApplicationState startTLState = (TrafficLightApplicationState) getIntent().getSerializableExtra(AppConstants.EXTRA_STATE);
+        // Test whether the startState is set: Cannot update text from null objects.
+        if (startTLState != null) {
+            updateTLState(startTLState); // Set text field that represents our initial state.
         } else {
             Log.w(WARN_TAG, "Unable to read arguments from Intent. Cannot set initial state.");
         }
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.d(DEBUG_TAG, "ONDESTROY: Exiting.");
-    }
-
-    @Override
     public void onApplicationStateChange(@Nullable ApplicationState newState) {
         Log.d(DEBUG_TAG, "Changing from state _ to _: " + applicationState + newState);
 
-        // Test whether the newState is set: Cast cannot handle null objects.
-        if (newState != null) {
-            // Set a text field that represents our new state.
-            TrafficLightApplicationState newTLState = (TrafficLightApplicationState) newState;
-            mStatusView.setText(newTLState.toString());
-        }
+        updateTLState((TrafficLightApplicationState) newState); // Set a text field that represents our new state.
     }
 
     @Override
@@ -139,6 +126,16 @@ public class TrafficLightActivity extends AbstractClientActivity {
     @Override
     public void onReceiveString(String str) {
         Log.d(DEBUG_TAG, "Received a string: " + str);
-        mPathView.setText(str); // We only receive string messages representing the picked file.
+        mPathView.setText(str); // We only receive string messages representing a picked file.
+    }
+
+    /**
+     * Update UI elements to new state of the TL application.
+     * @param newTLState ApplicationState we change to
+     */
+    private void updateTLState(TrafficLightApplicationState newTLState) {
+        if (newTLState != null) {
+            mStatusView.setText(newTLState.toString());
+        }
     }
 }

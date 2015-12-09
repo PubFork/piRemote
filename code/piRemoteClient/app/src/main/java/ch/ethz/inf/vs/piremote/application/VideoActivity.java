@@ -62,76 +62,20 @@ public class VideoActivity extends AbstractClientActivity {
 
         // TODO VIDEO APP: Set up UI references
 
-        ApplicationState startState = (ApplicationState) getIntent().getSerializableExtra(AppConstants.EXTRA_STATE);
-        // Test whether the startState is set: Cast and also switch/case statement cannot handle null objects.
-        if (startState != null) {
-            // Set initial start state.
-            VideoApplicationState newVideoState = (VideoApplicationState) startState;
-            switch (newVideoState) {
-                case VIDEO_PAUSED:
-                    // TODO VIDEO APP
-                    break;
-                case VIDEO_PLAYING:
-                    // TODO VIDEO APP
-                    break;
-                case VIDEO_STOPPED:
-                    // TODO VIDEO APP
-                    break;
-                default:
-                    break;
-            }
+        VideoApplicationState startVideoState = (VideoApplicationState) getIntent().getSerializableExtra(AppConstants.EXTRA_STATE);
+        // Test whether the startState is set: Nothing to do on null objects.
+        if (startVideoState != null) {
+            updateVideoState(null, startVideoState); // Set initial start state.
         } else {
             Log.w(WARN_TAG, "Unable to read arguments from Intent. Cannot set initial state.");
         }
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.d(DEBUG_TAG, "ONDESTROY: Exiting.");
-    }
-
-    @Override
     protected void onApplicationStateChange(ApplicationState newState) {
         Log.d(DEBUG_TAG, "Changing from state _ to _: " + applicationState + newState);
 
-        // Test whether the applicationState is set: Cast and also switch/case statement cannot handle null objects.
-        if (applicationState != null) {
-            // Reset from old state.
-            VideoApplicationState oldVideoState = (VideoApplicationState) applicationState;
-            switch (oldVideoState) {
-                case VIDEO_PAUSED:
-                    // TODO VIDEO APP
-                    break;
-                case VIDEO_PLAYING:
-                    // TODO VIDEO APP
-                    break;
-                case VIDEO_STOPPED:
-                    // TODO VIDEO APP
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        // Test whether the newState is set: Cast and also switch/case statement cannot handle null objects.
-        if (newState != null) {
-            // Change to new state.
-            VideoApplicationState newVideoState = (VideoApplicationState) newState;
-            switch (newVideoState) {
-                case VIDEO_PAUSED:
-                    // TODO VIDEO APP
-                    break;
-                case VIDEO_PLAYING:
-                    // TODO VIDEO APP
-                    break;
-                case VIDEO_STOPPED:
-                    // TODO VIDEO APP
-                    break;
-                default:
-                    break;
-            }
-        }
+        updateVideoState((VideoApplicationState) applicationState, (VideoApplicationState) newState);
     }
 
     @Override
@@ -147,5 +91,45 @@ public class VideoActivity extends AbstractClientActivity {
     @Override
     protected void onReceiveString(String str) {
         Log.d(DEBUG_TAG, "Received a string: " + str);
+    }
+
+    /**
+     * Update UI elements to new state of the video application.
+     * @param newVideoState ApplicationState we change to
+     */
+    private void updateVideoState(VideoApplicationState oldVideoState, VideoApplicationState newVideoState) {
+        // Test whether the oldState is set: Switch/case statement cannot handle null objects.
+        if (oldVideoState != null) {
+            switch (oldVideoState) { // Reset from old state.
+                case VIDEO_PAUSED:
+                    // TODO VIDEO APP
+                    break;
+                case VIDEO_PLAYING:
+                    // TODO VIDEO APP
+                    break;
+                case VIDEO_STOPPED:
+                    // TODO VIDEO APP
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        // Test whether the newState is set: Switch/case statement cannot handle null objects.
+        if (newVideoState != null) {
+            switch (newVideoState) { // Change to new state.
+                case VIDEO_PAUSED:
+                    // TODO VIDEO APP
+                    break;
+                case VIDEO_PLAYING:
+                    // TODO VIDEO APP
+                    break;
+                case VIDEO_STOPPED:
+                    // TODO VIDEO APP
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 }
