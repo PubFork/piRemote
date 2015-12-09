@@ -97,6 +97,17 @@ public class AppChooserActivity extends AbstractClientActivity {
         Log.d(DEBUG_TAG, "Received a string: " + str);
     }
 
+    @Override
+    protected void showProgress(boolean show) {
+        // Shows the progress UI and hides the application chooser screen.
+        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+        mAppChooserView.setVisibility(show ? View.GONE : View.VISIBLE);
+    }
+
+    /**
+     * Sends a request to change the application to the server.
+     * @param position the index of the application in the array of serverStates
+     */
     private void chooseApplication(int position) {
         switch (serverStates[position]) {
             case NONE:
@@ -108,16 +119,6 @@ public class AppChooserActivity extends AbstractClientActivity {
                 clientCore.changeServerState(serverStates[position]);
                 break;
         }
-    }
-
-    /**
-     * Shows the progress UI and hides the application chooser screen.
-     */
-    @Override
-    protected void showProgress(boolean show) {
-        // Show and hide the relevant UI components.
-        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-        mAppChooserView.setVisibility(show ? View.GONE : View.VISIBLE);
     }
 
     @Override

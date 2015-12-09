@@ -21,8 +21,6 @@ import ch.ethz.inf.vs.piremote.core.AppConstants;
 public class VideoActivity extends AbstractClientActivity {
 
     // UI references
-    private Button mBackButton;
-    private Button mPickButton;
     private TextView mPathView;
     private View mProgressView;
     private View mVideoView;
@@ -39,7 +37,7 @@ public class VideoActivity extends AbstractClientActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mBackButton = (Button) findViewById(R.id.button_back);
+        Button mBackButton = (Button) findViewById(R.id.button_back);
         mBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull View v) {
@@ -48,7 +46,7 @@ public class VideoActivity extends AbstractClientActivity {
             }
         });
 
-        mPickButton = (Button) findViewById(R.id.button_pick);
+        Button mPickButton = (Button) findViewById(R.id.button_pick);
         mPickButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull View v) {
@@ -96,12 +94,9 @@ public class VideoActivity extends AbstractClientActivity {
         Log.d(DEBUG_TAG, "Received a string: " + str);
     }
 
-    /**
-     * Shows the progress UI and hides the video screen.
-     */
     @Override
     protected void showProgress(boolean show) {
-        // Show and hide the relevant UI components.
+        // Shows the progress UI and hides the video screen.
         mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
         mVideoView.setVisibility(show ? View.GONE : View.VISIBLE);
     }

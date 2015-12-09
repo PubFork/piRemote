@@ -24,18 +24,12 @@ import ch.ethz.inf.vs.piremote.core.AppConstants;
 public class TrafficLightActivity extends AbstractClientActivity {
 
     // UI references
-    private Button mBackButton;
-    private Button mPickButton;
     private TextView mPathView;
     private TextView mStatusView;
-    private Button mRedButton;
-    private Button mOrangeButton;
-    private Button mGreenButton;
     private View mProgressView;
     private View mTrafficLightView;
 
     private final String DEBUG_TAG = "# TLApp #";
-    private final String ERROR_TAG = "# TLApp ERROR #";
     private final String WARN_TAG = "# TLApp WARN #";
 
     @Override
@@ -47,7 +41,7 @@ public class TrafficLightActivity extends AbstractClientActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mBackButton = (Button) findViewById(R.id.button_back);
+        Button mBackButton = (Button) findViewById(R.id.button_back);
         mBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull View v) {
@@ -56,7 +50,7 @@ public class TrafficLightActivity extends AbstractClientActivity {
             }
         });
 
-        mPickButton = (Button) findViewById(R.id.button_pick);
+        Button mPickButton = (Button) findViewById(R.id.button_pick);
         mPickButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull View v) {
@@ -70,7 +64,7 @@ public class TrafficLightActivity extends AbstractClientActivity {
 
         mStatusView = (TextView) findViewById(R.id.text_status);
 
-        mRedButton = (Button) findViewById(R.id.button_red);
+        Button mRedButton = (Button) findViewById(R.id.button_red);
         mRedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull View v) {
@@ -79,7 +73,7 @@ public class TrafficLightActivity extends AbstractClientActivity {
             }
         });
 
-        mOrangeButton = (Button) findViewById(R.id.button_orange);
+        Button mOrangeButton = (Button) findViewById(R.id.button_orange);
         mOrangeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull View v) {
@@ -88,7 +82,7 @@ public class TrafficLightActivity extends AbstractClientActivity {
             }
         });
 
-        mGreenButton = (Button) findViewById(R.id.button_green);
+        Button mGreenButton = (Button) findViewById(R.id.button_green);
         mGreenButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull View v) {
@@ -132,12 +126,9 @@ public class TrafficLightActivity extends AbstractClientActivity {
         mPathView.setText(str); // We only receive string messages representing a picked file.
     }
 
-    /**
-     * Shows the progress UI and hides the traffic light screen.
-     */
     @Override
     protected void showProgress(boolean show) {
-        // Show and hide the relevant UI components.
+        // Shows the progress UI and hides the traffic light screen.
         mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
         mTrafficLightView.setVisibility(show ? View.GONE : View.VISIBLE);
     }

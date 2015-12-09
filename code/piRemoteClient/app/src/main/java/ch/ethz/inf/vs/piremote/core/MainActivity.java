@@ -121,12 +121,9 @@ public class MainActivity extends AbstractClientActivity {
         Log.d(DEBUG_TAG, "Received a string: " + str);
     }
 
-    /**
-     * Shows the progress UI and hides the connect screen.
-     */
     @Override
     protected void showProgress(boolean show) {
-        // Show and hide the relevant UI components.
+        // Shows the progress UI and hides the connect screen.
         mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
         mConnectScreenView.setVisibility(show ? View.GONE : View.VISIBLE);
     }
@@ -141,7 +138,7 @@ public class MainActivity extends AbstractClientActivity {
             clientCore = new ClientCore(mServerAddress, mServerPort, (CoreApplication) getApplication());
             ((CoreApplication) getApplication()).setCoreThread(new Thread(clientCore));
             Log.v(VERBOSE_TAG, "Created core thread.");
-
+            // Start all background threads.
             ((CoreApplication) getApplication()).getCoreThread().start();
             Log.v(VERBOSE_TAG, "Started core thread.");
         }
