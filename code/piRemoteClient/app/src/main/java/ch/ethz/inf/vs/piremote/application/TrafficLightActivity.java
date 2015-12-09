@@ -118,9 +118,9 @@ public class TrafficLightActivity extends AbstractClientActivity {
     public void onApplicationStateChange(@Nullable ApplicationState newState) {
         Log.d(DEBUG_TAG, "Changing from state _ to _: " + applicationState + newState);
 
-        // Test whether the newState is set: Cast and also switch/case statement cannot handle null objects.
+        // Test whether the newState is set: Cast cannot handle null objects.
         if (newState != null) {
-            // Toggle the button that represents our new state.
+            // Set a text field that represents our new state.
             TrafficLightApplicationState newTLState = (TrafficLightApplicationState) newState;
             mStatusView.setText(newTLState.toString());
         }
@@ -139,7 +139,6 @@ public class TrafficLightActivity extends AbstractClientActivity {
     @Override
     public void onReceiveString(String str) {
         Log.d(DEBUG_TAG, "Received a string: " + str);
-        mPathView.setText(str); //
+        mPathView.setText(str); // We only receive string messages representing the picked file.
     }
-
 }
