@@ -44,8 +44,13 @@ public class KeepAliveService implements Runnable {
     @Override
     public void run() {
         while (clientNetwork.isRunning()) {
+            // Counter used to not send any unneeded keep-alive messsages to the server and
+            // disconnect if it is larger than the allowed number of drops.
+            int tryCounter = 0;
+            Log.v(VERBOSE_TAG, "Woke up.");
             if (clientNetwork.getUuid() != null) {
-                Log.v(VERBOSE_TAG, "Woke up.");
+                tryCounter = 0;
+                // Only send messages if the server has responded with a UUID.
                 long stillAlive = System.currentTimeMillis() - dispatcherService.getLastSeen();
                 if (stillAlive < NetworkConstants.TIMEOUT) {
                     // If the server<->client link hasn't timed out yet, place a keep alive message on
@@ -57,16 +62,32 @@ public class KeepAliveService implements Runnable {
                     // Else let us reset our application's state.
                     clientNetwork.disconnectFromServer();
                     Log.d(DEBUG_TAG, "Server didn't answer, resetting application state.");
+                    break;
                 }
+            } else {
+                // No UUID was given, increment counter and check if the network should stop.
+                Log.d(DEBUG_TAG, "No UUID given by server, staying idle.");
+                tryCounter++;
+                if (tryCounter > NetworkConstants.ALLOWED_DROPS) {
+                    // End service as server has been unreachable for longer than allowed timeout.
+                    clientNetwork.disconnectFromServer();
+                    Log.d(DEBUG_TAG, "Server didn't answer within allowed number of packet drops, stopping network.");
+                    break;
+                } else if (tryCounter > 1 && tryCounter <= NetworkConstants.ALLOWED_DROPS) {
+                    // Try resending a connection request within specification and not immediately
+                    // after the network has been initialised.
+                    clientNetwork.connectToServer();
+                    Log.d(DEBUG_TAG, "Retrying connection with server, try " + tryCounter + " out of " + NetworkConstants.ALLOWED_DROPS);
+                }
+            }
 
-                // Wait INTERVAL time before checking for a need to resend a keep-alive.
-                try {
-                    Log.v(VERBOSE_TAG, "Going to sleep.");
-                    Thread.sleep(NetworkConstants.INTERVAL);
-                } catch (InterruptedException e) {
-                    Log.e(ERROR_TAG, "Thread has been interrupted.");
-                    e.printStackTrace();
-                }
+            // Wait INTERVAL time before checking for a need to resend a keep-alive.
+            try {
+                Log.v(VERBOSE_TAG, "Going to sleep.");
+                Thread.sleep(NetworkConstants.INTERVAL);
+            } catch (InterruptedException e) {
+                Log.e(ERROR_TAG, "Thread has been interrupted.");
+                e.printStackTrace();
             }
         }
         Log.i(INFO_TAG, "Service ended.");
