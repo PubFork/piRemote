@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.net.InetAddress;
-import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -95,11 +94,7 @@ public class ClientCore implements Runnable {
             if (receivedPayload instanceof Offer) {
                 Log.d(DEBUG_TAG, "Start file picker: " + ((Offer) receivedPayload).paths);
                 // Start FilePicker displaying a list of offered directories and files to choose from. Adjust UI accordingly.
-                ArrayList<String> p = new ArrayList<>();
-                for (String s : ((Offer) receivedPayload).paths) {
-                    p.add(s);
-                }
-                coreApplication.updateFilePicker(p);
+                coreApplication.updateFilePicker(((Offer) receivedPayload).paths);
             } else if (receivedPayload instanceof Close) {
                 Log.d(DEBUG_TAG, "Request to close the file picker from the server.");
                 coreApplication.closeFilePicker(); // Close FilePicker. Adjust UI accordingly.
