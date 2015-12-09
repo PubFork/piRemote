@@ -17,4 +17,6 @@ public class AppConstants {
 
     // Constant strings for the keys of the extras (key-value-pairs) on Intents between Activities.
     public static final String EXTRA_STATE = "piremote.extra.STATE";
+    public static final String EXTRA_PATH_LIST = "piremote.extra.PATH_LIST";
+    public static final String EXTRA_PICKED_PATH = "piremote.extra.PICKED_PATH";
 }

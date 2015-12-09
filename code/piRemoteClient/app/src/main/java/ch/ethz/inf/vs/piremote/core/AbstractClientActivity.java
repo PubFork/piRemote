@@ -1,11 +1,13 @@
 package ch.ethz.inf.vs.piremote.core;
 
+import android.app.DialogFragment;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import MessageObject.Message;
@@ -17,13 +19,14 @@ import SharedConstants.ApplicationCsts.ApplicationState;
 import SharedConstants.ApplicationCsts.TrafficLightApplicationState;
 import StateObject.State;
 import ch.ethz.inf.vs.piremote.application.TrafficLightActivity;
+import ch.ethz.inf.vs.piremote.application.VideoActivity;
 
 /**
  * Created by andrina on 19/11/15.
  *
  * This abstract client application provides a way to access all applications on the client part in a uniform manner.
  */
-public abstract class AbstractClientActivity extends AppCompatActivity {
+public abstract class AbstractClientActivity extends AppCompatActivity implements FilePickerDialogFragment.FilePickerDialogListener {
 
     protected ApplicationState applicationState;
 
@@ -32,9 +35,49 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
     @Nullable
     private FilePicker fp;
 
+    private static final int PICK_FILE_REQUEST = 0;
+
     private final String DEBUG_TAG = "# AbstractApp #";
     private final String ERROR_TAG = "#AbstractApp ERROR #";
     private final String VERBOSE_TAG = "# AbstractApp VERBOSE #";
+
+    public void showFilePickerDialog(List<String> paths) {
+        // Create an instance of the dialog fragment and show it
+        DialogFragment dialog = new FilePickerDialogFragment();
+        dialog.show(getFragmentManager(), "FilePickerDialogFragment");
+    }
+
+    // The dialog fragment receives a reference to this Activity through the
+    // Fragment.onAttach() callback, which it uses to call the following methods
+    // defined by the FilePickerDialogFragment.FilePickerDialogListener interface
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
+        // User touched the dialog's positive button
+    }
+
+    @Override
+    public void onDialogNegativeClick(DialogFragment dialog) {
+        // User touched the dialog's negative button
+        Log.v(VERBOSE_TAG, "User touched the dialog's negative button.");
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+        if (requestCode == PICK_FILE_REQUEST) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                // The user picked a contact.
+                // The Intent's data Uri identifies which contact was selected.
+                String str = data.getStringExtra(AppConstants.EXTRA_PICKED_PATH);
+                if (str != null) {
+                    clientCore.pickFile(str);
+                }
+                // Do something with the contact here (bigger example below)
+            }
+        }
+
+    }
 
     public final void processMessageFromThread(@NonNull final Message msg) {
         runOnUiThread(new Runnable() {
@@ -55,15 +98,23 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
         });
     }
 
-    public final void updateFilePickerFromThread(final List<String> paths) {
+    public final void updateFilePickerFromThread(final ArrayList<String> paths) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 Log.v(VERBOSE_TAG, "Update file picker: " + paths);
+                showFilePickerDialog(paths);
+/*
+                Intent startFilePicker = new Intent(getBaseContext(), FilePicker.class);
+                startFilePicker.putStringArrayListExtra(AppConstants.EXTRA_PATH_LIST, paths);
+                startActivityForResult(startFilePicker, 0);
+*/
+/*
                 if (fp == null) {
                     fp = new FilePicker(); // TODO FILE PICKER: set base path
                 }
                 fp.updateFilePicker(paths);
+*/
             }
         });
     }
@@ -73,12 +124,14 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
             @Override
             public void run() {
                 Log.v(VERBOSE_TAG, "Close file picker.");
+/*
                 if (fp != null) {
                     fp.closeFilePicker();
                     fp = null; // Reset the state of the current file picker.
                 } else {
                     Log.e(ERROR_TAG, "Request to close an inactive file picker.");
                 }
+*/
             }
         });
     }
@@ -94,10 +147,6 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
     protected void onStop() {
         ((CoreApplication) getApplication()).resetCurrentActivity(this);
         Log.v(VERBOSE_TAG, "ONSTOP: Removed current activity." + this);
-        if (fp != null) {
-            fp.closeFilePicker();
-            fp = null;
-        }
         super.onStop();
     }
 
@@ -135,10 +184,12 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
             case TRAFFIC_LIGHT:
                 newApplication = TrafficLightActivity.class;
                 break;
+            case VIDEO:
+                newApplication = VideoActivity.class;
+                break;
             case NONE:
                 newApplication = AppChooserActivity.class; // No application is running: The client may choose an application to run.
                 break;
-            case SERVER_DOWN:
             default:
                 newApplication = MainActivity.class; // Server timed out: Disconnect and switch back to the MainActivity.
                 break;

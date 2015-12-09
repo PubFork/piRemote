@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import MessageObject.Message;
 import StateObject.State;
@@ -39,9 +39,11 @@ public class CoreApplication extends Application {
     }
 
     public synchronized void setCurrentActivity(AbstractClientActivity activity) {
+/*
         if (activity instanceof FilePicker) {
             return; // Don't register the file picker as the activity to be updated.
         }
+*/
         Log.v(VERBOSE_TAG, "Set current activity from _ to _: " + currentActivity + activity);
         this.currentActivity = activity;
     }
@@ -67,7 +69,7 @@ public class CoreApplication extends Application {
         }
     }
 
-    synchronized void updateFilePicker(List<String> paths) {
+    synchronized void updateFilePicker(ArrayList<String> paths) {
         Log.v(VERBOSE_TAG, "Update file picker on current activity: " + currentActivity);
         if (currentActivity != null) {
             currentActivity.updateFilePickerFromThread(paths);
