@@ -184,7 +184,8 @@ public class ServerCore{
         if(dir == null || !dir.isDirectory()) return null;
         File[] contents = dir.listFiles();
         if(contents != null) {
-            if(firstTime) offerPayload.paths.add(filePickerBasePath+"/");
+            if(firstTime) offerPayload.paths.add("/"+filePickerBasePath+"/");
+            else offerPayload.paths.add(dir.getAbsolutePath()+"/");
             for (File path : contents) {
                 String pathtoSend=path.getName();
                 if(path.isDirectory()) pathtoSend+="/";
