@@ -11,7 +11,6 @@ import android.widget.TextView;
 import SharedConstants.ApplicationCsts;
 import SharedConstants.ApplicationCsts.ApplicationState;
 import SharedConstants.ApplicationCsts.VideoApplicationState;
-import SharedConstants.CoreCsts;
 import ch.ethz.inf.vs.piremote.R;
 import ch.ethz.inf.vs.piremote.core.AbstractClientActivity;
 import ch.ethz.inf.vs.piremote.core.AppConstants;
@@ -43,8 +42,7 @@ public class VideoActivity extends AbstractClientActivity {
             @Override
             public void onClick(@NonNull View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
-                // Request to stop current application
-                clientCore.changeServerState(CoreCsts.ServerState.NONE);
+                closeApplication(); // Request to stop current application
             }
         });
 

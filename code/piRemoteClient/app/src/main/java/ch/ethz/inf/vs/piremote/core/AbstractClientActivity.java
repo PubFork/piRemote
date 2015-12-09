@@ -17,6 +17,7 @@ import MessageObject.PayloadObject.Payload;
 import MessageObject.PayloadObject.StringMessage;
 import SharedConstants.ApplicationCsts.ApplicationState;
 import SharedConstants.ApplicationCsts.TrafficLightApplicationState;
+import SharedConstants.CoreCsts.ServerState;
 import StateObject.State;
 import ch.ethz.inf.vs.piremote.R;
 import ch.ethz.inf.vs.piremote.application.TrafficLightActivity;
@@ -31,7 +32,7 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
 
     protected ApplicationState applicationState;
 
-    protected static ClientCore clientCore;
+    static ClientCore clientCore;
 
     private final String DEBUG_TAG = "# AbstractApp #";
     private final String ERROR_TAG = "#AbstractApp ERROR #";
@@ -71,7 +72,8 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
             public void run() {
                 Log.v(VERBOSE_TAG, "Process message: " + msg);
                 processMessage(msg);
-            }});
+            }
+        });
     }
 
     public final void startActivityFromThread(@NonNull final State state) {
@@ -191,6 +193,10 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
      */
     ApplicationState getApplicationState() {
         return applicationState;
+    }
+
+    protected void closeApplication() {
+        clientCore.changeServerState(ServerState.NONE);
     }
 
     /**
