@@ -72,12 +72,6 @@ public class AppChooserActivity extends AbstractClientActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.d(DEBUG_TAG, "ONDESTROY: Exiting.");
-    }
-
-    @Override
     public void onApplicationStateChange(ApplicationCsts.ApplicationState newState) {
         Log.d(DEBUG_TAG, "Changing from state _ to _: " + applicationState + newState);
     }

@@ -17,26 +17,12 @@ import StateObject.State;
  */
 public class CoreApplication extends Application {
 
-    private Thread coreThread;
-
     // All activities that are components of piRemote extend the AbstractClientActivity.
     @Nullable
     private AbstractClientActivity currentActivity = null; // Reference to the activity that is currently in the foreground.
 
     private final String DEBUG_TAG = "# AndroidApp #";
     private final String VERBOSE_TAG = "# AndroidApp VERBOSE #";
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        Log.d(DEBUG_TAG, "ONCREATE: Starting up.");
-    }
-
-    @Override
-    public void onTerminate() {
-        super.onTerminate();
-        Log.d(DEBUG_TAG, "ONTERMINATE: Exiting.");
-    }
 
     public synchronized void setCurrentActivity(AbstractClientActivity activity) {
         Log.v(VERBOSE_TAG, "Set current activity from _ to _: " + currentActivity + activity);
@@ -81,13 +67,5 @@ public class CoreApplication extends Application {
     @Nullable
     public AbstractClientActivity getCurrentActivity() {
         return currentActivity;
-    }
-
-    public Thread getCoreThread() {
-        return coreThread;
-    }
-
-    public void setCoreThread(Thread coreThread) {
-        this.coreThread = coreThread;
     }
 }

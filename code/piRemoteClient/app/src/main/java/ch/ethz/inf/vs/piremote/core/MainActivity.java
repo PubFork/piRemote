@@ -96,12 +96,6 @@ public class MainActivity extends AbstractClientActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.d(DEBUG_TAG, "ONDESTROY: Exiting.");
-    }
-
-    @Override
     public void onApplicationStateChange(ApplicationCsts.ApplicationState newState) {
         Log.d(DEBUG_TAG, "Changing from state _ to _: " + applicationState + newState);
     }
@@ -136,10 +130,7 @@ public class MainActivity extends AbstractClientActivity {
         if(validServerInformation()) {
             showProgress(true);
             clientCore = new ClientCore(mServerAddress, mServerPort, (CoreApplication) getApplication());
-            ((CoreApplication) getApplication()).setCoreThread(new Thread(clientCore));
-            Log.v(VERBOSE_TAG, "Created core thread.");
-            // Start all background threads.
-            ((CoreApplication) getApplication()).getCoreThread().start();
+            (new Thread(clientCore)).start(); // Start all background threads.
             Log.v(VERBOSE_TAG, "Started core thread.");
         }
     }
