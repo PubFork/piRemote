@@ -58,12 +58,12 @@ public class AppChooserActivity extends AbstractClientActivity {
             }
         });
 
-        Button mBackButton = (Button) findViewById(R.id.button_back);
-        mBackButton.setOnClickListener(new View.OnClickListener() {
+        Button mDisconnectButton = (Button) findViewById(R.id.button_disconnect);
+        mDisconnectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
-                clientCore.destroyConnection();
+                disconnectRunningApplication();
             }
         });
 
@@ -104,6 +104,7 @@ public class AppChooserActivity extends AbstractClientActivity {
                 Log.w(WARN_TAG, "Picked invalid application: " + serverStates[position]);
                 break;
             default:
+                showProgress(true);
                 clientCore.changeServerState(serverStates[position]);
                 break;
         }
@@ -121,16 +122,16 @@ public class AppChooserActivity extends AbstractClientActivity {
 
     @Override
     public void onBackPressed() {
-        clientCore.destroyConnection();
-        Toast.makeText(this, "disconnected", Toast.LENGTH_SHORT).show();
+        disconnectRunningApplication();
+        Toast.makeText(this, R.string.toast_disconnected, Toast.LENGTH_SHORT).show();
     }
 
     // back key does not reset things
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            clientCore.destroyConnection();
-            Toast.makeText(this, "disconnected", Toast.LENGTH_SHORT).show();
+            disconnectRunningApplication();
+            Toast.makeText(this, R.string.toast_disconnected, Toast.LENGTH_SHORT).show();
             return true;
         }
         return super.onKeyDown(keyCode, event);

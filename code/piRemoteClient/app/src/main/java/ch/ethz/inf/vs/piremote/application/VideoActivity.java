@@ -44,7 +44,7 @@ public class VideoActivity extends AbstractClientActivity {
             @Override
             public void onClick(@NonNull View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
-                closeApplication(); // Request to stop current application
+                closeRunningApplication(); // Request to stop current application
             }
         });
 

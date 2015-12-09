@@ -3,4 +3,5 @@
 
     <string name="button_back">Back</string>
     <string name="button_disconnect">Disconnect</string>
+    <string name="toast_disconnected">Disconnected</string>
 </resources>

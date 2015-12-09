@@ -17,6 +17,7 @@ import MessageObject.PayloadObject.Payload;
 import MessageObject.PayloadObject.StringMessage;
 import SharedConstants.ApplicationCsts.ApplicationState;
 import SharedConstants.ApplicationCsts.TrafficLightApplicationState;
+import SharedConstants.ApplicationCsts.VideoApplicationState;
 import SharedConstants.CoreCsts.ServerState;
 import StateObject.State;
 import ch.ethz.inf.vs.piremote.R;
@@ -37,34 +38,6 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
     private final String DEBUG_TAG = "# AbstractApp #";
     private final String ERROR_TAG = "#AbstractApp ERROR #";
     private final String VERBOSE_TAG = "# AbstractApp VERBOSE #";
-
-    /**
-     * Places a File Picker Dialog over the current activity when the user wants to select a file or directory. TODO: keep track of base path
-     * @param paths the list of files and directories
-     */
-    public void showFilePickerDialog(List<String> paths) {
-        // Get an array of all available files and directories.
-        final String[] pathNames = new String[paths.size()];
-        for (int i = 0; i < paths.size(); i++) {
-            pathNames[i] = paths.get(i);
-        }
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this); // Use the Builder class for convenient dialog construction
-        builder.setTitle(R.string.title_dialog_file_picker)
-                .setItems(pathNames, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int item) {
-                        clientCore.pickFile(pathNames[item]);
-                    }
-                })
-                .setNegativeButton(R.string.button_cancel, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // Send the negative button event back to the host activity, as the user cancelled the dialog.
-
-                    }
-                });
-        AlertDialog dialog = builder.create(); // Create an AlertDialog object
-        dialog.show();
-    }
 
     public final void processMessageFromThread(@NonNull final Message msg) {
         runOnUiThread(new Runnable() {
@@ -101,6 +74,7 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
             @Override
             public void run() {
                 Log.v(VERBOSE_TAG, "Close file picker.");
+                showProgress(false);
             }
         });
     }
@@ -125,6 +99,8 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
      */
     private void processMessage(@NonNull Message msg) {
 
+        showProgress(false); // We received an answer from the server, so we can display the activity again.
+
         // First, we need to check the ApplicationState.
         if(!consistentApplicationState(msg)) {
             Log.d(DEBUG_TAG, "Inconsistent application state.");
@@ -142,7 +118,7 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
             } else if (receivedPayload instanceof DoubleMessage) {
                 onReceiveDouble(((DoubleMessage) receivedPayload).d);
             } else if (receivedPayload instanceof StringMessage) {
-                 onReceiveString(((StringMessage) receivedPayload).str);
+                onReceiveString(((StringMessage) receivedPayload).str);
             }
         }
     }
@@ -170,10 +146,41 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
             case TRAFFIC_LIGHT:
                 applicationStartIntent.putExtra(AppConstants.EXTRA_STATE, (TrafficLightApplicationState) state.getApplicationState());
                 break;
+            case VIDEO:
+                applicationStartIntent.putExtra(AppConstants.EXTRA_STATE, (VideoApplicationState) state.getApplicationState());
+                break;
             default:
                 break;
         }
-        startActivity(applicationStartIntent); // Calls onStop() of current activity and onCreate()/onStart() of the new activity.
+        startActivity(applicationStartIntent); // Calls onCreate()/onStart() of the new activity and onStop() of current activity.
+    }
+
+    /**
+     * Places a File Picker Dialog over the current activity when the user wants to select a file or directory. TODO: keep track of base path -> ClientCore
+     * @param paths the list of files and directories
+     */
+    public void showFilePickerDialog(List<String> paths) {
+        // Get an array of all available files and directories.
+        final String[] pathNames = new String[paths.size()];
+        for (int i = 0; i < paths.size(); i++) {
+            pathNames[i] = paths.get(i);
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this); // Use the Builder class for convenient dialog construction
+        builder.setTitle(R.string.title_dialog_file_picker)
+                .setItems(pathNames, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int item) {
+                        clientCore.pickFile(pathNames[item]);
+                    }
+                })
+                .setNegativeButton(R.string.button_cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // Send the negative button event back to the host activity, as the user cancelled the dialog.
+
+                    }
+                });
+        AlertDialog dialog = builder.create(); // Create an AlertDialog object
+        dialog.show();
     }
 
     /**
@@ -195,16 +202,29 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
         return applicationState;
     }
 
-    protected void closeApplication() {
+    /**
+     * Called when a BACK button is pressed. Forwards a request to the server to close the currently running application.
+     */
+    protected void closeRunningApplication() {
+        showProgress(true);
         clientCore.changeServerState(ServerState.NONE);
+    }
+
+    /**
+     * Called when a DISCONNECT button is pressed. Forwards a disconnect to the server and terminates all background threads.
+     */
+    protected void disconnectRunningApplication() {
+        showProgress(true);
+        clientCore.destroyConnection();
     }
 
     /**
      * Creates and sends an int message to the server.
      * @param i Message Payload
      */
-    protected void sendInt(int i) {
+    protected final void sendInt(int i) {
         Log.d(DEBUG_TAG, "Send an int: " + i);
+        showProgress(true);
         clientCore.sendMessage(clientCore.makeMessage(new IntMessage(i)));
     }
 
@@ -212,8 +232,9 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
      * Creates and sends a double message to the server.
      * @param d Message Payload
      */
-    public void sendDouble(double d) {
+    protected final void sendDouble(double d) {
         Log.d(DEBUG_TAG, "Send a double: " + d);
+        showProgress(true);
         clientCore.sendMessage(clientCore.makeMessage(new DoubleMessage(d)));
     }
 
@@ -221,8 +242,9 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
      * Creates and sends a string message to the core.
      * @param str Message Payload
      */
-    public void sendString(String str) {
+    protected final void sendString(String str) {
         Log.d(DEBUG_TAG, "Send a string: " + str);
+        showProgress(true);
         clientCore.sendMessage(clientCore.makeMessage(new StringMessage(str)));
     }
 

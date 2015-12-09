@@ -68,7 +68,7 @@ public class MainActivity extends AbstractClientActivity {
 
         // We want to stop the background processes whenever we return to the MainActivity and started them before by connecting to the server.
         if (clientCore != null) {
-            clientCore.destroyConnection();
+            disconnectRunningApplication();
         }
     }
 
@@ -137,6 +137,7 @@ public class MainActivity extends AbstractClientActivity {
      */
     private void startCore() {
         if(validServerInformation()) {
+            showProgress(true);
             clientCore = new ClientCore(mServerAddress, mServerPort, (CoreApplication) getApplication());
             ((CoreApplication) getApplication()).setCoreThread(new Thread(clientCore));
             Log.v(VERBOSE_TAG, "Created core thread.");
