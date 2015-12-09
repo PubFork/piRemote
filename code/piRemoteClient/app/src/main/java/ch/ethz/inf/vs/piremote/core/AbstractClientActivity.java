@@ -251,4 +251,9 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
      * @param str Message Payload
      */
     protected abstract void onReceiveString(String str);
+
+    /**
+     * Called to show the progress UI and hide the view of the current UI components.
+     */
+    protected abstract void showProgress(boolean show);
 }

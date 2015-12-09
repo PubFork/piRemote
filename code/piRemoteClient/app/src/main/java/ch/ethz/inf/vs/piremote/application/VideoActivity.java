@@ -24,6 +24,8 @@ public class VideoActivity extends AbstractClientActivity {
     private Button mBackButton;
     private Button mPickButton;
     private TextView mPathView;
+    private View mProgressView;
+    private View mVideoView;
 
     private final String DEBUG_TAG = "# VideoApp #";
     private final String WARN_TAG = "# VideoApp WARN #";
@@ -60,6 +62,9 @@ public class VideoActivity extends AbstractClientActivity {
 
         // TODO VIDEO APP: Set up UI references
 
+        mProgressView = findViewById(R.id.view_progress);
+        mVideoView = findViewById(R.id.view_video);
+
         VideoApplicationState startVideoState = (VideoApplicationState) getIntent().getSerializableExtra(AppConstants.EXTRA_STATE);
         // Test whether the startState is set: Nothing to do on null objects.
         if (startVideoState != null) {
@@ -89,6 +94,16 @@ public class VideoActivity extends AbstractClientActivity {
     @Override
     protected void onReceiveString(String str) {
         Log.d(DEBUG_TAG, "Received a string: " + str);
+    }
+
+    /**
+     * Shows the progress UI and hides the video screen.
+     */
+    @Override
+    protected void showProgress(boolean show) {
+        // Show and hide the relevant UI components.
+        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+        mVideoView.setVisibility(show ? View.GONE : View.VISIBLE);
     }
 
     /**

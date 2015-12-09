@@ -31,6 +31,8 @@ public class TrafficLightActivity extends AbstractClientActivity {
     private Button mRedButton;
     private Button mOrangeButton;
     private Button mGreenButton;
+    private View mProgressView;
+    private View mTrafficLightView;
 
     private final String DEBUG_TAG = "# TLApp #";
     private final String ERROR_TAG = "# TLApp ERROR #";
@@ -95,6 +97,9 @@ public class TrafficLightActivity extends AbstractClientActivity {
             }
         });
 
+        mProgressView = findViewById(R.id.view_progress);
+        mTrafficLightView = findViewById(R.id.view_traffic_light);
+
         TrafficLightApplicationState startTLState = (TrafficLightApplicationState) getIntent().getSerializableExtra(AppConstants.EXTRA_STATE);
         // Test whether the startState is set: Cannot update text from null objects.
         if (startTLState != null) {
@@ -125,6 +130,16 @@ public class TrafficLightActivity extends AbstractClientActivity {
     public void onReceiveString(String str) {
         Log.d(DEBUG_TAG, "Received a string: " + str);
         mPathView.setText(str); // We only receive string messages representing a picked file.
+    }
+
+    /**
+     * Shows the progress UI and hides the traffic light screen.
+     */
+    @Override
+    protected void showProgress(boolean show) {
+        // Show and hide the relevant UI components.
+        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+        mTrafficLightView.setVisibility(show ? View.GONE : View.VISIBLE);
     }
 
     /**

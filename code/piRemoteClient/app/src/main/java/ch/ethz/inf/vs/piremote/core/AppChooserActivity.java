@@ -23,6 +23,10 @@ public class AppChooserActivity extends AbstractClientActivity {
 
     private final ServerState[] serverStates = ServerState.values();
 
+    // UI references
+    private View mProgressView;
+    private View mAppChooserView;
+
     private final String DEBUG_TAG = "# Chooser #";
     private final String ERROR_TAG = "# Chooser ERROR #";
     private final String WARN_TAG = "# Chooser WARN #";
@@ -62,6 +66,9 @@ public class AppChooserActivity extends AbstractClientActivity {
                 clientCore.destroyConnection();
             }
         });
+
+        mProgressView = findViewById(R.id.view_progress);
+        mAppChooserView = findViewById(R.id.view_application_chooser);
     }
 
     @Override
@@ -100,6 +107,16 @@ public class AppChooserActivity extends AbstractClientActivity {
                 clientCore.changeServerState(serverStates[position]);
                 break;
         }
+    }
+
+    /**
+     * Shows the progress UI and hides the application chooser screen.
+     */
+    @Override
+    protected void showProgress(boolean show) {
+        // Show and hide the relevant UI components.
+        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+        mAppChooserView.setVisibility(show ? View.GONE : View.VISIBLE);
     }
 
     @Override
