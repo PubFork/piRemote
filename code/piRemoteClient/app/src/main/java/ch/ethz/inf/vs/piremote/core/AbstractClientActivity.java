@@ -10,7 +10,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import java.util.List;
+import java.util.Arrays;
 
 import MessageObject.Message;
 import MessageObject.PayloadObject.DoubleMessage;
@@ -41,7 +41,7 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
     private final String DEBUG_TAG = "# AbstractApp #";
     private final String VERBOSE_TAG = "# AbstractApp VERBOSE #";
 
-    public final void processMessageFromThread(@NonNull final Message msg) {
+    final void processMessageFromThread(@NonNull final Message msg) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -51,7 +51,7 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
         });
     }
 
-    public final void startActivityFromThread(@NonNull final State state) {
+    final void startActivityFromThread(@NonNull final State state) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -61,22 +61,12 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
         });
     }
 
-    public final void updateFilePickerFromThread(final List<String> paths) {
+    final void updateFilePickerFromThread(final String[] paths) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Log.v(VERBOSE_TAG, "Update file picker: " + paths);
+                Log.v(VERBOSE_TAG, "Update file picker: " + Arrays.toString(paths));
                 showFilePickerDialog(paths);
-            }
-        });
-    }
-
-    public final void closeFilePickerFromThread() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Log.v(VERBOSE_TAG, "Close file picker.");
-                // TODO: reset file picker state?
             }
         });
     }
@@ -108,7 +98,7 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.menu_item_switch_app:
                 // Respond to the menu's button to change the application
-                closeRunningApplication(); // Request to stop current application
+                sendServerStateChange(ServerState.NONE);
                 return true;
             case R.id.menu_item_disconnect:
                 // Respond to the menu's button to disconnect from the server
@@ -123,8 +113,6 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
      * @param msg Message the ClientCore forwarded
      */
     private void processMessage(@NonNull Message msg) {
-
-        showProgress(false); // We received an answer from the server, so we can display the activity again.
 
         // First, we need to check the ApplicationState.
         if(!consistentApplicationState(msg)) {
@@ -146,6 +134,8 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
                 onReceiveString(((StringMessage) receivedPayload).str);
             }
         }
+
+        showProgress(false); // We received an answer from the server, so we can display the activity again.
     }
 
     /**
@@ -195,21 +185,15 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
     }
 
     /**
-     * Places a File Picker Dialog over the current activity when the user wants to select a file or directory. TODO: keep track of base path -> ClientCore
-     * @param paths the list of files and directories
+     * Places a File Picker Dialog over the current activity when the user wants to select a file or directory.
+     * @param listItems array of all available files and directories
      */
-    private void showFilePickerDialog(List<String> paths) {
-        // Get an array of all available files and directories.
-        final String[] pathNames = new String[paths.size()];
-        for (int i = 0; i < paths.size(); i++) {
-            pathNames[i] = paths.get(i);
-        }
-
+    private void showFilePickerDialog(final String[] listItems) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this); // Use the Builder class for convenient dialog construction
         builder.setTitle(R.string.title_dialog_file_picker)
-                .setItems(pathNames, new DialogInterface.OnClickListener() {
+                .setItems(listItems, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int item) {
-                        clientCore.pickFile(pathNames[item]);
+                        clientCore.requestFilePicker(listItems[item]);
                     }
                 })
                 .setNegativeButton(R.string.button_cancel, null);
@@ -218,16 +202,9 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
     }
 
     /**
-     * Called when a BACK button is pressed. Forwards a request to the server to close the currently running application.
-     */
-    protected final void closeRunningApplication() {
-        sendServerStateChange(ServerState.NONE);
-    }
-
-    /**
      * Called when a DISCONNECT button is pressed. Forwards a disconnect to the server and terminates all background threads.
      */
-    protected final void disconnectRunningApplication() {
+    final void disconnectRunningApplication() {
         showProgress(true);
         clientCore.destroyConnection();
     }
