@@ -21,15 +21,22 @@ public class CoreApplication extends Application {
     @Nullable
     private AbstractClientActivity currentActivity = null; // Reference to the activity that is currently in the foreground.
 
-    private final String DEBUG_TAG = "# AndroidApp #";
     private final String VERBOSE_TAG = "# AndroidApp VERBOSE #";
 
-    public synchronized void setCurrentActivity(AbstractClientActivity activity) {
+    /**
+     * Lets an AbstractClientActivity register itself to give the background thread access to the UI.
+     * @param activity to be registered
+     */
+    protected synchronized void setCurrentActivity(@Nullable AbstractClientActivity activity) {
         Log.v(VERBOSE_TAG, "Set current activity from _ to _: " + currentActivity + activity);
         this.currentActivity = activity;
     }
 
-    public synchronized void resetCurrentActivity(AbstractClientActivity activity) {
+    /**
+     * Lets an AbstractClientActivity unregister itself from receiving UI updates.
+     * @param activity to be unregistered, if currently registered
+     */
+    protected synchronized void resetCurrentActivity(AbstractClientActivity activity) {
         Log.v(VERBOSE_TAG, "Reset current activity from _: " + activity);
         if (currentActivity == activity) {
             this.currentActivity = null;
@@ -65,7 +72,7 @@ public class CoreApplication extends Application {
     }
 
     @Nullable
-    public AbstractClientActivity getCurrentActivity() {
+    AbstractClientActivity getCurrentActivity() {
         return currentActivity;
     }
 }

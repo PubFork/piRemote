@@ -13,7 +13,6 @@ import MessageObject.PayloadObject.Close;
 import MessageObject.PayloadObject.Offer;
 import MessageObject.PayloadObject.Payload;
 import MessageObject.PayloadObject.Pick;
-import MessageObject.PayloadObject.ServerStateChange;
 import SharedConstants.CoreCsts.ServerState;
 import StateObject.State;
 import ch.ethz.inf.vs.piremote.core.network.ClientNetwork;
@@ -23,16 +22,15 @@ import ch.ethz.inf.vs.piremote.core.network.ClientNetwork;
  */
 public class ClientCore implements Runnable {
 
-    // The ClientNetwork delivers incoming messages to the ClientCore by putting them into the queue.
-    private final LinkedBlockingQueue<Message> mainQueue = new LinkedBlockingQueue<>();
-
     private ServerState serverState;
 
     final CoreApplication coreApplication;
-    // Keep track of all activities in the background
-    @NonNull
-    private final ClientNetwork clientNetwork;
 
+    // The ClientNetwork delivers incoming messages to the ClientCore by putting them into the queue.
+    private final LinkedBlockingQueue<Message> mainQueue = new LinkedBlockingQueue<>();
+
+    @NonNull
+    private final ClientNetwork clientNetwork; // Keep track of all activities in the background
     private final AtomicBoolean connected = new AtomicBoolean(false);
 
     private final String DEBUG_TAG = "# Core #";
@@ -48,11 +46,7 @@ public class ClientCore implements Runnable {
 
     @Override
     public void run() {
-        // start the network and connect to the server
-        clientNetwork.startNetwork();
-        clientNetwork.connectToServer();
-
-        connected.set(true);
+        establishConnection();  // start the network and connect to the server
 
         // handle messages on the mainQueue that arrived over the network
         while (clientNetwork.isRunning()) {
@@ -65,8 +59,14 @@ public class ClientCore implements Runnable {
         } // terminates as soon as the clientNetwork disconnects from the server
     }
 
-    public void destroyConnection() {
-        if (isConnected()) {
+    private void establishConnection() {
+        clientNetwork.startNetwork();
+        clientNetwork.connectToServer();
+        connected.set(true);
+    }
+
+    void destroyConnection() {
+        if (connected.get()) {
             connected.set(false);
             clientNetwork.disconnectFromServer(); // Stop background threads
         }
@@ -82,8 +82,8 @@ public class ClientCore implements Runnable {
         if(!consistentServerState(msg)) {
             Log.d(DEBUG_TAG, "Inconsistent server state.");
             // Inconsistent state: Change the serverState before looking at the payload.
-            serverState = msg.getServerState(); // Update state
             coreApplication.startAbstractActivity(msg.getState());
+            serverState = msg.getServerState(); // Update state
         }
 
         // ServerState is consistent. Look at the payload for additional information.
@@ -114,16 +114,6 @@ public class ClientCore implements Runnable {
         return msg != null
                 && msg.getServerState() != null
                 && msg.getServerState().equals(serverState);
-    }
-
-    /**
-     * Is called by a client application to request a ServerState change.
-     * @param newState the ServerState the application wants to change to
-     */
-    public void changeServerState(ServerState newState) {
-        Log.d(DEBUG_TAG, "Request to change the sever state from _ to _: " + serverState + newState);
-        // Do not yet change the serverState locally, but rather wait for a state update (confirmation) from the server.
-        sendMessage(makeMessage(new ServerStateChange(newState))); // Send request to the server
     }
 
     /**
@@ -158,10 +148,6 @@ public class ClientCore implements Runnable {
         return new Message(clientNetwork.getUuid(), getState(), payload);
     }
 
-    private boolean isConnected() {
-        return connected.get();
-    }
-
     /**
      * Use this to read the current state (server and application state) of the client.
      * @return state object containing both the current server and application state
@@ -171,7 +157,7 @@ public class ClientCore implements Runnable {
         if (coreApplication.getCurrentActivity() == null) {
             return new State(serverState, null);
         }
-        return new State(serverState, coreApplication.getCurrentActivity().getApplicationState());
+        return new State(serverState, coreApplication.getCurrentActivity().applicationState);
     }
 
     @NonNull

@@ -109,8 +109,7 @@ public class AppChooserActivity extends AbstractClientActivity {
                 Log.w(WARN_TAG, "Picked invalid application: " + serverStates[position]);
                 break;
             default:
-                showProgress(true);
-                clientCore.changeServerState(serverStates[position]);
+                sendServerStateChange(serverStates[position]);
                 break;
         }
     }

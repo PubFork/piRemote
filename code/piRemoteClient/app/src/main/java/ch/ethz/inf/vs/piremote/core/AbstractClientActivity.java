@@ -14,6 +14,7 @@ import MessageObject.Message;
 import MessageObject.PayloadObject.DoubleMessage;
 import MessageObject.PayloadObject.IntMessage;
 import MessageObject.PayloadObject.Payload;
+import MessageObject.PayloadObject.ServerStateChange;
 import MessageObject.PayloadObject.StringMessage;
 import SharedConstants.ApplicationCsts.ApplicationState;
 import SharedConstants.ApplicationCsts.TrafficLightApplicationState;
@@ -31,12 +32,11 @@ import ch.ethz.inf.vs.piremote.application.VideoActivity;
  */
 public abstract class AbstractClientActivity extends AppCompatActivity {
 
-    protected ApplicationState applicationState;
+    protected ApplicationState applicationState; // we allow the ClientCore to read the current application state
 
     static ClientCore clientCore;
 
     private final String DEBUG_TAG = "# AbstractApp #";
-    private final String ERROR_TAG = "#AbstractApp ERROR #";
     private final String VERBOSE_TAG = "# AbstractApp VERBOSE #";
 
     public final void processMessageFromThread(@NonNull final Message msg) {
@@ -74,7 +74,7 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
             @Override
             public void run() {
                 Log.v(VERBOSE_TAG, "Close file picker.");
-                showProgress(false);
+                // TODO: reset file picker state?
             }
         });
     }
@@ -82,19 +82,19 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        ((CoreApplication) getApplication()).setCurrentActivity(this);
+        ((CoreApplication) getApplication()).setCurrentActivity(this); // Register the current activity to be notified by the core
         Log.v(VERBOSE_TAG, "ONSTART: Set current activity." + this);
     }
 
     @Override
     protected void onStop() {
-        ((CoreApplication) getApplication()).resetCurrentActivity(this);
+        ((CoreApplication) getApplication()).resetCurrentActivity(this); // Unregister the current activity to no longer be notified by the core
         Log.v(VERBOSE_TAG, "ONSTOP: Removed current activity." + this);
         super.onStop();
     }
 
     /**
-     * Inspect the received message and react to it. We can be sure that the application is still running on the server.
+     * Inspects the received message and reacts to it. We can be sure that the application is still running on the server.
      * @param msg Message the ClientCore forwarded
      */
     private void processMessage(@NonNull Message msg) {
@@ -123,6 +123,20 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Test whether the actual ApplicationState in the Message corresponds to the expected ApplicationState stored in the AbstractClientActivity.
+     * @param msg Message object for which we have to check the application state
+     */
+    private boolean consistentApplicationState(@Nullable Message msg) {
+        return msg != null
+                && msg.getApplicationState() != null
+                && msg.getApplicationState().equals(applicationState);
+    }
+
+    /**
+     * Switches from the current activity to the activity representing our new server state.
+     * @param state represents the activity to started
+     */
     private void startAbstractActivity(@NonNull State state) {
         Class newApplication; // Start activity depending on the server state denoting which application to start.
         switch (state.getServerState()) {
@@ -159,7 +173,7 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
      * Places a File Picker Dialog over the current activity when the user wants to select a file or directory. TODO: keep track of base path -> ClientCore
      * @param paths the list of files and directories
      */
-    public void showFilePickerDialog(List<String> paths) {
+    private void showFilePickerDialog(List<String> paths) {
         // Get an array of all available files and directories.
         final String[] pathNames = new String[paths.size()];
         for (int i = 0; i < paths.size(); i++) {
@@ -173,49 +187,35 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
                         clientCore.pickFile(pathNames[item]);
                     }
                 })
-                .setNegativeButton(R.string.button_cancel, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // Send the negative button event back to the host activity, as the user cancelled the dialog.
-
-                    }
-                });
+                .setNegativeButton(R.string.button_cancel, null);
         AlertDialog dialog = builder.create(); // Create an AlertDialog object
         dialog.show();
     }
 
     /**
-     * Test whether the actual ApplicationState in the Message corresponds to the expected ApplicationState stored in the AbstractClientActivity.
-     * @param msg Message object for which we have to check the application state
-     */
-    private boolean consistentApplicationState(@Nullable Message msg) {
-        return applicationState != null
-                && msg != null
-                && msg.getApplicationState() != null
-                && msg.getApplicationState().equals(applicationState);
-    }
-
-    /**
-     * Allows the ClientCore to read the current application state.
-     * @return ApplicationState of current application
-     */
-    ApplicationState getApplicationState() {
-        return applicationState;
-    }
-
-    /**
      * Called when a BACK button is pressed. Forwards a request to the server to close the currently running application.
      */
-    protected void closeRunningApplication() {
-        showProgress(true);
-        clientCore.changeServerState(ServerState.NONE);
+    protected final void closeRunningApplication() {
+        sendServerStateChange(ServerState.NONE);
     }
 
     /**
      * Called when a DISCONNECT button is pressed. Forwards a disconnect to the server and terminates all background threads.
      */
-    protected void disconnectRunningApplication() {
+    protected final void disconnectRunningApplication() {
         showProgress(true);
         clientCore.destroyConnection();
+    }
+
+    /**
+     * Is called by a client application to request a ServerState change.
+     * @param newState the ServerState the application wants to change to
+     */
+    protected final void sendServerStateChange(ServerState newState) {
+        Log.d(DEBUG_TAG, "Request to change the sever state to _: " + newState);
+        // Do not yet change the serverState locally, but rather wait for a state update (confirmation) from the server.
+        showProgress(true);
+        clientCore.sendMessage(clientCore.makeMessage(new ServerStateChange(newState))); // Send request to the server
     }
 
     /**
