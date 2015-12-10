@@ -5,8 +5,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import java.util.List;
-
 import MessageObject.Message;
 import StateObject.State;
 
@@ -57,17 +55,10 @@ public class CoreApplication extends Application {
         }
     }
 
-    synchronized void updateFilePicker(List<String> paths) {
+    synchronized void updateFilePicker(String[] paths) {
         Log.v(VERBOSE_TAG, "Update file picker on current activity: " + currentActivity);
         if (currentActivity != null) {
             currentActivity.updateFilePickerFromThread(paths);
-        }
-    }
-
-    synchronized void closeFilePicker() {
-        Log.v(VERBOSE_TAG, "Update file picker on current activity: " + currentActivity);
-        if (currentActivity != null) {
-            currentActivity.closeFilePickerFromThread();
         }
     }
 

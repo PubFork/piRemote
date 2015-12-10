@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.net.InetAddress;
+import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -25,6 +26,11 @@ public class ClientCore implements Runnable {
     private ServerState serverState;
 
     final CoreApplication coreApplication;
+
+    private String basePath; // client keeps track of the initial base path
+    private String currentPath;
+    private static final String RESET_PATH = "//";
+    private static final String LEVEL_UP = "..";
 
     // The ClientNetwork delivers incoming messages to the ClientCore by putting them into the queue.
     private final LinkedBlockingQueue<Message> mainQueue = new LinkedBlockingQueue<>();
@@ -94,10 +100,9 @@ public class ClientCore implements Runnable {
             if (receivedPayload instanceof Offer) {
                 Log.d(DEBUG_TAG, "Start file picker: " + ((Offer) receivedPayload).paths);
                 // Start FilePicker displaying a list of offered directories and files to choose from. Adjust UI accordingly.
-                coreApplication.updateFilePicker(((Offer) receivedPayload).paths);
+                trackFilePicker(((Offer) receivedPayload).paths);
             } else if (receivedPayload instanceof Close) {
                 Log.d(DEBUG_TAG, "Request to close the file picker from the server.");
-                coreApplication.closeFilePicker(); // Close FilePicker. Adjust UI accordingly.
             }
         }
 
@@ -117,12 +122,50 @@ public class ClientCore implements Runnable {
     }
 
     /**
-     * The client application picks a file, which we forward to the server.
-     * @param path represents the picked path, may be either a directory or a file
+     *
      */
-    void pickFile(String path) {
-        Log.d(DEBUG_TAG, "Picked path: " + path);
-        sendMessage(makeMessage(new Pick(path))); // Send request to the server
+    private void trackFilePicker(List<String> paths) {
+        String[] relativePaths; // elements to be displayed
+        if (paths.get(0).startsWith(RESET_PATH)) {
+            basePath = paths.get(0).substring(1); // reset base path
+            currentPath = basePath;
+        } else {
+            currentPath = paths.get(0); // store current path anyway
+        }
+
+        if (basePath.equals(currentPath)) {
+            relativePaths = new String[paths.size()-1]; // don't allow the user to navigate up
+            for (int i = 1; i < paths.size(); i++) {
+                relativePaths[i-1] = paths.get(i);
+            }
+        } else {
+            relativePaths = new String[paths.size()];
+            relativePaths[0] = LEVEL_UP;
+
+            for (int i = 1; i < paths.size(); i++) {
+                relativePaths[i] = paths.get(i);
+            }
+        }
+
+        coreApplication.updateFilePicker(relativePaths);
+    }
+
+    /**
+     * The client application picks a file, which we forward to the server.
+     * @param relativePath represents the picked path, may be either a directory or a file
+     */
+    void requestFilePicker(String relativePath) {
+        Log.d(DEBUG_TAG, "Picked path: " + relativePath);
+        String absolutePath;
+        switch (relativePath) {
+            case LEVEL_UP:
+                absolutePath = currentPath + relativePath; // TODO: replace by logic to remove last directory from currentPath
+                break;
+            default:
+                absolutePath = currentPath + relativePath;
+                break;
+        }
+        sendMessage(makeMessage(new Pick(absolutePath))); // Send request to the server
     }
 
     /**
