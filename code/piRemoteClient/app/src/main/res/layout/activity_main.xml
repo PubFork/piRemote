@@ -99,8 +99,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:text="@string/button_connect"
-                android:layout_marginBottom="@dimen/abc_action_bar_default_height_material" />
+                android:text="@string/button_connect" />
         </RelativeLayout>
 
     </RelativeLayout>

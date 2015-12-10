@@ -7,6 +7,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import java.util.List;
 
@@ -91,6 +93,29 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
         ((CoreApplication) getApplication()).resetCurrentActivity(this); // Unregister the current activity to no longer be notified by the core
         Log.v(VERBOSE_TAG, "ONSTOP: Removed current activity." + this);
         super.onStop();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_navigation, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Log.d(DEBUG_TAG, "Clicked button: " + item.toString());
+        switch (item.getItemId()) {
+            case R.id.menu_item_switch_app:
+                // Respond to the menu's button to change the application
+                closeRunningApplication(); // Request to stop current application
+                return true;
+            case R.id.menu_item_disconnect:
+                // Respond to the menu's button to disconnect from the server
+                disconnectRunningApplication();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     /**

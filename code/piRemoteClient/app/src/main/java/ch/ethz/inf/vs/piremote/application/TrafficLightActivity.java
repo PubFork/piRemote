@@ -41,15 +41,6 @@ public class TrafficLightActivity extends AbstractClientActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Button mBackButton = (Button) findViewById(R.id.button_back);
-        mBackButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull View v) {
-                Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
-                closeRunningApplication(); // Request to stop current application
-            }
-        });
-
         Button mPickButton = (Button) findViewById(R.id.button_pick);
         mPickButton.setOnClickListener(new View.OnClickListener() {
             @Override

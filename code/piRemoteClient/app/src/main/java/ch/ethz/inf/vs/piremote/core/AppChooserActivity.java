@@ -5,10 +5,10 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -58,17 +58,15 @@ public class AppChooserActivity extends AbstractClientActivity {
             }
         });
 
-        Button mDisconnectButton = (Button) findViewById(R.id.button_disconnect);
-        mDisconnectButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull View v) {
-                Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
-                disconnectRunningApplication();
-            }
-        });
-
         mProgressView = findViewById(R.id.view_progress);
         mAppChooserView = findViewById(R.id.view_application_chooser);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_simple_navigation, menu);
+        return true;
     }
 
     @Override

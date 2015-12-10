@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name">PiRemote</string>
 
-    <string name="button_back">Back</string>
-    <string name="button_disconnect">Disconnect</string>
+    <string name="menu_item_switch_app">Change Application</string>
+    <string name="menu_item_disconnect">Disconnect</string>
+
     <string name="toast_disconnected">Disconnected</string>
 </resources>

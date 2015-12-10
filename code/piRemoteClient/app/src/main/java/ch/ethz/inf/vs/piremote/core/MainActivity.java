@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -93,6 +94,12 @@ public class MainActivity extends AbstractClientActivity {
         editor.putString(AppConstants.SERVER_ADDRESS_STR, mAddressView.getText().toString());
         editor.putString(AppConstants.SERVER_PORT_STR, mPortView.getText().toString());
         editor.apply();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        return true;
     }
 
     @Override
