@@ -43,10 +43,10 @@ public class KeepAliveService implements Runnable {
 
     @Override
     public void run() {
+        int tryCounter = 0;
         while (clientNetwork.isRunning()) {
             // Counter used to not send any unneeded keep-alive messsages to the server and
             // disconnect if it is larger than the allowed number of drops.
-            int tryCounter = 0;
             Log.v(VERBOSE_TAG, "Woke up.");
             if (clientNetwork.getUuid() != null) {
                 tryCounter = 0;
@@ -66,8 +66,8 @@ public class KeepAliveService implements Runnable {
                 }
             } else {
                 // No UUID was given, increment counter and check if the network should stop.
-                Log.d(DEBUG_TAG, "No UUID given by server, staying idle.");
                 tryCounter++;
+                Log.d(DEBUG_TAG, "No UUID given by server, staying idle.");
                 if (tryCounter > NetworkConstants.ALLOWED_DROPS) {
                     // End service as server has been unreachable for longer than allowed timeout.
                     clientNetwork.disconnectFromServer();
