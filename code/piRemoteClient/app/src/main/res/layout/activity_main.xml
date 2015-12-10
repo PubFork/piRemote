@@ -71,6 +71,7 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/server_address"
                     android:inputType="number"
+                    android:digits="0123456789."
                     android:maxLines="1"
                     android:singleLine="true" />
 
