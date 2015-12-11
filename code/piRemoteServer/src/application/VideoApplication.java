@@ -9,6 +9,30 @@ import java.util.UUID;
 /**
  * Created by sandro on 08.12.15.
  * Application for playing videos and music (not optimized for music content though)
+ * In order to get this running, you MUST create a file /home/pi/.omxplayer with the following content:
+     DECREASE_SPEED:1
+     INCREASE_SPEED:2
+     REWIND:<
+     FAST_FORWARD:>
+     SHOW_INFO:z
+     PREVIOUS_AUDIO:j
+     NEXT_AUDIO:k
+     PREVIOUS_CHAPTER:i
+     NEXT_CHAPTER:o
+     PREVIOUS_SUBTITLE:n
+     NEXT_SUBTITLE:m
+     TOGGLE_SUBTITLE:s
+     DECREASE_SUBTITLE_DELAY:d
+     INCREASE_SUBTITLE_DELAY:f
+     EXIT:q
+     PAUSE:
+     DECREASE_VOLUME:-
+     INCREASE_VOLUME:+
+     SEEK_BACK_SMALL:x
+     SEEK_FORWARD_SMALL:c
+     SEEK_BACK_LARGE:y
+     SEEK_FORWARD_LARGE:v
+     STEP:p
  */
 public class VideoApplication extends AbstractApplication {
 
@@ -83,10 +107,10 @@ public class VideoApplication extends AbstractApplication {
                         changeApplicationState(ApplicationCsts.VideoApplicationState.VIDEO_STOPPED);
                         break;
                     case ApplicationCsts.VIDEO_JUMP_BACK:
-                        // TODO!
+                        sendToProcess("x");
                         break;
                     case ApplicationCsts.VIDEO_JUMP_FORWARD:
-                        // TODO!
+                        sendToProcess("c");
                         break;
                     case ApplicationCsts.VIDEO_SPEED_SLOWER:
                         sendToProcess("2");
@@ -122,7 +146,7 @@ public class VideoApplication extends AbstractApplication {
 
     void startProcess(String path){
         if(omxProcess != null) stopProcess();
-        processBuilder = new ProcessBuilder("/usr/bin/omxplayer", path);
+        processBuilder = new ProcessBuilder("/usr/bin/omxplayer", "--key-config /home/pi/.omxplayer",path);
         processBuilder.redirectErrorStream(true);
         try {
             omxProcess = processBuilder.start();
