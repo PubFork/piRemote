@@ -8,6 +8,8 @@ import java.net.InetAddress;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import MessageObject.Message;
 import MessageObject.PayloadObject.Close;
@@ -159,7 +161,11 @@ public class ClientCore implements Runnable {
         String absolutePath;
         switch (relativePath) {
             case LEVEL_UP:
-                absolutePath = currentPath + relativePath; // TODO: replace by logic to remove last directory from currentPath
+                // compute path for folder one level up, without using ..
+                Pattern pattern = Pattern.compile("(.*\\/)(.*\\/)"); // pattern for level up folder
+                Matcher matcher = pattern.matcher(currentPath);
+                matcher.find();
+                absolutePath = matcher.group(1); // set path for ..
                 break;
             default:
                 absolutePath = currentPath + relativePath;
