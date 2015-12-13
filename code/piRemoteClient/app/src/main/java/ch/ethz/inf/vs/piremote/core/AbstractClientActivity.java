@@ -98,7 +98,7 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.menu_item_switch_app:
                 // Respond to the menu's button to change the application
-                sendServerStateChange(ServerState.NONE);
+                closeRunningApplication();
                 return true;
             case R.id.menu_item_disconnect:
                 // Respond to the menu's button to disconnect from the server
@@ -133,9 +133,9 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
             } else if (receivedPayload instanceof StringMessage) {
                 onReceiveString(((StringMessage) receivedPayload).str);
             }
-        }
 
-        showProgress(false); // We received an answer from the server, so we can display the activity again.
+            showProgress(false); // We received an answer from the server, so we can display the activity again.
+        }
     }
 
     /**
@@ -199,6 +199,13 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
                 .setNegativeButton(R.string.button_cancel, null);
         AlertDialog dialog = builder.create(); // Create an AlertDialog object
         dialog.show();
+    }
+
+    /**
+     * Called when a BACK button is pressed. Forwards a request to the server to close the currently running application.
+     */
+    protected final void closeRunningApplication() {
+        sendServerStateChange(ServerState.NONE);
     }
 
     /**
