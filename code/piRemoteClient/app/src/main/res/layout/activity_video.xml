@@ -59,6 +59,13 @@
             android:textAlignment="textEnd"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
+        <Button
+            android:id="@+id/button_play"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/button_back"
+            android:text="Play"/>
+
     </RelativeLayout>
 
 </android.support.design.widget.CoordinatorLayout>

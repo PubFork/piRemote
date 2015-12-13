@@ -29,12 +29,14 @@ public class VideoActivity extends AbstractClientActivity {
     private final String DEBUG_TAG = "# VideoApp #";
     private final String WARN_TAG = "# VideoApp WARN #";
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(DEBUG_TAG, "ONCREATE: Starting up.");
 
-        setContentView(R.layout.activity_video);
+        //setContentView(R.layout.activity_video);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -59,7 +61,6 @@ public class VideoActivity extends AbstractClientActivity {
 
         // Keep track of the text field to change the output text when a file was picked.
         mPathView = (TextView) findViewById(R.id.picked_path);
-
         // TODO VIDEO APP: Set up UI references
 
         ApplicationState startState = (ApplicationState) getIntent().getSerializableExtra(AppConstants.EXTRA_STATE);
