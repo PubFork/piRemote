@@ -79,7 +79,7 @@ public class DispatcherService implements Runnable {
                     if (((Message) input).isBroadcast()) {
                         // This is a broadcast message sent to every client, the UUID field is
                         // per specification null.
-                        if (clientUUID == null && clientNetwork.getUuid() != null) {
+                        if (clientUUID != null && ((Message) input).getUuid() == null) {
                             Log.v(VERBOSE_TAG, "Received a broadcast message with set client UUID.");
                             Log.i(INFO_TAG, ((Message) input).toString());
                             clientNetwork.putOnMainQueue((Message) input);
