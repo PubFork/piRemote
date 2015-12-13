@@ -18,7 +18,6 @@ import MessageObject.Message;
 import NetworkConstants.NetworkConstants;
 
 public class SenderService implements Runnable {
-    //TODO(Mickey) Add proper Android logging
 
     @NonNull
     private final ClientNetwork clientNetwork;
@@ -63,7 +62,6 @@ public class SenderService implements Runnable {
     public void run() {
         while (clientNetwork.isRunning() || !sendingQueue.isEmpty()) {
             // Try sending a message while ClientNetwork is running.
-            //TODO(Mickey) Proper documentation on the program logic
             try {
                 // Take an Object from the Queue.
                 Object messageToSend = sendingQueue.take();
@@ -95,7 +93,6 @@ public class SenderService implements Runnable {
                 // Send the packet.
                 socket.send(packet);
                 Log.i(INFO_TAG, "Packet sent.");
-                Log.v(VERBOSE_TAG, "Packet sent.");
             } catch (InterruptedException e) {
                 Log.e(ERROR_TAG, "Received an interrupt while sending messages.", e.getCause());
             } catch (IOException e) {

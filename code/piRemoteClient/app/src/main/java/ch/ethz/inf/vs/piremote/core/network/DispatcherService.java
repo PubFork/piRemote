@@ -17,7 +17,6 @@ import MessageObject.Message;
 import NetworkConstants.NetworkConstants;
 
 public class DispatcherService implements Runnable {
-    //TODO(Mickey) Add proper Android logging
 
     @NonNull
     private final ClientNetwork clientNetwork;
@@ -70,7 +69,6 @@ public class DispatcherService implements Runnable {
 
                 // Marshalling of the DatagramPacket back to an object
                 ByteArrayInputStream byteStream = new ByteArrayInputStream(receiveBuffer);
-                //receiveBuffer = packet.getData();
                 ObjectInputStream objectStream = new ObjectInputStream(byteStream);
                 Object input = objectStream.readObject();
 
@@ -78,14 +76,30 @@ public class DispatcherService implements Runnable {
                 if (input instanceof Message) {
                     // Message object received
                     UUID clientUUID = clientNetwork.getUuid();
-                    if ((clientUUID == null) || !clientUUID.equals(((Message) input).getUuid())) {
-                        // The client doesn't have a UUID yet or it has an invalid UUID.
-                        clientNetwork.setUuid(((Message) input).getUuid());
-                        Log.v(VERBOSE_TAG, "New UUID received.");
+                    if (((Message) input).isBroadcast()) {
+                        // This is a broadcast message sent to every client, the UUID field is
+                        // per specification null.
+                        if (clientUUID == null && clientNetwork.getUuid() != null) {
+                            Log.v(VERBOSE_TAG, "Received a broadcast message with set client UUID.");
+                            Log.i(INFO_TAG, ((Message) input).toString());
+                            clientNetwork.putOnMainQueue((Message) input);
+                        } else {
+                            Log.v(VERBOSE_TAG, "Received a broadcast message, but no client UUID set. Ignoring.");
+                        }
+                    } else {
+                        // This is a message directly sent to the client, we will adopt the new UUID.
+                        if ((clientUUID == null ) || !clientUUID.equals(((Message) input).getUuid())) {
+                            // The client doesn't have a UUID yet or it has an invalid UUID.
+                            clientNetwork.setUuid(((Message) input).getUuid());
+                            Log.v(VERBOSE_TAG, "New UUID received.");
+
+                        } else {
+                            Log.v(VERBOSE_TAG, "Received a message, client has UUID set.");
+                        }
+                        Log.v(VERBOSE_TAG, "Received a message, routing it through.");
+                        Log.i(INFO_TAG, ((Message) input).toString());
+                        clientNetwork.putOnMainQueue((Message) input);
                     }
-                    Log.i(INFO_TAG, "Received a message, routing it through.");
-                    Log.v(VERBOSE_TAG, ((Message) input).toString());
-                    clientNetwork.putOnMainQueue((Message) input);
                 } else {
                     // Unknown object received, this shouldn't happen
                     Log.wtf(WTF_TAG, "Unknown input received from network.");
