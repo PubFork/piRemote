@@ -12,7 +12,6 @@ import android.widget.TextView;
 import SharedConstants.ApplicationCsts;
 import SharedConstants.ApplicationCsts.ApplicationState;
 import SharedConstants.ApplicationCsts.TrafficLightApplicationState;
-import SharedConstants.CoreCsts;
 import ch.ethz.inf.vs.piremote.R;
 import ch.ethz.inf.vs.piremote.core.AbstractClientActivity;
 import ch.ethz.inf.vs.piremote.core.AppConstants;
@@ -25,16 +24,12 @@ import ch.ethz.inf.vs.piremote.core.AppConstants;
 public class TrafficLightActivity extends AbstractClientActivity {
 
     // UI references
-    private Button mBackButton;
-    private Button mPickButton;
     private TextView mPathView;
     private TextView mStatusView;
-    private Button mRedButton;
-    private Button mOrangeButton;
-    private Button mGreenButton;
+    private View mProgressView;
+    private View mTrafficLightView;
 
     private final String DEBUG_TAG = "# TLApp #";
-    private final String ERROR_TAG = "# TLApp ERROR #";
     private final String WARN_TAG = "# TLApp WARN #";
 
     @Override
@@ -46,17 +41,7 @@ public class TrafficLightActivity extends AbstractClientActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mBackButton = (Button) findViewById(R.id.button_back);
-        mBackButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull View v) {
-                Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
-                // Request to stop current application
-                clientCore.changeServerState(CoreCsts.ServerState.NONE);
-            }
-        });
-
-        mPickButton = (Button) findViewById(R.id.button_pick);
+        Button mPickButton = (Button) findViewById(R.id.button_pick);
         mPickButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull View v) {
@@ -70,7 +55,7 @@ public class TrafficLightActivity extends AbstractClientActivity {
 
         mStatusView = (TextView) findViewById(R.id.text_status);
 
-        mRedButton = (Button) findViewById(R.id.button_red);
+        Button mRedButton = (Button) findViewById(R.id.button_red);
         mRedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull View v) {
@@ -79,7 +64,7 @@ public class TrafficLightActivity extends AbstractClientActivity {
             }
         });
 
-        mOrangeButton = (Button) findViewById(R.id.button_orange);
+        Button mOrangeButton = (Button) findViewById(R.id.button_orange);
         mOrangeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull View v) {
@@ -88,7 +73,7 @@ public class TrafficLightActivity extends AbstractClientActivity {
             }
         });
 
-        mGreenButton = (Button) findViewById(R.id.button_green);
+        Button mGreenButton = (Button) findViewById(R.id.button_green);
         mGreenButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull View v) {
@@ -97,33 +82,23 @@ public class TrafficLightActivity extends AbstractClientActivity {
             }
         });
 
-        ApplicationState startState = (ApplicationState) getIntent().getSerializableExtra(AppConstants.EXTRA_STATE);
-        // Test whether the startState is set: Cast and also switch/case statement cannot handle null objects.
-        if (startState != null) {
-            // Toggle the button that represents our start state.
-            TrafficLightApplicationState newTLState = (TrafficLightApplicationState) startState;
-            mStatusView.setText(newTLState.toString());
+        mProgressView = findViewById(R.id.view_progress);
+        mTrafficLightView = findViewById(R.id.view_traffic_light);
+
+        TrafficLightApplicationState startTLState = (TrafficLightApplicationState) getIntent().getSerializableExtra(AppConstants.EXTRA_STATE);
+        // Test whether the startState is set: Cannot update text from null objects.
+        if (startTLState != null) {
+            updateTLState(startTLState); // Set text field that represents our initial state.
         } else {
             Log.w(WARN_TAG, "Unable to read arguments from Intent. Cannot set initial state.");
         }
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.d(DEBUG_TAG, "ONDESTROY: Exiting.");
-    }
-
-    @Override
     public void onApplicationStateChange(@Nullable ApplicationState newState) {
         Log.d(DEBUG_TAG, "Changing from state _ to _: " + applicationState + newState);
 
-        // Test whether the newState is set: Cast cannot handle null objects.
-        if (newState != null) {
-            // Set a text field that represents our new state.
-            TrafficLightApplicationState newTLState = (TrafficLightApplicationState) newState;
-            mStatusView.setText(newTLState.toString());
-        }
+        updateTLState((TrafficLightApplicationState) newState); // Set a text field that represents our new state.
     }
 
     @Override
@@ -139,6 +114,23 @@ public class TrafficLightActivity extends AbstractClientActivity {
     @Override
     public void onReceiveString(String str) {
         Log.d(DEBUG_TAG, "Received a string: " + str);
-        mPathView.setText(str); // We only receive string messages representing the picked file.
+        mPathView.setText(str); // We only receive string messages representing a picked file.
+    }
+
+    @Override
+    protected void showProgress(boolean show) {
+        // Shows the progress UI and hides the traffic light screen.
+        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+        mTrafficLightView.setVisibility(show ? View.GONE : View.VISIBLE);
+    }
+
+    /**
+     * Update UI elements to new state of the TL application.
+     * @param newTLState ApplicationState we change to
+     */
+    private void updateTLState(TrafficLightApplicationState newTLState) {
+        if (newTLState != null) {
+            mStatusView.setText(newTLState.toString());
+        }
     }
 }

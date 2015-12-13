@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -24,12 +25,13 @@ public class MainActivity extends AbstractClientActivity {
     private InetAddress mServerAddress;
     private int mServerPort;
 
+    private SharedPreferences settings; // Store server address and port entered
+
     // UI references
     private EditText mAddressView;
     private EditText mPortView;
-
-    // Store server address and port entered
-    private SharedPreferences settings;
+    private View mProgressView;
+    private View mConnectScreenView;
 
     private final String DEBUG_TAG = "# Main #";
     private final String ERROR_TAG = "# Main ERROR #";
@@ -56,6 +58,9 @@ public class MainActivity extends AbstractClientActivity {
                 startCore();
             }
         });
+
+        mProgressView = findViewById(R.id.view_progress);
+        mConnectScreenView = findViewById(R.id.view_connect_screen);
     }
 
     @Override
@@ -64,7 +69,7 @@ public class MainActivity extends AbstractClientActivity {
 
         // We want to stop the background processes whenever we return to the MainActivity and started them before by connecting to the server.
         if (clientCore != null) {
-            clientCore.destroyConnection();
+            disconnectRunningApplication();
         }
     }
 
@@ -92,9 +97,9 @@ public class MainActivity extends AbstractClientActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.d(DEBUG_TAG, "ONDESTROY: Exiting.");
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        return true;
     }
 
     @Override
@@ -117,17 +122,22 @@ public class MainActivity extends AbstractClientActivity {
         Log.d(DEBUG_TAG, "Received a string: " + str);
     }
 
+    @Override
+    protected void showProgress(boolean show) {
+        // Shows the progress UI and hides the connect screen.
+        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+        mConnectScreenView.setVisibility(show ? View.GONE : View.VISIBLE);
+    }
+
     /**
      * Attempts to connect to the Raspberry Pi using the address and port specified.
      * If the entered server information is invalid, errors are displayed and no actual connection attempt is made.
      */
     private void startCore() {
         if(validServerInformation()) {
+            showProgress(true);
             clientCore = new ClientCore(mServerAddress, mServerPort, (CoreApplication) getApplication());
-            ((CoreApplication) getApplication()).setCoreThread(new Thread(clientCore));
-            Log.v(VERBOSE_TAG, "Created core thread.");
-
-            ((CoreApplication) getApplication()).getCoreThread().start();
+            (new Thread(clientCore)).start(); // Start all background threads.
             Log.v(VERBOSE_TAG, "Started core thread.");
         }
     }

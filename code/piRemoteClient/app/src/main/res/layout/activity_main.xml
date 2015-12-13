@@ -34,52 +34,74 @@
         android:paddingTop="@dimen/activity_vertical_margin"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <TextView
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/welcome" />
+            android:layout_centerHorizontal="true">
 
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/text_server_address"
+            <ProgressBar
+                android:id="@+id/view_progress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="?android:attr/progressBarStyle"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/view_connect_screen"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_marginTop="50dp">
+            android:layout_height="match_parent">
 
-            <EditText
-                android:id="@+id/server_address"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/welcome" />
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/text_server_address"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/server_address"
-                android:maxLines="1"
-                android:singleLine="true" />
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="50dp">
 
-        </android.support.design.widget.TextInputLayout>
+                <EditText
+                    android:id="@+id/server_address"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/server_address"
+                    android:inputType="number"
+                    android:digits="0123456789."
+                    android:maxLines="1"
+                    android:singleLine="true" />
 
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/text_server_port"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/text_server_address"
-            android:layout_marginTop="50dp">
+            </android.support.design.widget.TextInputLayout>
 
-            <EditText
-                android:id="@+id/server_port"
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/text_server_port"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/server_port"
-                android:maxLines="1"
-                android:singleLine="true" />
+                android:layout_below="@+id/text_server_address"
+                android:layout_marginTop="50dp">
 
-        </android.support.design.widget.TextInputLayout>
+                <EditText
+                    android:id="@+id/server_port"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/server_port"
+                    android:inputType="number"
+                    android:maxLines="1"
+                    android:singleLine="true" />
 
-        <Button
-            android:id="@+id/button_connect"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:text="@string/button_connect"
-            android:layout_marginBottom="@dimen/abc_action_bar_default_height_material" />
+            </android.support.design.widget.TextInputLayout>
+
+            <Button
+                android:id="@+id/button_connect"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:text="@string/button_connect" />
+        </RelativeLayout>
 
     </RelativeLayout>
 

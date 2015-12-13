@@ -11,7 +11,6 @@ import android.widget.TextView;
 import SharedConstants.ApplicationCsts;
 import SharedConstants.ApplicationCsts.ApplicationState;
 import SharedConstants.ApplicationCsts.VideoApplicationState;
-import SharedConstants.CoreCsts;
 import ch.ethz.inf.vs.piremote.R;
 import ch.ethz.inf.vs.piremote.core.AbstractClientActivity;
 import ch.ethz.inf.vs.piremote.core.AppConstants;
@@ -22,9 +21,9 @@ import ch.ethz.inf.vs.piremote.core.AppConstants;
 public class VideoActivity extends AbstractClientActivity {
 
     // UI references
-    private Button mBackButton;
-    private Button mPickButton;
     private TextView mPathView;
+    private View mProgressView;
+    private View mVideoView;
 
     private final String DEBUG_TAG = "# VideoApp #";
     private final String WARN_TAG = "# VideoApp WARN #";
@@ -40,17 +39,7 @@ public class VideoActivity extends AbstractClientActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mBackButton = (Button) findViewById(R.id.button_back);
-        mBackButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull View v) {
-                Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
-                // Request to stop current application
-                clientCore.changeServerState(CoreCsts.ServerState.NONE);
-            }
-        });
-
-        mPickButton = (Button) findViewById(R.id.button_pick);
+        Button mPickButton = (Button) findViewById(R.id.button_pick);
         mPickButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull View v) {
@@ -63,76 +52,23 @@ public class VideoActivity extends AbstractClientActivity {
         mPathView = (TextView) findViewById(R.id.picked_path);
         // TODO VIDEO APP: Set up UI references
 
-        ApplicationState startState = (ApplicationState) getIntent().getSerializableExtra(AppConstants.EXTRA_STATE);
-        // Test whether the startState is set: Cast and also switch/case statement cannot handle null objects.
-        if (startState != null) {
-            // Set initial start state.
-            VideoApplicationState newVideoState = (VideoApplicationState) startState;
-            switch (newVideoState) {
-                case VIDEO_PAUSED:
-                    // TODO VIDEO APP
-                    break;
-                case VIDEO_PLAYING:
-                    // TODO VIDEO APP
-                    break;
-                case VIDEO_STOPPED:
-                    // TODO VIDEO APP
-                    break;
-                default:
-                    break;
-            }
+        mProgressView = findViewById(R.id.view_progress);
+        mVideoView = findViewById(R.id.view_video);
+
+        VideoApplicationState startVideoState = (VideoApplicationState) getIntent().getSerializableExtra(AppConstants.EXTRA_STATE);
+        // Test whether the startState is set: Nothing to do on null objects.
+        if (startVideoState != null) {
+            updateVideoState(null, startVideoState); // Set initial start state.
         } else {
             Log.w(WARN_TAG, "Unable to read arguments from Intent. Cannot set initial state.");
         }
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.d(DEBUG_TAG, "ONDESTROY: Exiting.");
-    }
-
-    @Override
     protected void onApplicationStateChange(ApplicationState newState) {
         Log.d(DEBUG_TAG, "Changing from state _ to _: " + applicationState + newState);
 
-        // Test whether the applicationState is set: Cast and also switch/case statement cannot handle null objects.
-        if (applicationState != null) {
-            // Reset from old state.
-            VideoApplicationState oldVideoState = (VideoApplicationState) applicationState;
-            switch (oldVideoState) {
-                case VIDEO_PAUSED:
-                    // TODO VIDEO APP
-                    break;
-                case VIDEO_PLAYING:
-                    // TODO VIDEO APP
-                    break;
-                case VIDEO_STOPPED:
-                    // TODO VIDEO APP
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        // Test whether the newState is set: Cast and also switch/case statement cannot handle null objects.
-        if (newState != null) {
-            // Change to new state.
-            VideoApplicationState newVideoState = (VideoApplicationState) newState;
-            switch (newVideoState) {
-                case VIDEO_PAUSED:
-                    // TODO VIDEO APP
-                    break;
-                case VIDEO_PLAYING:
-                    // TODO VIDEO APP
-                    break;
-                case VIDEO_STOPPED:
-                    // TODO VIDEO APP
-                    break;
-                default:
-                    break;
-            }
-        }
+        updateVideoState((VideoApplicationState) applicationState, (VideoApplicationState) newState);
     }
 
     @Override
@@ -148,5 +84,52 @@ public class VideoActivity extends AbstractClientActivity {
     @Override
     protected void onReceiveString(String str) {
         Log.d(DEBUG_TAG, "Received a string: " + str);
+    }
+
+    @Override
+    protected void showProgress(boolean show) {
+        // Shows the progress UI and hides the video screen.
+        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+        mVideoView.setVisibility(show ? View.GONE : View.VISIBLE);
+    }
+
+    /**
+     * Update UI elements to new state of the video application.
+     * @param newVideoState ApplicationState we change to
+     */
+    private void updateVideoState(VideoApplicationState oldVideoState, VideoApplicationState newVideoState) {
+        // Test whether the oldState is set: Switch/case statement cannot handle null objects.
+        if (oldVideoState != null) {
+            switch (oldVideoState) { // Reset from old state.
+                case VIDEO_PAUSED:
+                    // TODO VIDEO APP
+                    break;
+                case VIDEO_PLAYING:
+                    // TODO VIDEO APP
+                    break;
+                case VIDEO_STOPPED:
+                    // TODO VIDEO APP
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        // Test whether the newState is set: Switch/case statement cannot handle null objects.
+        if (newVideoState != null) {
+            switch (newVideoState) { // Change to new state.
+                case VIDEO_PAUSED:
+                    // TODO VIDEO APP
+                    break;
+                case VIDEO_PLAYING:
+                    // TODO VIDEO APP
+                    break;
+                case VIDEO_STOPPED:
+                    // TODO VIDEO APP
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 }

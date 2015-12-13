@@ -5,8 +5,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import java.util.List;
-
 import MessageObject.Message;
 import StateObject.State;
 
@@ -17,36 +15,26 @@ import StateObject.State;
  */
 public class CoreApplication extends Application {
 
-    private Thread coreThread;
-
     // All activities that are components of piRemote extend the AbstractClientActivity.
     @Nullable
     private AbstractClientActivity currentActivity = null; // Reference to the activity that is currently in the foreground.
 
-    private final String DEBUG_TAG = "# AndroidApp #";
     private final String VERBOSE_TAG = "# AndroidApp VERBOSE #";
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        Log.d(DEBUG_TAG, "ONCREATE: Starting up.");
-    }
-
-    @Override
-    public void onTerminate() {
-        super.onTerminate();
-        Log.d(DEBUG_TAG, "ONTERMINATE: Exiting.");
-    }
-
-    public synchronized void setCurrentActivity(AbstractClientActivity activity) {
-        if (activity instanceof FilePicker) {
-            return; // Don't register the file picker as the activity to be updated.
-        }
+    /**
+     * Lets an AbstractClientActivity register itself to give the background thread access to the UI.
+     * @param activity to be registered
+     */
+    protected synchronized void setCurrentActivity(@Nullable AbstractClientActivity activity) {
         Log.v(VERBOSE_TAG, "Set current activity from _ to _: " + currentActivity + activity);
         this.currentActivity = activity;
     }
 
-    public synchronized void resetCurrentActivity(AbstractClientActivity activity) {
+    /**
+     * Lets an AbstractClientActivity unregister itself from receiving UI updates.
+     * @param activity to be unregistered, if currently registered
+     */
+    protected synchronized void resetCurrentActivity(AbstractClientActivity activity) {
         Log.v(VERBOSE_TAG, "Reset current activity from _: " + activity);
         if (currentActivity == activity) {
             this.currentActivity = null;
@@ -67,30 +55,15 @@ public class CoreApplication extends Application {
         }
     }
 
-    synchronized void updateFilePicker(List<String> paths) {
+    synchronized void updateFilePicker(String[] paths) {
         Log.v(VERBOSE_TAG, "Update file picker on current activity: " + currentActivity);
         if (currentActivity != null) {
             currentActivity.updateFilePickerFromThread(paths);
         }
     }
 
-    synchronized void closeFilePicker() {
-        Log.v(VERBOSE_TAG, "Update file picker on current activity: " + currentActivity);
-        if (currentActivity != null) {
-            currentActivity.closeFilePickerFromThread();
-        }
-    }
-
     @Nullable
-    public AbstractClientActivity getCurrentActivity() {
+    AbstractClientActivity getCurrentActivity() {
         return currentActivity;
-    }
-
-    public Thread getCoreThread() {
-        return coreThread;
-    }
-
-    public void setCoreThread(Thread coreThread) {
-        this.coreThread = coreThread;
     }
 }

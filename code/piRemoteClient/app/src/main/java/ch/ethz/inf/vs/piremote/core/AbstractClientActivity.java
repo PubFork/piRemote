@@ -1,22 +1,31 @@
 package ch.ethz.inf.vs.piremote.core;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 
-import java.util.List;
+import java.util.Arrays;
 
 import MessageObject.Message;
 import MessageObject.PayloadObject.DoubleMessage;
 import MessageObject.PayloadObject.IntMessage;
 import MessageObject.PayloadObject.Payload;
+import MessageObject.PayloadObject.ServerStateChange;
 import MessageObject.PayloadObject.StringMessage;
 import SharedConstants.ApplicationCsts.ApplicationState;
 import SharedConstants.ApplicationCsts.TrafficLightApplicationState;
+import SharedConstants.ApplicationCsts.VideoApplicationState;
+import SharedConstants.CoreCsts.ServerState;
 import StateObject.State;
+import ch.ethz.inf.vs.piremote.R;
 import ch.ethz.inf.vs.piremote.application.TrafficLightActivity;
+import ch.ethz.inf.vs.piremote.application.VideoActivity;
 
 /**
  * Created by andrina on 19/11/15.
@@ -25,27 +34,24 @@ import ch.ethz.inf.vs.piremote.application.TrafficLightActivity;
  */
 public abstract class AbstractClientActivity extends AppCompatActivity {
 
-    protected ApplicationState applicationState;
+    protected ApplicationState applicationState; // we allow the ClientCore to read the current application state
 
-    protected static ClientCore clientCore;
-
-    @Nullable
-    private FilePicker fp;
+    static ClientCore clientCore;
 
     private final String DEBUG_TAG = "# AbstractApp #";
-    private final String ERROR_TAG = "#AbstractApp ERROR #";
     private final String VERBOSE_TAG = "# AbstractApp VERBOSE #";
 
-    public final void processMessageFromThread(@NonNull final Message msg) {
+    final void processMessageFromThread(@NonNull final Message msg) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 Log.v(VERBOSE_TAG, "Process message: " + msg);
                 processMessage(msg);
-            }});
+            }
+        });
     }
 
-    public final void startActivityFromThread(@NonNull final State state) {
+    final void startActivityFromThread(@NonNull final State state) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -55,30 +61,12 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
         });
     }
 
-    public final void updateFilePickerFromThread(final List<String> paths) {
+    final void updateFilePickerFromThread(final String[] paths) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Log.v(VERBOSE_TAG, "Update file picker: " + paths);
-                if (fp == null) {
-                    fp = new FilePicker(); // TODO FILE PICKER: set base path
-                }
-                fp.updateFilePicker(paths);
-            }
-        });
-    }
-
-    public final void closeFilePickerFromThread() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Log.v(VERBOSE_TAG, "Close file picker.");
-                if (fp != null) {
-                    fp.closeFilePicker();
-                    fp = null; // Reset the state of the current file picker.
-                } else {
-                    Log.e(ERROR_TAG, "Request to close an inactive file picker.");
-                }
+                Log.v(VERBOSE_TAG, "Update file picker: " + Arrays.toString(paths));
+                showFilePickerDialog(paths);
             }
         });
     }
@@ -86,23 +74,42 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        ((CoreApplication) getApplication()).setCurrentActivity(this);
+        ((CoreApplication) getApplication()).setCurrentActivity(this); // Register the current activity to be notified by the core
         Log.v(VERBOSE_TAG, "ONSTART: Set current activity." + this);
     }
 
     @Override
     protected void onStop() {
-        ((CoreApplication) getApplication()).resetCurrentActivity(this);
+        ((CoreApplication) getApplication()).resetCurrentActivity(this); // Unregister the current activity to no longer be notified by the core
         Log.v(VERBOSE_TAG, "ONSTOP: Removed current activity." + this);
-        if (fp != null) {
-            fp.closeFilePicker();
-            fp = null;
-        }
         super.onStop();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_navigation, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Log.d(DEBUG_TAG, "Clicked button: " + item.toString());
+        switch (item.getItemId()) {
+            case R.id.menu_item_switch_app:
+                // Respond to the menu's button to change the application
+                sendServerStateChange(ServerState.NONE);
+                return true;
+            case R.id.menu_item_disconnect:
+                // Respond to the menu's button to disconnect from the server
+                disconnectRunningApplication();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     /**
-     * Inspect the received message and react to it. We can be sure that the application is still running on the server.
+     * Inspects the received message and reacts to it. We can be sure that the application is still running on the server.
      * @param msg Message the ClientCore forwarded
      */
     private void processMessage(@NonNull Message msg) {
@@ -124,21 +131,39 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
             } else if (receivedPayload instanceof DoubleMessage) {
                 onReceiveDouble(((DoubleMessage) receivedPayload).d);
             } else if (receivedPayload instanceof StringMessage) {
-                 onReceiveString(((StringMessage) receivedPayload).str);
+                onReceiveString(((StringMessage) receivedPayload).str);
             }
         }
+
+        showProgress(false); // We received an answer from the server, so we can display the activity again.
     }
 
+    /**
+     * Test whether the actual ApplicationState in the Message corresponds to the expected ApplicationState stored in the AbstractClientActivity.
+     * @param msg Message object for which we have to check the application state
+     */
+    private boolean consistentApplicationState(@Nullable Message msg) {
+        return msg != null
+                && msg.getApplicationState() != null
+                && msg.getApplicationState().equals(applicationState);
+    }
+
+    /**
+     * Switches from the current activity to the activity representing our new server state.
+     * @param state represents the activity to started
+     */
     private void startAbstractActivity(@NonNull State state) {
         Class newApplication; // Start activity depending on the server state denoting which application to start.
         switch (state.getServerState()) {
             case TRAFFIC_LIGHT:
                 newApplication = TrafficLightActivity.class;
                 break;
+            case VIDEO:
+                newApplication = VideoActivity.class;
+                break;
             case NONE:
                 newApplication = AppChooserActivity.class; // No application is running: The client may choose an application to run.
                 break;
-            case SERVER_DOWN:
             default:
                 newApplication = MainActivity.class; // Server timed out: Disconnect and switch back to the MainActivity.
                 break;
@@ -150,37 +175,58 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
             case TRAFFIC_LIGHT:
                 applicationStartIntent.putExtra(AppConstants.EXTRA_STATE, (TrafficLightApplicationState) state.getApplicationState());
                 break;
+            case VIDEO:
+                applicationStartIntent.putExtra(AppConstants.EXTRA_STATE, (VideoApplicationState) state.getApplicationState());
+                break;
             default:
                 break;
         }
-        startActivity(applicationStartIntent); // Calls onStop() of current activity and onCreate()/onStart() of the new activity.
+        startActivity(applicationStartIntent); // Calls onCreate()/onStart() of the new activity and onStop() of current activity.
     }
 
     /**
-     * Test whether the actual ApplicationState in the Message corresponds to the expected ApplicationState stored in the AbstractClientActivity.
-     * @param msg Message object for which we have to check the application state
+     * Places a File Picker Dialog over the current activity when the user wants to select a file or directory.
+     * @param listItems array of all available files and directories
      */
-    private boolean consistentApplicationState(@Nullable Message msg) {
-        return applicationState != null
-                && msg != null
-                && msg.getApplicationState() != null
-                && msg.getApplicationState().equals(applicationState);
+    private void showFilePickerDialog(final String[] listItems) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this); // Use the Builder class for convenient dialog construction
+        builder.setTitle(R.string.title_dialog_file_picker)
+                .setItems(listItems, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int item) {
+                        clientCore.requestFilePicker(listItems[item]);
+                    }
+                })
+                .setNegativeButton(R.string.button_cancel, null);
+        AlertDialog dialog = builder.create(); // Create an AlertDialog object
+        dialog.show();
     }
 
     /**
-     * Allows the ClientCore to read the current application state.
-     * @return ApplicationState of current application
+     * Called when a DISCONNECT button is pressed. Forwards a disconnect to the server and terminates all background threads.
      */
-    ApplicationState getApplicationState() {
-        return applicationState;
+    final void disconnectRunningApplication() {
+        showProgress(true);
+        clientCore.destroyConnection();
+    }
+
+    /**
+     * Is called by a client application to request a ServerState change.
+     * @param newState the ServerState the application wants to change to
+     */
+    protected final void sendServerStateChange(ServerState newState) {
+        Log.d(DEBUG_TAG, "Request to change the sever state to _: " + newState);
+        // Do not yet change the serverState locally, but rather wait for a state update (confirmation) from the server.
+        showProgress(true);
+        clientCore.sendMessage(clientCore.makeMessage(new ServerStateChange(newState))); // Send request to the server
     }
 
     /**
      * Creates and sends an int message to the server.
      * @param i Message Payload
      */
-    protected void sendInt(int i) {
+    protected final void sendInt(int i) {
         Log.d(DEBUG_TAG, "Send an int: " + i);
+        showProgress(true);
         clientCore.sendMessage(clientCore.makeMessage(new IntMessage(i)));
     }
 
@@ -188,8 +234,9 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
      * Creates and sends a double message to the server.
      * @param d Message Payload
      */
-    public void sendDouble(double d) {
+    protected final void sendDouble(double d) {
         Log.d(DEBUG_TAG, "Send a double: " + d);
+        showProgress(true);
         clientCore.sendMessage(clientCore.makeMessage(new DoubleMessage(d)));
     }
 
@@ -197,8 +244,9 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
      * Creates and sends a string message to the core.
      * @param str Message Payload
      */
-    public void sendString(String str) {
+    protected final void sendString(String str) {
         Log.d(DEBUG_TAG, "Send a string: " + str);
+        showProgress(true);
         clientCore.sendMessage(clientCore.makeMessage(new StringMessage(str)));
     }
 
@@ -227,4 +275,9 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
      * @param str Message Payload
      */
     protected abstract void onReceiveString(String str);
+
+    /**
+     * Called to show the progress UI and hide the view of the current UI components.
+     */
+    protected abstract void showProgress(boolean show);
 }

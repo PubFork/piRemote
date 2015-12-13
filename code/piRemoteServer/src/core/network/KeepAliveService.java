@@ -48,7 +48,10 @@ class KeepAliveService implements Runnable {
                 } else {
                     // Else notify the dispatcherService to delete the Session.
                     Session deadSession = new Session(entry.getKey(), entry.getValue());
-                    dispatcherService.putOnQueue(deadSession);
+                    if (!dispatcherService.getQueue().contains(deadSession)) {
+                        // Only add the session to be deleted if it isn't yet contained in the sessions to be deleted.
+                        dispatcherService.putOnQueue(deadSession);
+                    }
                 }
             }
 

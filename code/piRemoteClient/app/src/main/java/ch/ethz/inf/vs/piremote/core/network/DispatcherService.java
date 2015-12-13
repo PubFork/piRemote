@@ -91,13 +91,13 @@ public class DispatcherService implements Runnable {
                     Log.wtf(WTF_TAG, "Unknown input received from network.");
                 }
             } catch (ClassNotFoundException e) {
-                Log.e(ERROR_TAG, "Unknown class has been passed through." + e.getCause());
+                Log.e(ERROR_TAG, "Unknown class has been passed through.");
             } catch (OptionalDataException e) {
-                Log.e(ERROR_TAG, "OptionalDataException." + e.getCause());
+                Log.e(ERROR_TAG, "OptionalDataException.");
             } catch (InterruptedException e) {
-                Log.e(ERROR_TAG, "Received an interrupt while receiving messages." + e.getCause());
+                Log.e(ERROR_TAG, "Got an interrupt while receiving messages.");
             } catch (IOException e) {
-                Log.e(ERROR_TAG, "IO error occurred while receiving messages." + e.getCause());
+                Log.e(ERROR_TAG, "IO error occurred while receiving messages.");
             }
         }
         Log.i(INFO_TAG, "Service ended.");

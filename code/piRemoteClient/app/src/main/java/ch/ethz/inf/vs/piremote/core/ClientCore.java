@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.net.InetAddress;
+import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -13,7 +14,6 @@ import MessageObject.PayloadObject.Close;
 import MessageObject.PayloadObject.Offer;
 import MessageObject.PayloadObject.Payload;
 import MessageObject.PayloadObject.Pick;
-import MessageObject.PayloadObject.ServerStateChange;
 import SharedConstants.CoreCsts.ServerState;
 import StateObject.State;
 import ch.ethz.inf.vs.piremote.core.network.ClientNetwork;
@@ -23,16 +23,20 @@ import ch.ethz.inf.vs.piremote.core.network.ClientNetwork;
  */
 public class ClientCore implements Runnable {
 
-    // The ClientNetwork delivers incoming messages to the ClientCore by putting them into the queue.
-    private final LinkedBlockingQueue<Message> mainQueue = new LinkedBlockingQueue<>();
-
     private ServerState serverState;
 
     final CoreApplication coreApplication;
-    // Keep track of all activities in the background
-    @NonNull
-    private final ClientNetwork clientNetwork;
 
+    private String basePath; // client keeps track of the initial base path
+    private String currentPath;
+    private static final String RESET_PATH = "//";
+    private static final String LEVEL_UP = "..";
+
+    // The ClientNetwork delivers incoming messages to the ClientCore by putting them into the queue.
+    private final LinkedBlockingQueue<Message> mainQueue = new LinkedBlockingQueue<>();
+
+    @NonNull
+    private final ClientNetwork clientNetwork; // Keep track of all activities in the background
     private final AtomicBoolean connected = new AtomicBoolean(false);
 
     private final String DEBUG_TAG = "# Core #";
@@ -48,11 +52,7 @@ public class ClientCore implements Runnable {
 
     @Override
     public void run() {
-        // start the network and connect to the server
-        clientNetwork.startNetwork();
-        clientNetwork.connectToServer();
-
-        connected.set(true);
+        establishConnection();  // start the network and connect to the server
 
         // handle messages on the mainQueue that arrived over the network
         while (clientNetwork.isRunning()) {
@@ -65,8 +65,14 @@ public class ClientCore implements Runnable {
         } // terminates as soon as the clientNetwork disconnects from the server
     }
 
-    public void destroyConnection() {
-        if (isConnected()) {
+    private void establishConnection() {
+        clientNetwork.startNetwork();
+        clientNetwork.connectToServer();
+        connected.set(true);
+    }
+
+    void destroyConnection() {
+        if (connected.get()) {
             connected.set(false);
             clientNetwork.disconnectFromServer(); // Stop background threads
         }
@@ -82,8 +88,8 @@ public class ClientCore implements Runnable {
         if(!consistentServerState(msg)) {
             Log.d(DEBUG_TAG, "Inconsistent server state.");
             // Inconsistent state: Change the serverState before looking at the payload.
-            serverState = msg.getServerState(); // Update state
             coreApplication.startAbstractActivity(msg.getState());
+            serverState = msg.getServerState(); // Update state
         }
 
         // ServerState is consistent. Look at the payload for additional information.
@@ -94,10 +100,9 @@ public class ClientCore implements Runnable {
             if (receivedPayload instanceof Offer) {
                 Log.d(DEBUG_TAG, "Start file picker: " + ((Offer) receivedPayload).paths);
                 // Start FilePicker displaying a list of offered directories and files to choose from. Adjust UI accordingly.
-                coreApplication.updateFilePicker(((Offer) receivedPayload).paths);
+                trackFilePicker(((Offer) receivedPayload).paths);
             } else if (receivedPayload instanceof Close) {
                 Log.d(DEBUG_TAG, "Request to close the file picker from the server.");
-                coreApplication.closeFilePicker(); // Close FilePicker. Adjust UI accordingly.
             }
         }
 
@@ -117,22 +122,50 @@ public class ClientCore implements Runnable {
     }
 
     /**
-     * Is called by a client application to request a ServerState change.
-     * @param newState the ServerState the application wants to change to
+     *
      */
-    public void changeServerState(ServerState newState) {
-        Log.d(DEBUG_TAG, "Request to change the sever state from _ to _: " + serverState + newState);
-        // Do not yet change the serverState locally, but rather wait for a state update (confirmation) from the server.
-        sendMessage(makeMessage(new ServerStateChange(newState))); // Send request to the server
+    private void trackFilePicker(List<String> paths) {
+        String[] relativePaths; // elements to be displayed
+        if (paths.get(0).startsWith(RESET_PATH)) {
+            basePath = paths.get(0).substring(1); // reset base path
+            currentPath = basePath;
+        } else {
+            currentPath = paths.get(0); // store current path anyway
+        }
+
+        if (basePath.equals(currentPath)) {
+            relativePaths = new String[paths.size()-1]; // don't allow the user to navigate up
+            for (int i = 1; i < paths.size(); i++) {
+                relativePaths[i-1] = paths.get(i);
+            }
+        } else {
+            relativePaths = new String[paths.size()];
+            relativePaths[0] = LEVEL_UP;
+
+            for (int i = 1; i < paths.size(); i++) {
+                relativePaths[i] = paths.get(i);
+            }
+        }
+
+        coreApplication.updateFilePicker(relativePaths);
     }
 
     /**
      * The client application picks a file, which we forward to the server.
-     * @param path represents the picked path, may be either a directory or a file
+     * @param relativePath represents the picked path, may be either a directory or a file
      */
-    void pickFile(String path) {
-        Log.d(DEBUG_TAG, "Picked path: " + path);
-        sendMessage(makeMessage(new Pick(path))); // Send request to the server
+    void requestFilePicker(String relativePath) {
+        Log.d(DEBUG_TAG, "Picked path: " + relativePath);
+        String absolutePath;
+        switch (relativePath) {
+            case LEVEL_UP:
+                absolutePath = currentPath + relativePath; // TODO: replace by logic to remove last directory from currentPath
+                break;
+            default:
+                absolutePath = currentPath + relativePath;
+                break;
+        }
+        sendMessage(makeMessage(new Pick(absolutePath))); // Send request to the server
     }
 
     /**
@@ -158,10 +191,6 @@ public class ClientCore implements Runnable {
         return new Message(clientNetwork.getUuid(), getState(), payload);
     }
 
-    private boolean isConnected() {
-        return connected.get();
-    }
-
     /**
      * Use this to read the current state (server and application state) of the client.
      * @return state object containing both the current server and application state
@@ -171,7 +200,7 @@ public class ClientCore implements Runnable {
         if (coreApplication.getCurrentActivity() == null) {
             return new State(serverState, null);
         }
-        return new State(serverState, coreApplication.getCurrentActivity().getApplicationState());
+        return new State(serverState, coreApplication.getCurrentActivity().applicationState);
     }
 
     @NonNull

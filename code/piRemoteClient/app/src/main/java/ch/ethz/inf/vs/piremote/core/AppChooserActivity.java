@@ -5,10 +5,10 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -22,6 +22,10 @@ import ch.ethz.inf.vs.piremote.R;
 public class AppChooserActivity extends AbstractClientActivity {
 
     private final ServerState[] serverStates = ServerState.values();
+
+    // UI references
+    private View mProgressView;
+    private View mAppChooserView;
 
     private final String DEBUG_TAG = "# Chooser #";
     private final String ERROR_TAG = "# Chooser ERROR #";
@@ -54,20 +58,15 @@ public class AppChooserActivity extends AbstractClientActivity {
             }
         });
 
-        Button mBackButton = (Button) findViewById(R.id.button_back);
-        mBackButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull View v) {
-                Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
-                clientCore.destroyConnection();
-            }
-        });
+        mProgressView = findViewById(R.id.view_progress);
+        mAppChooserView = findViewById(R.id.view_application_chooser);
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.d(DEBUG_TAG, "ONDESTROY: Exiting.");
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_simple_navigation, menu);
+        return true;
     }
 
     @Override
@@ -90,6 +89,17 @@ public class AppChooserActivity extends AbstractClientActivity {
         Log.d(DEBUG_TAG, "Received a string: " + str);
     }
 
+    @Override
+    protected void showProgress(boolean show) {
+        // Shows the progress UI and hides the application chooser screen.
+        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+        mAppChooserView.setVisibility(show ? View.GONE : View.VISIBLE);
+    }
+
+    /**
+     * Sends a request to change the application to the server.
+     * @param position the index of the application in the array of serverStates
+     */
     private void chooseApplication(int position) {
         switch (serverStates[position]) {
             case NONE:
@@ -97,23 +107,23 @@ public class AppChooserActivity extends AbstractClientActivity {
                 Log.w(WARN_TAG, "Picked invalid application: " + serverStates[position]);
                 break;
             default:
-                clientCore.changeServerState(serverStates[position]);
+                sendServerStateChange(serverStates[position]);
                 break;
         }
     }
 
     @Override
     public void onBackPressed() {
-        clientCore.destroyConnection();
-        Toast.makeText(this, "disconnected", Toast.LENGTH_SHORT).show();
+        disconnectRunningApplication();
+        Toast.makeText(this, R.string.toast_disconnected, Toast.LENGTH_SHORT).show();
     }
 
     // back key does not reset things
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            clientCore.destroyConnection();
-            Toast.makeText(this, "disconnected", Toast.LENGTH_SHORT).show();
+            disconnectRunningApplication();
+            Toast.makeText(this, R.string.toast_disconnected, Toast.LENGTH_SHORT).show();
             return true;
         }
         return super.onKeyDown(keyCode, event);
