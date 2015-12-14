@@ -1,5 +1,7 @@
 package SharedConstants;
 
+import javafx.application.Application;
+
 import java.io.Serializable;
 
 /**
@@ -59,4 +61,29 @@ public class ApplicationCsts implements Serializable {
     public static final int IMAGE_PICK_FILE = 0;
     public static final int IMAGE_SHOW = 1;
     public static final int IMAGE_HIDE = 2;
+
+    /**
+     * Constants used for communication and state management of the music player.
+     */
+    public enum MusicApplicationState implements ApplicationState {
+        MUSIC_STOPPED,
+        MUSIC_PLAYING,
+        MUSIC_PAUSED
+    }
+
+    public static final int MUSIC_PLAY = 0;
+    public static final int MUSIC_PAUSE = 1;
+    public static final int MUSIC_STOP = 2;
+    public static final int MUSIC_STATUS = 3;
+    public static final int MUSIC_GET_CURRENT = 4;
+    public static final int MUSIC_NEXT = 10;
+    public static final int MUSIC_PREV = 11;
+    public static final int MUSIC_VOLUME_UP = 20;
+    public static final int MUSIC_VOLUME_DOWN = 21;
+    public static final int MUSIC_LOOP = 30;
+    public static final int MUSIC_SINGLE = 31;
+    public static final int MUSIC_SHUFFLE = 32;
+    public static final int MUSIC_CONSUME = 33;
+    public static final int MUSIC_PICK_FILE = 100;
+    public static final int MUSIC_GET_PLAYLIST = 101;
 }
