@@ -48,4 +48,25 @@ public class ApplicationCsts implements Serializable {
     public static final int VIDEO_VOLUME_INCREASE = 7;
     public static final int VIDEO_VOLUME_DECREASE = 8;
     public static final int VIDEO_PICK_FILE = 9;
+    
+    // RadioPiApplication
+    public enum RadioPiApplicationState implements ApplicationState{
+        RADIO_STOP("Stop"),
+        RADIO_INIT("Initialize"),
+        RADIO_PLAY("Play");
+
+        private final String stateRepresentation;
+        RadioPiApplicationState(String s) {
+            this.stateRepresentation = s;
+        }
+
+        @Override
+        public String toString() {
+            return stateRepresentation;
+        }
+    }
+    public static final int RADIO_GO_PLAY = 0;
+    public static final int RADIO_GO_INIT = 1;
+    public static final int RADIO_GO_STOP = 2;
+    public static final int RADIO_PICK_FILE = 3;
 }
