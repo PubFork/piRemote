@@ -150,7 +150,8 @@ public class VideoApplication extends AbstractApplication {
 
     void startProcess(String path){
         if(omxProcess != null) stopProcess();
-        processBuilder = new ProcessBuilder("/usr/bin/omxplayer", "--key-config /home/pi/.omxplayer",path);
+        //processBuilder = new ProcessBuilder("/usr/bin/omxplayer", "--key-config /home/pi/.omxplayer", path); // uncomment on raspberry
+        processBuilder = new ProcessBuilder("/usr/bin/mplayer", path); // uncomment on laptop
         processBuilder.redirectErrorStream(true);
         try {
             omxProcess = processBuilder.start();
