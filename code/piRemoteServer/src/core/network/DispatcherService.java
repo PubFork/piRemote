@@ -97,7 +97,7 @@ class DispatcherService implements Runnable {
                     if (sessionTable.containsKey(uuid)) {
                         // Update lastSeen and put the message on the Core's queue.
                         sessionTable.get(uuid).updateLastSeen(lastSeen.get());
-                        if (!(((Message) input).getPayload() instanceof KeepAlive)) {
+                        if (!(receivedMessage.getPayload() instanceof KeepAlive)) {
                             ServerCore.mainQueue.put(receivedMessage);
                         }
                     } else if (uuid != null){

@@ -35,6 +35,8 @@ public class ImageApplication extends AbstractApplication{
 
     @Override
     public void onApplicationStateChange(ApplicationCsts.ApplicationState newState) {
+        if(getApplicationState() == null) return; // First time do nothing
+
         System.out.println("ImageApplication: Shall change state from "+getApplicationState().toString()+" to "+newState.toString());
 
         if(getApplicationState().equals(newState)) {
