@@ -1,5 +1,7 @@
 package ch.ethz.inf.vs.piremote.application;
 
+import android.support.v4.app.Fragment;
+import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
@@ -14,28 +16,37 @@ import SharedConstants.ApplicationCsts.VideoApplicationState;
 import ch.ethz.inf.vs.piremote.R;
 import ch.ethz.inf.vs.piremote.core.AbstractClientActivity;
 import ch.ethz.inf.vs.piremote.core.AppConstants;
+import ch.ethz.inf.vs.piremote.application.StoppedFragment;
+import ch.ethz.inf.vs.piremote.application.PlayFragment;
+
 
 /**
  * Activity for the video application on the client.
  */
-public class VideoActivity extends AbstractClientActivity {
+public class VideoActivity extends AbstractClientActivity implements PlayFragment.onClickAction,PausedFragment.onClickAction{
 
     // UI references
     private TextView mPathView;
     private View mProgressView;
     private View mVideoView;
+    private StoppedFragment mStoppedFragment;
+    private PlayFragment mPlayFragment;
+    private PausedFragment mPausedFragment;
 
     private final String DEBUG_TAG = "# VideoApp #";
     private final String WARN_TAG = "# VideoApp WARN #";
 
-
+    @Override
+    public void onButtonPressed(int state){
+        sendInt(state);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(DEBUG_TAG, "ONCREATE: Starting up.");
 
-        //setContentView(R.layout.activity_video);
+        setContentView(R.layout.activity_video);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -50,10 +61,21 @@ public class VideoActivity extends AbstractClientActivity {
 
         // Keep track of the text field to change the output text when a file was picked.
         mPathView = (TextView) findViewById(R.id.picked_path);
+
+
         // TODO VIDEO APP: Set up UI references
 
         mProgressView = findViewById(R.id.view_progress);
         mVideoView = findViewById(R.id.view_video);
+
+        mStoppedFragment = new StoppedFragment();
+        mStoppedFragment.setArguments(getIntent().getExtras());
+
+        mPlayFragment = new PlayFragment();
+        mPlayFragment.setArguments(getIntent().getExtras());
+
+        mPausedFragment = new PausedFragment();
+        mPausedFragment.setArguments(getIntent().getExtras());
 
         VideoApplicationState startVideoState = (VideoApplicationState) getIntent().getSerializableExtra(AppConstants.EXTRA_STATE);
         // Test whether the startState is set: Nothing to do on null objects.
@@ -108,7 +130,7 @@ public class VideoActivity extends AbstractClientActivity {
                     // TODO VIDEO APP
                     break;
                 case VIDEO_STOPPED:
-                    // TODO VIDEO APP
+                    //TODO video app
                     break;
                 default:
                     break;
@@ -119,13 +141,13 @@ public class VideoActivity extends AbstractClientActivity {
         if (newVideoState != null) {
             switch (newVideoState) { // Change to new state.
                 case VIDEO_PAUSED:
-                    // TODO VIDEO APP
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, mPausedFragment).commit();
                     break;
                 case VIDEO_PLAYING:
-                    // TODO VIDEO APP
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, mPlayFragment).commit();
                     break;
                 case VIDEO_STOPPED:
-                    // TODO VIDEO APP
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, mStoppedFragment).commit();
                     break;
                 default:
                     break;

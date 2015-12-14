@@ -1,0 +1,73 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="ch.ethz.inf.vs.piremote.application.PlayFragment">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="16dp">
+
+        <Button
+            android:id="@+id/button_play_pause"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/play"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true" />
+
+        <Button
+            android:id="@+id/button_next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/jump_forward"
+            android:layout_alignBottom="@+id/button_play_pause"
+            android:layout_alignParentEnd="true" />
+
+        <Button
+            android:id="@+id/button_previous"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/jump_back"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true" />
+        <Button
+            android:id="@+id/button_faster"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/speed_faster"
+            android:layout_below="@+id/button_next"
+            android:layout_alignParentEnd="true" />
+        <Button
+            android:id="@+id/button_slower"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/speed_slower"
+            android:layout_above="@+id/button_softer"
+            android:layout_alignParentStart="true" />
+        <Button
+            android:id="@+id/button_stop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/stop"
+            android:layout_alignTop="@+id/button_slower"
+            android:layout_alignStart="@+id/button_play_pause" />
+
+        <Button
+            android:id="@+id/button_louder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/volume_increase"
+            android:layout_below="@+id/button_faster"
+            android:layout_alignParentEnd="true" />
+
+        <Button
+            android:id="@+id/button_softer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/volume_decrease"
+            android:layout_alignTop="@+id/button_louder"
+            android:layout_alignParentStart="true" />
+    </RelativeLayout>
+
+</FrameLayout>
