@@ -57,7 +57,7 @@ public class ServerCore{
                 e.printStackTrace();
             }
         }
-        System.out.println("PiRemote: Exiting normally.");
+        System.out.println("PiRemote: Exiting normally."); // Note: Server Shutdown is not implemented at this stage.
     }
 
     public static void run() throws InterruptedException {
