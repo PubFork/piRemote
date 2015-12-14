@@ -25,6 +25,7 @@ import SharedConstants.ApplicationCsts.VideoApplicationState;
 import SharedConstants.CoreCsts.ServerState;
 import StateObject.State;
 import ch.ethz.inf.vs.piremote.R;
+import ch.ethz.inf.vs.piremote.application.RadioPiActivity;
 import ch.ethz.inf.vs.piremote.application.TrafficLightActivity;
 import ch.ethz.inf.vs.piremote.application.VideoActivity;
 
@@ -176,6 +177,9 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
             case VIDEO:
                 newApplication = VideoActivity.class;
                 break;
+            case RADIO_PI:
+                newApplication = RadioPiActivity.class;
+                break;
             case NONE:
                 newApplication = AppChooserActivity.class; // No application is running: The client may choose an application to run.
                 break;
@@ -192,6 +196,9 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
                 break;
             case VIDEO:
                 applicationStartIntent.putExtra(AppConstants.EXTRA_STATE, (VideoApplicationState) state.getApplicationState());
+                break;
+            case RADIO_PI:
+                applicationStartIntent.putExtra(AppConstants.EXTRA_STATE, (TrafficLightApplicationState) state.getApplicationState());
                 break;
             default:
                 break;
