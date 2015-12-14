@@ -184,6 +184,7 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
                 break;
         }
         Intent applicationStartIntent = new Intent(this, newApplication);
+        applicationStartIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         // If the application is already running on the server, wee need to forward the dictated state.
         switch (state.getServerState()) {
