@@ -83,6 +83,7 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
     protected void onStop() {
         ((CoreApplication) getApplication()).resetCurrentActivity(this); // Unregister the current activity to no longer be notified by the core
         Log.v(VERBOSE_TAG, "ONSTOP: Removed current activity." + this);
+        showProgress(false); // We reset the spinning wheel before leaving the application.
         super.onStop();
     }
 
@@ -132,6 +133,8 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
             // Inconsistent state: Change the applicationState before looking at the payload.
             onApplicationStateChange(msg.getApplicationState()); // Update UI.
             applicationState = msg.getApplicationState();
+
+            showProgress(false); // The server dictated the new state, so we can display the activity again.
         }
 
         // ApplicationState is consistent. Look at the payload for additional information.
