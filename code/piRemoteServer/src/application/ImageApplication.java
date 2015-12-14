@@ -68,7 +68,7 @@ public class ImageApplication extends AbstractApplication{
     public void onReceiveInt(int i, UUID senderUUID) {
         if (i == ApplicationCsts.IMAGE_PICK_FILE) {
             System.out.println("ImageApplication: Initializing file pick.");
-            pickFile("/home/sandro",senderUUID);
+            pickFile(System.getProperty("user.home"),senderUUID);
         } else {
             if (getApplicationState().equals(ApplicationCsts.ImageApplicationState.IMAGE_DISPLAYED)
                 || getApplicationState().equals(ApplicationCsts.ImageApplicationState.IMAGE_NOT_DISPLAYED)) {
