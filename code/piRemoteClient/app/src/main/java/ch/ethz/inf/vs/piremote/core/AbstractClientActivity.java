@@ -22,6 +22,7 @@ import MessageObject.PayloadObject.StringMessage;
 import SharedConstants.ApplicationCsts.ApplicationState;
 import SharedConstants.ApplicationCsts.TrafficLightApplicationState;
 import SharedConstants.ApplicationCsts.VideoApplicationState;
+import SharedConstants.ApplicationCsts.RadioPiApplicationState;
 import SharedConstants.CoreCsts.ServerState;
 import StateObject.State;
 import ch.ethz.inf.vs.piremote.R;
@@ -198,7 +199,7 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
                 applicationStartIntent.putExtra(AppConstants.EXTRA_STATE, (VideoApplicationState) state.getApplicationState());
                 break;
             case RADIO_PI:
-                applicationStartIntent.putExtra(AppConstants.EXTRA_STATE, (TrafficLightApplicationState) state.getApplicationState());
+                applicationStartIntent.putExtra(AppConstants.EXTRA_STATE, (RadioPiApplicationState) state.getApplicationState());
                 break;
             default:
                 break;
