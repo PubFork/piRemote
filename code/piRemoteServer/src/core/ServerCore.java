@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -226,6 +227,7 @@ public class ServerCore{
         if(contents != null) {
             if(firstTime) offerPayload.paths.add("/"+filePickerBasePath+"/");
             else offerPayload.paths.add(dir.getAbsolutePath()+"/");
+            Arrays.sort(contents);
             for (File path : contents) {
                 String pathtoSend=path.getName();
                 if(path.isDirectory()) pathtoSend+="/";
