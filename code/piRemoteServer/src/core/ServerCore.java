@@ -73,12 +73,12 @@ public class ServerCore{
 
         // Wait for network to be available
         while(serverNetwork.getPort() <= 0);
-        String txt = "PiRemote: Listening on port "+Integer.toString(serverNetwork.getPort());
-        System.out.println(txt);
+        String portString = Integer.toString(serverNetwork.getPort());
+        System.out.println("PiRemote: Listening on port "+portString);
         try {
             FileOutputStream portFile = new FileOutputStream(portPath);
             try{
-                portFile.write(txt.getBytes());
+                portFile.write(portString.getBytes());
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }finally {

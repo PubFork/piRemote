@@ -32,7 +32,7 @@ use_spacer no
 
 TEXT
 ${color green}eth0:     ${addr eth0}
-${color green}${exec cat .piremote-port}
+${color green}${if_match "${exec pgrep -f 'java.*piRemoteServer'}" != ""}PiRemote: port ${exec cat .piremote-port}${else}PiRemote: (not running)${endif}
 
 ${color #5b6dad} ${downspeedgraph eth0 16,140 000000 7f8ed3 150} ${color #5b6dad} ${upspeedgraph eth0 16,140 000000 7f8ed3 18}
 ${color #5b6dad}eth0: Down: $color${downspeed eth0} k/s ${color #5b6dad}Up:   $color${upspeed eth0} k/s 
