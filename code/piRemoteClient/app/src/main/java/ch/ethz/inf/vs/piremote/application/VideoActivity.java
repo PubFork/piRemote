@@ -63,8 +63,6 @@ public class VideoActivity extends AbstractClientActivity implements PlayFragmen
         mPathView = (TextView) findViewById(R.id.picked_path);
 
 
-        // TODO VIDEO APP: Set up UI references
-
         mProgressView = findViewById(R.id.view_progress);
         mVideoView = findViewById(R.id.view_video);
 
