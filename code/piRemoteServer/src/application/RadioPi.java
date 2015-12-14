@@ -2,6 +2,7 @@ package application;
 
 import SharedConstants.ApplicationCsts;
 import core.AbstractApplication;
+import SharedConstants.ApplicationCsts.RadioPiApplicationState;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,21 +18,21 @@ public class RadioPi extends AbstractApplication {
 
     @Override
     public void onApplicationStart() {
-        System.out.println("TrafficLight: Starting up.");
-        changeApplicationState(ApplicationCsts.TrafficLightApplicationState.TRAFFIC_ORANGE);
+        System.out.println("Radio Pi: Starting up.");
+        changeApplicationState(RadioPiApplicationState.RADIO_INIT);
     }
 
     @Override
     public void onApplicationStop() {
-        System.out.println("TrafficLight: Will now stop.");
+        System.out.println("Radio Pi: Will now stop.");
     }
 
     @Override
     public void onApplicationStateChange(ApplicationCsts.ApplicationState newState) {
         String str;
-        if(newState.equals(ApplicationCsts.TrafficLightApplicationState.TRAFFIC_GREEN)) {
+        if(newState.equals(RadioPiApplicationState.RADIO_PLAY)) {
             String executable = "pifm";
-            String frequency = "99.3"; // use 96.9
+            String frequency = "96.9"; // use 96.9 or gge
             if (soundFile!=null) {
                 try {
                     System.out.println("Executing:" + "sudo ./radiopi2473/" + executable + " " + soundFile + " " + frequency);
@@ -42,16 +43,16 @@ public class RadioPi extends AbstractApplication {
                     e.printStackTrace();
                 }
             }
-            str = "Green";
-        } else if(newState.equals(ApplicationCsts.TrafficLightApplicationState.TRAFFIC_ORANGE)) {
-            str = "Orange";
-        } else if(newState.equals(ApplicationCsts.TrafficLightApplicationState.TRAFFIC_RED)) {
+            str = "Play";
+        } else if(newState.equals(RadioPiApplicationState.RADIO_INIT)) {
+            str = "Init";
+        } else if(newState.equals(RadioPiApplicationState.RADIO_STOP)) {
             if (p!=null) {
                 p.destroy();
             }
-            str = "Red";
+            str = "Stop";
         } else {
-            throw new RuntimeException("TrafficApplication read unknown state!" + newState.toString());
+            throw new RuntimeException("RadioPiApplication read unknown state!" + newState.toString());
         }
         System.out.println("RadioPi: New state is: "+str);
     }
@@ -65,7 +66,7 @@ public class RadioPi extends AbstractApplication {
 
     @Override
     public void onReceiveInt(int cst, UUID senderUUID) {
-        if(cst == ApplicationCsts.TRAFFIC_PICK_FILE){
+        if(cst == ApplicationCsts.RADIO_PICK_FILE){
             System.out.println("RadioPi: Initializing file pick.");
             pickFile("/home/pi/piremote/radiopi2473",senderUUID);
             return;
@@ -73,14 +74,14 @@ public class RadioPi extends AbstractApplication {
 
         ApplicationCsts.ApplicationState newState;
         switch (cst){
-            case ApplicationCsts.TRAFFIC_GO_GREEN:
-                newState = ApplicationCsts.TrafficLightApplicationState.TRAFFIC_GREEN;
+            case ApplicationCsts.RADIO_GO_PLAY:
+                newState = RadioPiApplicationState.RADIO_PLAY;
                 break;
-            case ApplicationCsts.TRAFFIC_GO_ORANGE:
-                newState = ApplicationCsts.TrafficLightApplicationState.TRAFFIC_ORANGE;
+            case ApplicationCsts.RADIO_GO_INIT:
+                newState = RadioPiApplicationState.RADIO_INIT;
                 break;
-            case ApplicationCsts.TRAFFIC_GO_RED:
-                newState = ApplicationCsts.TrafficLightApplicationState.TRAFFIC_RED;
+            case ApplicationCsts.RADIO_GO_STOP:
+                newState = RadioPiApplicationState.RADIO_STOP;
                 break;
             default:
                 return;
