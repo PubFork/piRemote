@@ -41,6 +41,8 @@ public class ClientCore implements Runnable {
     private final ClientNetwork clientNetwork; // Keep track of all activities in the background
     private final AtomicBoolean connected = new AtomicBoolean(false);
 
+    boolean serverDown = false; // flag to indicate receive of notification that server does not react anymore
+
     private final String DEBUG_TAG = "# Core #";
     private final String ERROR_TAG = "# Core ERROR #";
     private final String WARN_TAG = "# Core WARN #";
@@ -71,6 +73,7 @@ public class ClientCore implements Runnable {
         clientNetwork.startNetwork();
         clientNetwork.connectToServer();
         connected.set(true);
+        serverDown = false;
     }
 
     void destroyConnection() {
@@ -90,6 +93,9 @@ public class ClientCore implements Runnable {
         if(!consistentServerState(msg)) {
             Log.d(DEBUG_TAG, "Inconsistent server state.");
             // Inconsistent state: Change the serverState before looking at the payload.
+            if (msg.getServerState() == ServerState.SERVER_DOWN) {
+                serverDown = true;
+            }
             coreApplication.startAbstractActivity(msg.getState());
             serverState = msg.getServerState(); // Update state
         }
@@ -105,6 +111,7 @@ public class ClientCore implements Runnable {
                 trackFilePicker(((Offer) receivedPayload).paths);
             } else if (receivedPayload instanceof Close) {
                 Log.d(DEBUG_TAG, "Request to close the file picker from the server.");
+                coreApplication.closeFilePicker();
             }
         }
 

@@ -35,6 +35,8 @@ public class ImageApplication extends AbstractApplication{
 
     @Override
     public void onApplicationStateChange(ApplicationCsts.ApplicationState newState) {
+        if(getApplicationState() == null) return; // First time do nothing
+
         System.out.println("ImageApplication: Shall change state from "+getApplicationState().toString()+" to "+newState.toString());
 
         if(getApplicationState().equals(newState)) {
@@ -66,7 +68,7 @@ public class ImageApplication extends AbstractApplication{
     public void onReceiveInt(int i, UUID senderUUID) {
         if (i == ApplicationCsts.IMAGE_PICK_FILE) {
             System.out.println("ImageApplication: Initializing file pick.");
-            pickFile("/home/sandro",senderUUID);
+            pickFile(System.getProperty("user.home"),senderUUID);
         } else {
             if (getApplicationState().equals(ApplicationCsts.ImageApplicationState.IMAGE_DISPLAYED)
                 || getApplicationState().equals(ApplicationCsts.ImageApplicationState.IMAGE_NOT_DISPLAYED)) {

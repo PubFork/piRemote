@@ -62,6 +62,13 @@ public class CoreApplication extends Application {
         }
     }
 
+    synchronized void closeFilePicker() {
+        Log.v(VERBOSE_TAG, "Update file picker on current activity: " + currentActivity);
+        if (currentActivity != null) {
+            currentActivity.closeFilePickerFromThread();
+        }
+    }
+
     @Nullable
     AbstractClientActivity getCurrentActivity() {
         return currentActivity;

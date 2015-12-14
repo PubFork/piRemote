@@ -96,7 +96,7 @@ public class VideoApplication extends AbstractApplication {
     public void onReceiveInt(int i, UUID senderUUID) {
         if(i == ApplicationCsts.VIDEO_PICK_FILE){
             System.out.println("VideoApplication: Initializing file pick.");
-            pickFile("/home/sandro",senderUUID);
+            pickFile(System.getProperty("user.home"),senderUUID);
         }else{
             if(getApplicationState().equals(ApplicationCsts.VideoApplicationState.VIDEO_PLAYING)
                 || getApplicationState().equals(ApplicationCsts.VideoApplicationState.VIDEO_PAUSED)){
@@ -150,8 +150,8 @@ public class VideoApplication extends AbstractApplication {
 
     void startProcess(String path){
         if(omxProcess != null) stopProcess();
-        //processBuilder = new ProcessBuilder("/usr/bin/omxplayer", "--key-config /home/pi/.omxplayer", path); // uncomment on raspberry
-        processBuilder = new ProcessBuilder("/usr/bin/mplayer", path); // uncomment on laptop
+        processBuilder = new ProcessBuilder("/usr/bin/omxplayer", "--key-config /home/pi/.omxplayer", path); // uncomment on raspberry
+        //processBuilder = new ProcessBuilder("/usr/bin/mplayer", "-fs", path); // uncomment on laptop
         processBuilder.redirectErrorStream(true);
         try {
             omxProcess = processBuilder.start();
@@ -169,6 +169,14 @@ public class VideoApplication extends AbstractApplication {
     }
 
     void stopProcess(){
+        try {
+            while(omxStderr.available()>0){
+                System.out.println(omxStderr.read());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         if(omxProcess != null){
             omxProcess.destroy();
             try {
