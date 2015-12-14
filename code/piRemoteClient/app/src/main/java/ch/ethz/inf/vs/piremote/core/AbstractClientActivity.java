@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import java.util.Arrays;
 
@@ -82,6 +83,7 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
     protected void onStop() {
         ((CoreApplication) getApplication()).resetCurrentActivity(this); // Unregister the current activity to no longer be notified by the core
         Log.v(VERBOSE_TAG, "ONSTOP: Removed current activity." + this);
+        showProgress(false); // We reset the spinning wheel before leaving the application.
         super.onStop();
     }
 
@@ -107,7 +109,18 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
+    @Override
+    public void onBackPressed() {
+        if (this instanceof MainActivity) {
+            super.onBackPressed(); // TODO: finish application and do not return to last activity
+        } else if (this instanceof AppChooserActivity) {
+            disconnectRunningApplication();
+            Toast.makeText(this, R.string.toast_disconnected, Toast.LENGTH_SHORT).show();
+        } else {
+            closeRunningApplication();
+            Toast.makeText(this, R.string.toast_switch_app, Toast.LENGTH_SHORT).show();
+        }
+    }
     /**
      * Inspects the received message and reacts to it. We can be sure that the application is still running on the server.
      * @param msg Message the ClientCore forwarded
@@ -120,6 +133,8 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
             // Inconsistent state: Change the applicationState before looking at the payload.
             onApplicationStateChange(msg.getApplicationState()); // Update UI.
             applicationState = msg.getApplicationState();
+
+            showProgress(false); // The server dictated the new state, so we can display the activity again.
         }
 
         // ApplicationState is consistent. Look at the payload for additional information.

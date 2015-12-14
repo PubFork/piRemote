@@ -4,13 +4,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import SharedConstants.ApplicationCsts;
 import SharedConstants.CoreCsts.ServerState;
@@ -110,22 +108,5 @@ public class AppChooserActivity extends AbstractClientActivity {
                 sendServerStateChange(serverStates[position]);
                 break;
         }
-    }
-
-    @Override
-    public void onBackPressed() {
-        disconnectRunningApplication();
-        Toast.makeText(this, R.string.toast_disconnected, Toast.LENGTH_SHORT).show();
-    }
-
-    // back key does not reset things
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            disconnectRunningApplication();
-            Toast.makeText(this, R.string.toast_disconnected, Toast.LENGTH_SHORT).show();
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
     }
 }

@@ -12,6 +12,9 @@ import core.network.ServerNetwork;
 import core.test.ServerCoreTester;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -25,15 +28,39 @@ public class ServerCore{
 
     // The networking component shall deliver incoming messages to the server by putting them into the following queue:
     public static final BlockingQueue<Message> mainQueue = new LinkedBlockingQueue<>();
+    public static final String portPath = System.getProperty("user.home")+"/.piremote-port";
 
     protected static ServerNetwork serverNetwork;
     protected static CoreCsts.ServerState serverState;
     protected static AbstractApplication application;
     protected static boolean running;
     protected static String filePickerBasePath;
+
     //public static int round=0; // TEST ONLY
 
     public static void main(String [ ] args) throws InterruptedException {
+        System.out.println("PiRemote: Starting up.");
+        try {
+            run();
+        }finally { // This doesn't happen when the program gets killed
+            try {
+                FileOutputStream portFile = new FileOutputStream(portPath);
+                try{
+                    String txt = "PiRemote: (not running)";
+                    portFile.write(txt.getBytes());
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }finally {
+                    portFile.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println("PiRemote: Exiting normally."); // Note: Server Shutdown is not implemented at this stage.
+    }
+
+    public static void run() throws InterruptedException {
         // Initialize state
         serverState = CoreCsts.ServerState.NONE;
         application = null;
@@ -46,7 +73,20 @@ public class ServerCore{
 
         // Wait for network to be available
         while(serverNetwork.getPort() <= 0);
-        System.out.println("Listening on port "+Integer.toString(serverNetwork.getPort()));
+        String portString = Integer.toString(serverNetwork.getPort());
+        System.out.println("PiRemote: Listening on port "+portString);
+        try {
+            FileOutputStream portFile = new FileOutputStream(portPath);
+            try{
+                portFile.write(portString.getBytes());
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }finally {
+                portFile.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         // TEST ONLY
         //ServerCoreTester st = new ServerCoreTester(mainQueue);

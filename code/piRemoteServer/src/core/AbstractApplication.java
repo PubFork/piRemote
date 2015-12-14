@@ -56,9 +56,9 @@ public abstract class AbstractApplication {
 
     protected void changeApplicationState(ApplicationCsts.ApplicationState newState){
         // This shall be called by the server application to request an ApplicationState change)
+        onApplicationStateChange(newState); // Inform the application
         applicationState = newState; // Change the applicationState
         ServerCore.sendMessage(ServerCore.makeMessage()); // Inform clients about it
-        onApplicationStateChange(applicationState); // Get back to the application
     }
 
     protected void pickFile(@NotNull String path, @NotNull UUID destination){
