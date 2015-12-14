@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import MessageObject.Message;
+import MessageObject.PayloadObject.KeepAlive;
 import NetworkConstants.NetworkConstants;
 
 public class KeepAliveService implements Runnable {
@@ -55,7 +56,7 @@ public class KeepAliveService implements Runnable {
                 if (stillAlive < NetworkConstants.TIMEOUT) {
                     // If the server<->client link hasn't timed out yet, place a keep alive message on
                     // the sending queue.
-                    Message keepAlive = new Message(clientNetwork.getUuid(), clientNetwork.getClientCore().getState());
+                    Message keepAlive = new Message(clientNetwork.getUuid(), clientNetwork.getClientCore().getState(), new KeepAlive());
                     clientNetwork.putOnSendingQueue(keepAlive);
                     Log.d(DEBUG_TAG, "Sending keep alive to server");
                 } else {
