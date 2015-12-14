@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="play">Play</string>
+    <string name="stop">Stop</string>
+    <string name="pause">Pause</string>
+    <string name="jump_back">Back</string>
+    <string name="jump_forward">Forward</string>
+    <string name="speed_slower">Slower</string>
+    <string name="speed_faster">Faster</string>
+    <string name="volume_increase">Louder</string>
+    <string name="volume_decrease">Softer</string>
+</resources>
