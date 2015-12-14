@@ -59,12 +59,15 @@ public class VideoApplication extends AbstractApplication {
 
     @Override
     public void onApplicationStateChange(ApplicationCsts.ApplicationState newState) {
-        System.out.println("VideoApplication: Shall change state to "+newState.toString());
         if(getApplicationState() == null) return; // First time do nothing
 
-        if(getApplicationState().equals(newState))
+        System.out.println("VideoApplication: Shall change state from "+getApplicationState().toString()+" to "+newState.toString());
+
+        if(getApplicationState().equals(newState)) {
             System.out.println("VideoApplication: Warning: Ignoring attempt to change to current state: "
                     + getApplicationState().toString());
+            return;
+        }
         if(getApplicationState().equals(ApplicationCsts.VideoApplicationState.VIDEO_STOPPED)){
             if(newState.equals(ApplicationCsts.VideoApplicationState.VIDEO_PLAYING)){
                 startProcess(pathToPlay);
@@ -84,8 +87,9 @@ public class VideoApplication extends AbstractApplication {
     @Override
     public void onFilePicked(File file, UUID senderUUID) {
         System.out.println("VideoApplication: File picked: "+file.getPath());
+        changeApplicationState(ApplicationCsts.VideoApplicationState.VIDEO_STOPPED);
         pathToPlay = file.getAbsolutePath();
-        startProcess(pathToPlay);
+        changeApplicationState(ApplicationCsts.VideoApplicationState.VIDEO_PLAYING);
     }
 
     @Override
