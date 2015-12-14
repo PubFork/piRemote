@@ -105,6 +105,7 @@ public class ClientCore implements Runnable {
                 trackFilePicker(((Offer) receivedPayload).paths);
             } else if (receivedPayload instanceof Close) {
                 Log.d(DEBUG_TAG, "Request to close the file picker from the server.");
+                coreApplication.closeFilePicker();
             }
         }
 

@@ -9,6 +9,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Toast;
 
 import java.util.Arrays;
@@ -39,6 +41,9 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
 
     static ClientCore clientCore;
 
+    // UI references
+    AlertDialog fpDialog;
+
     private final String DEBUG_TAG = "# AbstractApp #";
     private final String VERBOSE_TAG = "# AbstractApp VERBOSE #";
 
@@ -68,6 +73,16 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
             public void run() {
                 Log.v(VERBOSE_TAG, "Update file picker: " + Arrays.toString(paths));
                 showFilePickerDialog(paths);
+            }
+        });
+    }
+
+    final void closeFilePickerFromThread() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Log.v(VERBOSE_TAG, "Close file picker.");
+                closeFilePickerDialog();
             }
         });
     }
@@ -112,7 +127,7 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if (this instanceof MainActivity) {
-            super.onBackPressed(); // TODO: finish application and do not return to last activity
+            super.onBackPressed();
         } else if (this instanceof AppChooserActivity) {
             disconnectRunningApplication();
             Toast.makeText(this, R.string.toast_disconnected, Toast.LENGTH_SHORT).show();
@@ -213,8 +228,23 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
                     }
                 })
                 .setNegativeButton(R.string.button_cancel, null);
-        AlertDialog dialog = builder.create(); // Create an AlertDialog object
-        dialog.show();
+        if (fpDialog != null) {
+            fpDialog.dismiss();
+        }
+        fpDialog = builder.create(); // Create an AlertDialog object
+        fpDialog.show();
+
+        //Overriding the handler immediately after show is probably a better approach than OnShowListener as described below
+        fpDialog.getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                clientCore.requestFilePicker(listItems[position]);
+            }
+        });
+    }
+
+    private void closeFilePickerDialog() {
+        fpDialog.dismiss();
     }
 
     /**
