@@ -95,6 +95,15 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onRestart() {
+        super.onRestart();
+
+        if (clientCore != null && clientCore.serverDown) {
+            disconnectRunningApplication();
+        }
+    }
+
+    @Override
     protected void onStop() {
         ((CoreApplication) getApplication()).resetCurrentActivity(this); // Unregister the current activity to no longer be notified by the core
         Log.v(VERBOSE_TAG, "ONSTOP: Removed current activity." + this);
