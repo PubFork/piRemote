@@ -34,7 +34,7 @@ public class TrafficLight extends AbstractApplication {
     @Override
     public void onFilePicked(File file, UUID senderUUID) {
         System.out.println("TrafficLight: Picked file: "+file.getName()+". Requesting close.");
-        sendString(file.getName(), senderUUID);
+        sendString(file.getName());
         closeFilePicker(senderUUID);
     }
 

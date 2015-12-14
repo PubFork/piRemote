@@ -18,7 +18,6 @@ import SharedConstants.CoreCsts;
 import ch.ethz.inf.vs.piremote.core.ClientCore;
 
 public class ClientNetwork implements Runnable {
-    //TODO(Mickey) Add proper Android logging
 
     @NonNull
     private final ClientCore clientCore;

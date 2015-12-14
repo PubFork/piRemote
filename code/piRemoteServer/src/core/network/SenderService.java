@@ -11,6 +11,8 @@ import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
+import java.util.HashMap;
+import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -54,23 +56,36 @@ class SenderService implements Runnable {
                 // Take an Object from the Queue.
                 Message messageToSend = sendingQueue.take();
 
-                // Get the NetworkInfo about the client supposed to the receive the Message.
-                NetworkInfo networkInfo = serverNetwork.getSessionTable().get(messageToSend.getUuid());
+                // Serialise the message to send
+                ByteArrayOutputStream byteStream = new ByteArrayOutputStream(NetworkConstants.PACKETSIZE);
+                ObjectOutputStream objectStream = new ObjectOutputStream(byteStream);
+                objectStream.writeObject(messageToSend);
+                objectStream.flush();
 
-                if (networkInfo != null) {
+                // Create a buffer and the corresponding packet to be sent to address/port.
+                byte[] sendBuffer = byteStream.toByteArray();
 
-                    // Serialise the message to send
-                    ByteArrayOutputStream byteStream = new ByteArrayOutputStream(NetworkConstants.PACKETSIZE);
-                    ObjectOutputStream objectStream = new ObjectOutputStream(byteStream);
-                    objectStream.writeObject(messageToSend);
-                    objectStream.flush();
+                if (messageToSend.isBroadcast()) {
+                    // Get a copy of the session table
+                    HashMap<UUID, NetworkInfo> sessionTableSnapshot = (HashMap) serverNetwork.getSessionTable().clone();
 
-                    // Create a buffer and the corresponding packet to be sent to address/port.
-                    byte[] sendBuffer = byteStream.toByteArray();
-                    DatagramPacket packet = new DatagramPacket(sendBuffer, sendBuffer.length, networkInfo.getIp(), networkInfo.getPort());
+                    // Iterate over the map and send the message to each client
+                    for (NetworkInfo client : sessionTableSnapshot.values()) {
+                        DatagramPacket packet = new DatagramPacket(sendBuffer, sendBuffer.length, client.getIp(), client.getPort());
 
-                    // Send the packet.
-                    socket.send(packet);
+                        // Send the packet.
+                        socket.send(packet);
+                    }
+                } else {
+                    // Get the NetworkInfo about the client supposed to the receive the Message.
+                    NetworkInfo client = serverNetwork.getSessionTable().get(messageToSend.getUuid());
+
+                    if (client != null) {
+                        DatagramPacket packet = new DatagramPacket(sendBuffer, sendBuffer.length, client.getIp(), client.getPort());
+
+                        // Send the packet.
+                        socket.send(packet);
+                    }
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();

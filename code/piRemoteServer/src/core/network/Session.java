@@ -41,4 +41,23 @@ class Session {
     public NetworkInfo getNetworkInfo() {
         return networkInfo;
     }
+
+    /**
+     * Method overriding object comparison on Session objects.
+     * @param other Other object to compare to.
+     * @return True if both objects are the same, else returns false.
+     */
+    @Override
+    public boolean equals(Object other) {
+        if (other instanceof Session) {
+            if (((Session) other).getNetworkInfo() != networkInfo) {
+                return false;
+            }
+            if (((Session) other).getUUID() != uuid) {
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
 }

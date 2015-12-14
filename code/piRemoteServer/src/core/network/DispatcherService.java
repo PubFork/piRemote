@@ -74,13 +74,11 @@ class DispatcherService implements Runnable {
                 socket.receive(packet);
                 lastSeen.set(System.currentTimeMillis());
 
-                // TODO(Mickey) Check proper handling order from here on.
-
                 // Check for any clients that need to be removed
                 while (!morgueQueue.isEmpty()) {
                     Session temp = morgueQueue.take();
-                    sessionTable.remove(temp.getUUID(), temp.getNetworkInfo());
-                    System.out.println("DispatcherService: Removed client due to timeout: "+temp.getUUID().toString());
+                    sessionTable.remove(temp.getUUID());
+                    System.out.println("DispatcherService: Removed client due to timeout: " + temp.getUUID().toString());
                     printSessionTable();
                 }
 
@@ -103,7 +101,6 @@ class DispatcherService implements Runnable {
                         // The client has likely timed out and doesn't have a valid UUID anymore, reassociate it.
                         addNewClient(packet.getAddress(), packet.getPort(), lastSeen);
                     }
-                    // (TODO: first check if it is a FilePickerRequest) is handled by ServerCore
                 } else if (input instanceof Connection) {
                     Connection connection = (Connection) input;
 
@@ -113,9 +110,13 @@ class DispatcherService implements Runnable {
                     } else if (connection.getConnection() == Connection.Connect.DISCONNECT) {
                         // Explicit disconnect request from client received, remove the session.
                         UUID uuid = connection.getUuid();
-                        sessionTable.remove(uuid);
-                        System.out.println("DispatcherService: Removed client due to disconnect: "+uuid.toString());
-                        printSessionTable();
+                        if (uuid != null) {
+                            sessionTable.remove(uuid);
+                            System.out.println("DispatcherService: Removed client due to disconnect: " + uuid.toString());
+                            printSessionTable();
+                        } else {
+                            System.out.println("DispatcherService: Client requesting a disconnect sent an empty UUID.");
+                        }
                     }
                 } else {
                     // Something unknown has been received. This is really bad! Abort!
