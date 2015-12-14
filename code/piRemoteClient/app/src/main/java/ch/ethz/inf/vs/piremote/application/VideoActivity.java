@@ -80,7 +80,7 @@ public class VideoActivity extends AbstractClientActivity implements PlayFragmen
         VideoApplicationState startVideoState = (VideoApplicationState) getIntent().getSerializableExtra(AppConstants.EXTRA_STATE);
         // Test whether the startState is set: Nothing to do on null objects.
         if (startVideoState != null) {
-            updateVideoState(null, startVideoState); // Set initial start state.
+            updateVideoState(startVideoState); // Set initial start state.
         } else {
             Log.w(WARN_TAG, "Unable to read arguments from Intent. Cannot set initial state.");
         }
@@ -90,7 +90,7 @@ public class VideoActivity extends AbstractClientActivity implements PlayFragmen
     protected void onApplicationStateChange(ApplicationState newState) {
         Log.d(DEBUG_TAG, "Changing from state _ to _: " + applicationState + newState);
 
-        updateVideoState((VideoApplicationState) applicationState, (VideoApplicationState) newState);
+        updateVideoState((VideoApplicationState) newState);
     }
 
     @Override
@@ -119,24 +119,7 @@ public class VideoActivity extends AbstractClientActivity implements PlayFragmen
      * Update UI elements to new state of the video application.
      * @param newVideoState ApplicationState we change to
      */
-    private void updateVideoState(VideoApplicationState oldVideoState, VideoApplicationState newVideoState) {
-        // Test whether the oldState is set: Switch/case statement cannot handle null objects.
-        if (oldVideoState != null) {
-            switch (oldVideoState) { // Reset from old state.
-                case VIDEO_PAUSED:
-                    // TODO VIDEO APP
-                    break;
-                case VIDEO_PLAYING:
-                    // TODO VIDEO APP
-                    break;
-                case VIDEO_STOPPED:
-                    //TODO video app
-                    break;
-                default:
-                    break;
-            }
-        }
-
+    private void updateVideoState(VideoApplicationState newVideoState) {
         // Test whether the newState is set: Switch/case statement cannot handle null objects.
         if (newVideoState != null) {
             switch (newVideoState) { // Change to new state.
