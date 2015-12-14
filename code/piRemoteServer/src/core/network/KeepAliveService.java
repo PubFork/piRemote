@@ -1,6 +1,7 @@
 package core.network;
 
 import MessageObject.Message;
+import MessageObject.PayloadObject.KeepAlive;
 import NetworkConstants.NetworkConstants;
 import core.ServerCore;
 import org.jetbrains.annotations.NotNull;
@@ -43,7 +44,7 @@ class KeepAliveService implements Runnable {
                 if (stillAlive < NetworkConstants.TIMEOUT) {
                     // If the server<->client link hasn't timed out yet, place a keep alive message on
                     // the sending queue.
-                    Message keepAlive = new Message(entry.getKey(), ServerCore.getState());
+                    Message keepAlive = new Message(entry.getKey(), ServerCore.getState(), new KeepAlive());
                     senderService.putOnQueue(keepAlive);
                 } else {
                     // Else notify the dispatcherService to delete the Session.
