@@ -62,7 +62,6 @@ public class VideoActivity extends AbstractClientActivity implements PlayFragmen
         // Keep track of the text field to change the output text when a file was picked.
         mPathView = (TextView) findViewById(R.id.picked_path);
 
-
         mProgressView = findViewById(R.id.view_progress);
         mVideoView = findViewById(R.id.view_video);
 
@@ -104,6 +103,7 @@ public class VideoActivity extends AbstractClientActivity implements PlayFragmen
     @Override
     protected void onReceiveString(String str) {
         Log.d(DEBUG_TAG, "Received a string: " + str);
+        mPathView.setText(str);
     }
 
     @Override
