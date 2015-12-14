@@ -148,8 +148,6 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
             // Inconsistent state: Change the applicationState before looking at the payload.
             onApplicationStateChange(msg.getApplicationState()); // Update UI.
             applicationState = msg.getApplicationState();
-
-            showProgress(false); // The server dictated the new state, so we can display the activity again.
         }
 
         // ApplicationState is consistent. Look at the payload for additional information.
@@ -163,9 +161,9 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
             } else if (receivedPayload instanceof StringMessage) {
                 onReceiveString(((StringMessage) receivedPayload).str);
             }
-
-            showProgress(false); // We received an answer from the server, so we can display the activity again.
         }
+
+        showProgress(false); // We received an answer from the server, so we can display the activity again.
     }
 
     /**
