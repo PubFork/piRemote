@@ -42,7 +42,7 @@
         </LinearLayout>
 
         <RelativeLayout
-            android:id="@+id/view_video"
+            android:id="@+id/view_image"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
