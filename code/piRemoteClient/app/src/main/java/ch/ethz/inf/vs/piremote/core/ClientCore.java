@@ -30,7 +30,7 @@ public class ClientCore implements Runnable {
     final CoreApplication coreApplication;
 
     private String basePath; // client keeps track of the initial base path
-    private String currentPath;
+    public static String currentPath;
     private static final String RESET_PATH = "//";
     private static final String LEVEL_UP = "..";
 
