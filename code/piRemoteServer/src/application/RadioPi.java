@@ -33,7 +33,6 @@ public class RadioPi extends AbstractApplication {
         String str;
         String executable = "pifm";
         if(newState.equals(RadioPiApplicationState.RADIO_PLAY)) {
-            executable = "pifm";
             String frequency = "96.9"; // use 96.9 or gge
             if (soundFile!=null) {
                 try {
@@ -74,8 +73,7 @@ public class RadioPi extends AbstractApplication {
     @Override
     public void onReceiveInt(int cst, UUID senderUUID) {
         if(cst == ApplicationCsts.RADIO_PICK_FILE){
-            System.out.println("Radio Pi: Initializing file pick.");
-            pickFile("/home/pi/piremote/radiopi2473",senderUUID);
+            pickFile("./radiopi2473",senderUUID);
             return;
         }
 

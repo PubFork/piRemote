@@ -89,13 +89,27 @@
                     android:id="@+id/frequency"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="96.9 FM"
+                    android:text="96.9"
+                    android:inputType="number"
+                    android:digits="0123456789."
+                    android:maxLength="6"
                     android:textColor="#cccccc"
                     android:textAlignment="center"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:layout_below="@+id/picked_path"
-                    android:layout_alignParentStart="true"
-                    android:layout_marginTop="40dp"/>
+                    android:layout_marginTop="40dp"
+                    android:layout_alignEnd="@+id/button_pick"/>
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="FM"
+                    android:textColor="#cccccc"
+                    android:id="@+id/editText2"
+                    android:textSize="18sp"
+                    android:layout_alignBaseline="@+id/frequency"
+                    android:layout_alignBottom="@+id/frequency"
+                    android:layout_toStartOf="@+id/button_stop"
+                    android:layout_marginEnd="10dp"/>
 
             <TextView
                 android:id="@+id/text_status"
@@ -122,6 +136,7 @@
                 android:textColor="#cccccc"
                 android:textAlignment="textEnd"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
+
         </RelativeLayout>
         
     </RelativeLayout>
