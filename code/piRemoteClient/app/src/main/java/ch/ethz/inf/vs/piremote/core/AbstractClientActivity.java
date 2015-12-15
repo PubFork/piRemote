@@ -21,12 +21,16 @@ import MessageObject.PayloadObject.IntMessage;
 import MessageObject.PayloadObject.Payload;
 import MessageObject.PayloadObject.ServerStateChange;
 import MessageObject.PayloadObject.StringMessage;
+import SharedConstants.ApplicationCsts;
 import SharedConstants.ApplicationCsts.ApplicationState;
 import SharedConstants.ApplicationCsts.TrafficLightApplicationState;
 import SharedConstants.ApplicationCsts.VideoApplicationState;
+import SharedConstants.ApplicationCsts.RadioPiApplicationState;
 import SharedConstants.CoreCsts.ServerState;
 import StateObject.State;
 import ch.ethz.inf.vs.piremote.R;
+import ch.ethz.inf.vs.piremote.application.ImageActivity;
+import ch.ethz.inf.vs.piremote.application.RadioPiActivity;
 import ch.ethz.inf.vs.piremote.application.TrafficLightActivity;
 import ch.ethz.inf.vs.piremote.application.VideoActivity;
 
@@ -95,6 +99,15 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onRestart() {
+        super.onRestart();
+
+        if (clientCore != null && clientCore.serverDown) {
+            disconnectRunningApplication();
+        }
+    }
+
+    @Override
     protected void onStop() {
         ((CoreApplication) getApplication()).resetCurrentActivity(this); // Unregister the current activity to no longer be notified by the core
         Log.v(VERBOSE_TAG, "ONSTOP: Removed current activity." + this);
@@ -148,8 +161,6 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
             // Inconsistent state: Change the applicationState before looking at the payload.
             onApplicationStateChange(msg.getApplicationState()); // Update UI.
             applicationState = msg.getApplicationState();
-
-            showProgress(false); // The server dictated the new state, so we can display the activity again.
         }
 
         // ApplicationState is consistent. Look at the payload for additional information.
@@ -163,9 +174,9 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
             } else if (receivedPayload instanceof StringMessage) {
                 onReceiveString(((StringMessage) receivedPayload).str);
             }
-
-            showProgress(false); // We received an answer from the server, so we can display the activity again.
         }
+
+        showProgress(false); // We received an answer from the server, so we can display the activity again.
     }
 
     /**
@@ -191,8 +202,14 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
             case VIDEO:
                 newApplication = VideoActivity.class;
                 break;
+            case RADIO_PI:
+                newApplication = RadioPiActivity.class;
+                break;
             case NONE:
                 newApplication = AppChooserActivity.class; // No application is running: The client may choose an application to run.
+                break;
+            case IMAGE:
+                newApplication = ImageActivity.class;
                 break;
             default:
                 newApplication = MainActivity.class; // Server timed out: Disconnect and switch back to the MainActivity.
@@ -208,6 +225,12 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
                 break;
             case VIDEO:
                 applicationStartIntent.putExtra(AppConstants.EXTRA_STATE, (VideoApplicationState) state.getApplicationState());
+                break;
+            case IMAGE:
+                applicationStartIntent.putExtra(AppConstants.EXTRA_STATE, (ApplicationCsts.ImageApplicationState) state.getApplicationState());
+                break;
+            case RADIO_PI:
+                applicationStartIntent.putExtra(AppConstants.EXTRA_STATE, (RadioPiApplicationState) state.getApplicationState());
                 break;
             default:
                 break;

@@ -42,7 +42,7 @@ public class TrafficLight extends AbstractApplication {
     public void onReceiveInt(int cst, UUID senderUUID) {
         if(cst == ApplicationCsts.TRAFFIC_PICK_FILE){
             System.out.println("TrafficLight: Initializing file pick.");
-            pickFile("/home/sandro",senderUUID);
+            pickFile(System.getProperty("user.home"),senderUUID);
             return;
         }
 

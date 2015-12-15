@@ -64,16 +64,6 @@ public class MainActivity extends AbstractClientActivity {
     }
 
     @Override
-    protected void onRestart() {
-        super.onRestart();
-
-        // We want to stop the background processes whenever we return to the MainActivity and started them before by connecting to the server.
-        if (clientCore != null) {
-            disconnectRunningApplication();
-        }
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
         Log.v(VERBOSE_TAG, "ONRESUME: Restore preferences.");

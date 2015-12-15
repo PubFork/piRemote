@@ -34,7 +34,7 @@ import java.util.UUID;
      SEEK_FORWARD_LARGE:v
      STEP:p
  */
-public class VideoApplication extends AbstractApplication {
+public class VideoApplication extends AbstractApplication implements ProcessListener {
 
     String pathToPlay = "";
     ProcessBuilder processBuilder = null;
@@ -44,6 +44,7 @@ public class VideoApplication extends AbstractApplication {
     InputStream omxStdout = null;
     BufferedReader omxReader = null;
     BufferedWriter omxWriter = null;
+    ProcessExitDetector processExitDetector = null;
 
     @Override
     public void onApplicationStart() {
@@ -54,7 +55,7 @@ public class VideoApplication extends AbstractApplication {
     @Override
     public void onApplicationStop() {
         System.out.println("VideoApplication: Will now stop.");
-        stopProcess();
+        requestProcessStop();
     }
 
     @Override
@@ -77,7 +78,7 @@ public class VideoApplication extends AbstractApplication {
         }else{
             // We are playing or paused
             if(newState.equals(ApplicationCsts.VideoApplicationState.VIDEO_STOPPED)){
-                stopProcess();
+                // do nothing, this only happens at startup or when the player is already dead.
             }else{
                 sendToProcess(" ");
             }
@@ -86,9 +87,16 @@ public class VideoApplication extends AbstractApplication {
 
     @Override
     public void onFilePicked(File file, UUID senderUUID) {
+        closeFilePicker(senderUUID);
         System.out.println("VideoApplication: File picked: "+file.getPath());
-        changeApplicationState(ApplicationCsts.VideoApplicationState.VIDEO_STOPPED);
+
+        // Stop current playback and busy wait
+        requestProcessStop();
+        while(!getApplicationState().equals(ApplicationCsts.VideoApplicationState.VIDEO_STOPPED));
+
+        // Run new playback
         pathToPlay = file.getAbsolutePath();
+        sendString(file.getName());
         changeApplicationState(ApplicationCsts.VideoApplicationState.VIDEO_PLAYING);
     }
 
@@ -96,7 +104,7 @@ public class VideoApplication extends AbstractApplication {
     public void onReceiveInt(int i, UUID senderUUID) {
         if(i == ApplicationCsts.VIDEO_PICK_FILE){
             System.out.println("VideoApplication: Initializing file pick.");
-            pickFile("/home/sandro",senderUUID);
+            pickFile(System.getProperty("user.home"),senderUUID);
         }else{
             if(getApplicationState().equals(ApplicationCsts.VideoApplicationState.VIDEO_PLAYING)
                 || getApplicationState().equals(ApplicationCsts.VideoApplicationState.VIDEO_PAUSED)){
@@ -108,7 +116,7 @@ public class VideoApplication extends AbstractApplication {
                         changeApplicationState(ApplicationCsts.VideoApplicationState.VIDEO_PAUSED);
                         break;
                     case ApplicationCsts.VIDEO_STOP:
-                        changeApplicationState(ApplicationCsts.VideoApplicationState.VIDEO_STOPPED);
+                        requestProcessStop();
                         break;
                     case ApplicationCsts.VIDEO_JUMP_BACK:
                         sendToProcess("x");
@@ -149,47 +157,59 @@ public class VideoApplication extends AbstractApplication {
     }
 
     void startProcess(String path){
-        if(omxProcess != null) stopProcess();
-        //processBuilder = new ProcessBuilder("/usr/bin/omxplayer", "--key-config /home/pi/.omxplayer", path); // uncomment on raspberry
-        processBuilder = new ProcessBuilder("/usr/bin/mplayer", path); // uncomment on laptop
+        if(omxProcess != null) requestProcessStop();
+        processBuilder = new ProcessBuilder("/usr/bin/omxplayer", "--key-config","/home/pi/.omxplayer", path); // uncomment on raspberry
+        //processBuilder = new ProcessBuilder("/usr/bin/mplayer", "-fs", path); // uncomment on laptop
         processBuilder.redirectErrorStream(true);
         try {
             omxProcess = processBuilder.start();
+            processExitDetector = new ProcessExitDetector(omxProcess);
+            processExitDetector.addProcessListener(this);
+            processExitDetector.start();
+            if(omxProcess != null) {
+                omxStdin = omxProcess.getOutputStream();
+                omxStderr = omxProcess.getErrorStream();
+                omxStdout = omxProcess.getInputStream();
+
+                omxReader = new BufferedReader(new InputStreamReader(omxStdout));
+                omxWriter = new BufferedWriter(new OutputStreamWriter(omxStdin));
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if(omxProcess != null) {
-            omxStdin = omxProcess.getOutputStream();
-            omxStderr = omxProcess.getErrorStream();
-            omxStdout = omxProcess.getInputStream();
+    }
 
-            omxReader = new BufferedReader(new InputStreamReader(omxStdout));
-            omxWriter = new BufferedWriter(new OutputStreamWriter(omxStdin));
+    void requestProcessStop(){
+        if(omxProcess != null){
+            sendToProcess("q");
         }
     }
 
-    void stopProcess(){
-        if(omxProcess != null){
-            omxProcess.destroy();
-            try {
-                omxProcess.waitFor();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }finally {
-                try {
-                    omxReader.close();
-                    omxWriter.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+    @Override
+    public void onProcessExit(Process process) {
+        System.out.println("VideoApplication: Player exited.");
+        try {
+            omxReader.close();
+            omxWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        omxProcess = null;
+        omxReader = null;
+        omxWriter = null;
+        processExitDetector.removeProcessListener(this);
+        processExitDetector = null;
+        omxProcess=null;
+        changeApplicationState(ApplicationCsts.VideoApplicationState.VIDEO_STOPPED);
     }
 
     void sendToProcess(String what){
         try {
-            omxWriter.write(what);
+            if(applicationState != ApplicationCsts.VideoApplicationState.VIDEO_STOPPED && omxWriter != null) {
+                omxWriter.write(what);
+                omxWriter.flush();
+            }else{
+                System.out.println("VideoApplication: Request to send \""+what+"\" to process was ignored because I'm stopped");
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
