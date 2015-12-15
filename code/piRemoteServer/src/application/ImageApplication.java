@@ -74,6 +74,12 @@ public class ImageApplication extends AbstractApplication{
                 case ApplicationCsts.IMAGE_SHOW:
                     changeApplicationState(ApplicationCsts.ImageApplicationState.IMAGE_NOT_DISPLAYED);
                     break;
+                case ApplicationCsts.IMAGE_NEXT:
+                    sendToProcess("-n");
+                    break;
+                case ApplicationCsts.IMAGE_PREV:
+                    sendToProcess("-b");
+                    break;
                 default:
                     System.out.println("ImageApplication: Warning: Ignoring invalid value: " + Integer.toString(i));
                     break;
@@ -101,14 +107,18 @@ public class ImageApplication extends AbstractApplication{
     }
 
     void sendToProcess(String flag){
-        processBuilder = new ProcessBuilder("geeqie","-r", flag);
-        try {
-            Process prc = processBuilder.start();
-            prc.waitFor();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        if(applicationState.equals(ApplicationCsts.ImageApplicationState.IMAGE_DISPLAYED)) {
+            processBuilder = new ProcessBuilder("geeqie", "-r", flag);
+            try {
+                Process prc = processBuilder.start();
+                prc.waitFor();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }else{
+            System.out.println("ImageApplication: Warning: Didn't send flag \""+flag+"\" to process because it ain't running.");
         }
     }
 }
