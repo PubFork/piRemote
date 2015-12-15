@@ -157,7 +157,7 @@ public class VideoApplication extends AbstractApplication implements ProcessList
     }
 
     void startProcess(String path){
-        processBuilder = new ProcessBuilder("/usr/bin/omxplayer", "--key-config","/home/pi/.omxplayer", path); // uncomment on raspberry
+        processBuilder = new ProcessBuilder("/usr/bin/omxplayer", "-b", "--key-config","/home/pi/.omxplayer", path); // uncomment on raspberry
         //processBuilder = new ProcessBuilder("/usr/bin/mplayer", "-fs", path); // uncomment on laptop
         processBuilder.redirectErrorStream(true);
         try {
