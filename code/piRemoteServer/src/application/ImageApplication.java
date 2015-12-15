@@ -8,18 +8,12 @@ import java.util.UUID;
 
 /**
  * Created by Fabian on 14.12.15.
+ * Requires geeqie to be installed on the server.
  */
-public class ImageApplication extends AbstractApplication implements ProcessListener{
+public class ImageApplication extends AbstractApplication{
 
     String imagePath = "";
     ProcessBuilder processBuilder = null;
-    Process fehProcess = null;
-    OutputStream fehStdin = null;
-    InputStream fehStderr = null;
-    InputStream fehStdout = null;
-    BufferedReader fehReader = null;
-    BufferedWriter fehWriter = null;
-    ProcessExitDetector processExitDetector = null;
 
     @Override
     public void onApplicationStart() {
@@ -30,7 +24,7 @@ public class ImageApplication extends AbstractApplication implements ProcessList
     @Override
     public void onApplicationStop() {
         System.out.println("ImageApplication: Will now stop.");
-        requestProcessStop();
+        sendToProcess("-q");
     }
 
 
@@ -49,7 +43,8 @@ public class ImageApplication extends AbstractApplication implements ProcessList
             // As above .equals() if statement has not triggered, we know that we shall start up
             startProcess(imagePath);
         } else {
-            // The listener determined that the process terminated, nothing to do here.
+            // Terminate geeqie
+            sendToProcess("-q");
         }
     }
 
@@ -58,9 +53,7 @@ public class ImageApplication extends AbstractApplication implements ProcessList
         closeFilePicker(senderUUID);
         System.out.println("ImageApplication: File picked: "+file.getPath());
 
-        // Stop current image and busy wait
-        requestProcessStop();
-        while(!getApplicationState().equals(ApplicationCsts.ImageApplicationState.IMAGE_NOT_DISPLAYED));
+        changeApplicationState(ApplicationCsts.ImageApplicationState.IMAGE_NOT_DISPLAYED);
 
         // Run new image
         imagePath = file.getAbsolutePath();
@@ -74,21 +67,22 @@ public class ImageApplication extends AbstractApplication implements ProcessList
             System.out.println("ImageApplication: Initializing file pick.");
             pickFile(System.getProperty("user.home"),senderUUID);
         } else {
-            if (getApplicationState().equals(ApplicationCsts.ImageApplicationState.IMAGE_DISPLAYED)
-                || getApplicationState().equals(ApplicationCsts.ImageApplicationState.IMAGE_NOT_DISPLAYED)) {
-                switch (i) {
-                    case ApplicationCsts.IMAGE_HIDE:
-                        requestProcessStop(); // This will trigger the listener which will set the state
-                        break;
-                    case ApplicationCsts.IMAGE_SHOW:
-                        changeApplicationState(ApplicationCsts.ImageApplicationState.IMAGE_DISPLAYED);
-                        break;
-                    default:
-                        System.out.println("ImageApplication: Warning: Ignoring invalid value: " + Integer.toString(i));
-                        break;
-                }
-            } else {
-                System.out.println("ImageApplication: Warning: Ignoring invalid value: " + Integer.toString(i));
+            switch (i) {
+                case ApplicationCsts.IMAGE_HIDE:
+                    changeApplicationState(ApplicationCsts.ImageApplicationState.IMAGE_DISPLAYED);
+                    break;
+                case ApplicationCsts.IMAGE_SHOW:
+                    changeApplicationState(ApplicationCsts.ImageApplicationState.IMAGE_NOT_DISPLAYED);
+                    break;
+                case ApplicationCsts.IMAGE_NEXT:
+                    sendToProcess("-n");
+                    break;
+                case ApplicationCsts.IMAGE_PREV:
+                    sendToProcess("-b");
+                    break;
+                default:
+                    System.out.println("ImageApplication: Warning: Ignoring invalid value: " + Integer.toString(i));
+                    break;
             }
         }
     }
@@ -101,49 +95,30 @@ public class ImageApplication extends AbstractApplication implements ProcessList
 
 
     void startProcess(String path) {
-        // TODO: Set up tmp lns to path
-        processBuilder = new ProcessBuilder("feh","-FY", "-D", "1", "/tmp/feh1", "/tmp/feh2");
-        processBuilder.redirectErrorStream(true);
+        processBuilder = new ProcessBuilder("geeqie","-r", "-f", path);
         try {
-            fehProcess = processBuilder.start();
-            processExitDetector = new ProcessExitDetector(fehProcess);
-            processExitDetector.addProcessListener(this);
-            processExitDetector.start();
-            if(fehProcess != null) {
-                fehStdin = fehProcess.getOutputStream();
-                fehStderr = fehProcess.getErrorStream();
-                fehStdout = fehProcess.getInputStream();
+            Process prc = processBuilder.start();
+            prc.waitFor();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
-                fehReader = new BufferedReader(new InputStreamReader(fehStdout));
-                fehWriter = new BufferedWriter(new OutputStreamWriter(fehStdin));
+    void sendToProcess(String flag){
+        if(applicationState.equals(ApplicationCsts.ImageApplicationState.IMAGE_DISPLAYED)) {
+            processBuilder = new ProcessBuilder("geeqie", "-r", flag);
+            try {
+                Process prc = processBuilder.start();
+                prc.waitFor();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        }else{
+            System.out.println("ImageApplication: Warning: Didn't send flag \""+flag+"\" to process because it ain't running.");
         }
-    }
-
-    void requestProcessStop() {
-        if(fehProcess != null){
-            fehProcess.destroy();
-            fehProcess = null;
-            // Now wait for the listener to trigger and change state
-        }
-    }
-
-    @Override
-    public void onProcessExit(Process process) {
-        System.out.println("ImageApplication: Player exited.");
-        try {
-            fehReader.close();
-            fehWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        fehReader = null;
-        fehWriter = null;
-        processExitDetector.removeProcessListener(this);
-        processExitDetector = null;
-        fehProcess=null;
-        changeApplicationState(ApplicationCsts.ImageApplicationState.IMAGE_NOT_DISPLAYED);
     }
 }

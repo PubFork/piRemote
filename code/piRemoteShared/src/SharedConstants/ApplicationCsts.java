@@ -59,6 +59,8 @@ public class ApplicationCsts implements Serializable {
     public static final int IMAGE_PICK_FILE = 0;
     public static final int IMAGE_SHOW = 1;
     public static final int IMAGE_HIDE = 2;
+    public static final int IMAGE_PREV = 3;
+    public static final int IMAGE_NEXT = 4;
 
 
     // RadioPiApplication
