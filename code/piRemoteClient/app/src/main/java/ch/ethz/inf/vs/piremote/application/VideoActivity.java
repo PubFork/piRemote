@@ -109,8 +109,8 @@ public class VideoActivity extends AbstractClientActivity implements PlayFragmen
     @Override
     protected void showProgress(boolean show) {
         // Shows the progress UI and hides the video screen.
-        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-        mVideoView.setVisibility(show ? View.GONE : View.VISIBLE);
+        /*mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+        mVideoView.setVisibility(show ? View.GONE : View.VISIBLE);*/
     }
 
     /**

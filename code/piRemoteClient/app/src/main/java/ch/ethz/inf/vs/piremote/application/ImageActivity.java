@@ -81,7 +81,7 @@ public class ImageActivity extends AbstractClientActivity {
 
     @Override
     protected void showProgress(boolean show) {
-        progressView.setVisibility(show ? View.VISIBLE : View.GONE);
-        imageView.setVisibility(show ? View.GONE : View.VISIBLE);
+        /*progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+        imageView.setVisibility(show ? View.GONE : View.VISIBLE);*/
     }
 }
