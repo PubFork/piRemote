@@ -1,8 +1,7 @@
 package ch.ethz.inf.vs.piremote.application;
 
-import android.support.v7.app.AppCompatActivity;
+
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -15,20 +14,15 @@ import ch.ethz.inf.vs.piremote.core.AbstractClientActivity;
 public class ImageActivity extends AbstractClientActivity {
 
     private final String DEBUG_TAG = "# ImageApp #";
-    private final String WARN_TAG = "# ImageApp WARN #";
 
     private TextView pickedFile;
     private View progressView;
+    private View imageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image);
-
-        /*
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        */
 
         // pick file button
         Button pickButton = (Button) findViewById(R.id.button_pick);
@@ -45,6 +39,7 @@ public class ImageActivity extends AbstractClientActivity {
 
         // spinning wheel
         progressView = findViewById(R.id.view_progress);
+        imageView = findViewById(R.id.view_image);
     }
 
     @Override
@@ -71,5 +66,6 @@ public class ImageActivity extends AbstractClientActivity {
     @Override
     protected void showProgress(boolean show) {
         progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+        imageView.setVisibility(show ? View.GONE : View.VISIBLE);
     }
 }
