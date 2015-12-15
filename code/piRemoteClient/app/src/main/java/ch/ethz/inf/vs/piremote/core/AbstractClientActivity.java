@@ -25,10 +25,12 @@ import SharedConstants.ApplicationCsts;
 import SharedConstants.ApplicationCsts.ApplicationState;
 import SharedConstants.ApplicationCsts.TrafficLightApplicationState;
 import SharedConstants.ApplicationCsts.VideoApplicationState;
+import SharedConstants.ApplicationCsts.RadioPiApplicationState;
 import SharedConstants.CoreCsts.ServerState;
 import StateObject.State;
 import ch.ethz.inf.vs.piremote.R;
 import ch.ethz.inf.vs.piremote.application.ImageActivity;
+import ch.ethz.inf.vs.piremote.application.RadioPiActivity;
 import ch.ethz.inf.vs.piremote.application.TrafficLightActivity;
 import ch.ethz.inf.vs.piremote.application.VideoActivity;
 
@@ -200,6 +202,9 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
             case VIDEO:
                 newApplication = VideoActivity.class;
                 break;
+            case RADIO_PI:
+                newApplication = RadioPiActivity.class;
+                break;
             case NONE:
                 newApplication = AppChooserActivity.class; // No application is running: The client may choose an application to run.
                 break;
@@ -223,6 +228,9 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
                 break;
             case IMAGE:
                 applicationStartIntent.putExtra(AppConstants.EXTRA_STATE, (ApplicationCsts.ImageApplicationState) state.getApplicationState());
+            case RADIO_PI:
+                applicationStartIntent.putExtra(AppConstants.EXTRA_STATE, (RadioPiApplicationState) state.getApplicationState());
+                break;
             default:
                 break;
         }
