@@ -61,7 +61,10 @@ public class ImageApplication extends AbstractApplication{
     @Override
     public void onFilePicked(File file, UUID senderUUID) {
         System.out.println("ImageApplication: File picked: "+file.getPath());
+        closeFilePicker(senderUUID);
         imagePath = file.getAbsolutePath();
+        sendString(file.getName());
+        changeApplicationState(ApplicationCsts.ImageApplicationState.IMAGE_DISPLAYED);
     }
 
     @Override
