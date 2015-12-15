@@ -126,7 +126,7 @@ public class ServerCore{
                             serverState = newServerState;
                             application.onApplicationStart();
                         }else{
-                            System.out.println("OMG - a client that new that no application is running asked for stopping it, what is this client doing??");
+                            System.out.println("OMG - a client that knew that no application is running asked for stopping it, what is this client doing??");
                         }
                     }else{
                         // Application shall change or stop
