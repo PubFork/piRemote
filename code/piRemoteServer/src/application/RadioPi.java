@@ -39,9 +39,9 @@ public class RadioPi extends AbstractApplication {
                 try {
                     System.out.println("Executing:" + "sudo ./radiopi2473/" + executable + " " + soundFile + " " + frequency);
                     p = Runtime.getRuntime().exec("sudo ./radiopi2473/" + executable + " " + soundFile + " " + frequency);
-                    System.out.println("RadioPi: Broadcasting");
+                    System.out.println("Radio Pi: Broadcasting");
                 } catch (IOException e) {
-                    System.out.println("RadioPi: Broadcast failed");
+                    System.out.println("Radio Pi: Broadcast failed");
                     e.printStackTrace();
                 }
             }
@@ -61,12 +61,12 @@ public class RadioPi extends AbstractApplication {
         } else {
             throw new RuntimeException("RadioPiApplication read unknown state!" + newState.toString());
         }
-        System.out.println("RadioPi: New state is: "+str);
+        System.out.println("Radio Pi: New state is: "+str);
     }
 
     @Override
     public void onFilePicked(File file, UUID senderUUID) {
-        System.out.println("RadioPi: Picked file: "+file.getName()+". Requesting close.");
+        System.out.println("Radio Pi: Picked file: "+file.getName()+". Requesting close.");
         sendString(file.getName(), senderUUID);
         closeFilePicker(senderUUID);
     }
@@ -74,7 +74,7 @@ public class RadioPi extends AbstractApplication {
     @Override
     public void onReceiveInt(int cst, UUID senderUUID) {
         if(cst == ApplicationCsts.RADIO_PICK_FILE){
-            System.out.println("RadioPi: Initializing file pick.");
+            System.out.println("Radio Pi: Initializing file pick.");
             pickFile("/home/pi/piremote/radiopi2473",senderUUID);
             return;
         }
@@ -106,6 +106,6 @@ public class RadioPi extends AbstractApplication {
         String []fileFreq = str.split(":");
         soundFile = fileFreq[0];
         frequency = fileFreq[1];
-        System.out.println("RadioPi: file and freqency set");
+        System.out.println("Radio Pi: file and freqency set");
     }
 }
