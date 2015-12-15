@@ -34,6 +34,7 @@ public class MusicActivity extends AbstractClientActivity {
     private TextView mTextViewCurrentSong;
     private TextView mTextViewPathView;
     private TextView mTextViewVolume;
+    private TextView mTextViewPlaylist;
     private View mMusicView;
 
     private Button mPickButton;
@@ -57,6 +58,18 @@ public class MusicActivity extends AbstractClientActivity {
     private final String WTF_TAG = "# Music WTF #";
     private final String WARN_TAG = "# Music WARN #";
     private final String VERBOSE_TAG = "# Music VERBOSE #";
+
+    // These constants are fixed to the output of mpc
+    private final int volumeStart = 8;
+    private final int volumeEnd = 10;
+    private final int loopStart = 23;
+    private final int loopEnd = 25;
+    private final int shuffleStart = 37;
+    private final int shuffleEnd = 39;
+    private final int singleStart = 51;
+    private final int singleEnd = 53;
+    private final int consumeStart = 66;
+    private final int consumeEnd = 68;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,18 +112,54 @@ public class MusicActivity extends AbstractClientActivity {
     protected void onReceiveString(String str) {
         Log.d(DEBUG_TAG, "Received a string: " + str);
 
-        // TODO: Set to different textViews based on pseudo-header received.
         if (str.startsWith(ApplicationCsts.MUSIC_PREFIX_SONG)) {
+            // Set the current song
             mTextViewCurrentSong.setText(str.substring(ApplicationCsts.MUSIC_PREFIX_SONG.length()));
         } else if (str.startsWith(ApplicationCsts.MUSIC_PREFIX_EXTRA)) {
+            // Get the default output sent by mpc
             String playbackSettings = str.substring(ApplicationCsts.MUSIC_PREFIX_EXTRA.length());
-            // Get volume
-            // Get loop
-            // Get shuffle
-            // Get single
-            // Get consume
-        } else {
-            // Filepicker needed?
+            String temp;
+
+            // Set the volume view
+            mTextViewVolume.setText(playbackSettings.substring(volumeStart, volumeEnd));
+
+            // Set the state of the loop switch
+            temp = playbackSettings.substring(loopStart, loopEnd);
+            if (temp.contains(" ")) {
+                mSwitchLoop.setChecked(true);
+            } else {
+                mSwitchLoop.setChecked(false);
+            }
+
+            // Set the state of the shuffle switch
+            temp = playbackSettings.substring(shuffleStart, shuffleEnd);
+            if (temp.contains(" ")) {
+                mSwitchShuffle.setChecked(true);
+            } else {
+                mSwitchShuffle.setChecked(false);
+            }
+
+            // Set the state of the single-loop switch
+            temp = playbackSettings.substring(singleStart, singleEnd);
+            if (temp.contains(" ")) {
+                mSwitchSingleLoop.setChecked(true);
+            } else {
+                mSwitchSingleLoop.setChecked(false);
+            }
+
+            // Set the state of the consume switch
+            temp = playbackSettings.substring(consumeStart, consumeEnd);
+            if (temp.contains(" ")) {
+                mSwitchConsume.setChecked(true);
+            } else {
+                mSwitchConsume.setChecked(false);
+            }
+        } else if (str.startsWith(ApplicationCsts.MUSIC_PREFIX_PLAYLIST)) {
+            // Fill the scrollable playlist window with the current playlist
+            mTextViewPlaylist.setText(str.substring(ApplicationCsts.MUSIC_PREFIX_PLAYLIST.length()));
+        } else if (str.startsWith(ApplicationCsts.MUSIC_PREFIX_FILESELECTION)) {
+            // Show the currently picked file
+            mTextViewPathView.setText(str.substring(ApplicationCsts.MUSIC_PREFIX_FILESELECTION.length()));
         }
     }
 
@@ -123,8 +172,33 @@ public class MusicActivity extends AbstractClientActivity {
         if (newMusicState != null) {
             if (newMusicState == MusicApplicationState.MUSIC_PAUSED) {
                 mTextViewCurrentSong.setText("Playback paused");
+                mButtonPlay.setText("PLAY");
+                mButtonPlay.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(@NonNull View v) {
+                        Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
+                        sendInt(ApplicationCsts.MUSIC_PLAY);
+                    }
+                });
             } else if (newMusicState == MusicApplicationState.MUSIC_STOPPED) {
                 mTextViewCurrentSong.setText("Playback stopped");
+                mButtonPlay.setText("PLAY");
+                mButtonPlay.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(@NonNull View v) {
+                        Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
+                        sendInt(ApplicationCsts.MUSIC_PLAY);
+                    }
+                });
+            } else {
+                mButtonPlay.setText("PAUSE");
+                mButtonPlay.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(@NonNull View v) {
+                        Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
+                        sendInt(ApplicationCsts.MUSIC_PAUSE);
+                    }
+                });
             }
         }
     }
@@ -133,6 +207,7 @@ public class MusicActivity extends AbstractClientActivity {
         mTextViewCurrentSong = (TextView) findViewById(R.id.textView_musicCurrentSong);
         mTextViewPathView = (TextView) findViewById(R.id.textView_musicFilePicker);
         mTextViewVolume = (TextView) findViewById(R.id.textView_musicCurrentVolume);
+        mTextViewPlaylist = (TextView) findViewById(R.id.textView_musicPlaylist);
     }
 
     private void registerButtons() {
@@ -150,7 +225,7 @@ public class MusicActivity extends AbstractClientActivity {
             @Override
             public void onClick(@NonNull View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
-                sendInt(ApplicationCsts.TRAFFIC_PICK_FILE);
+                sendInt(ApplicationCsts.MUSIC_PICK_FILE);
             }
         });
 
