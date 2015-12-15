@@ -1,6 +1,7 @@
 package core;
 
 import application.ImageApplication;
+import application.MusicApplication;
 import application.TrafficLight;
 import SharedConstants.CoreCsts;
 import application.VideoApplication;
@@ -14,6 +15,7 @@ public class ApplicationFactory {
         if(applicationToStart.equals(CoreCsts.ServerState.TRAFFIC_LIGHT)) return new TrafficLight();
         if(applicationToStart.equals(CoreCsts.ServerState.VIDEO)) return new VideoApplication();
         if(applicationToStart.equals(CoreCsts.ServerState.IMAGE)) return new ImageApplication();
+        if(applicationToStart.equals(CoreCsts.ServerState.MUSIC)) return new MusicApplication();
         return null;
     }
 }
