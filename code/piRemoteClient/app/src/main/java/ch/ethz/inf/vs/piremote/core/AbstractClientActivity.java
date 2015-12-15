@@ -228,6 +228,7 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
                 break;
             case IMAGE:
                 applicationStartIntent.putExtra(AppConstants.EXTRA_STATE, (ApplicationCsts.ImageApplicationState) state.getApplicationState());
+                break;
             case RADIO_PI:
                 applicationStartIntent.putExtra(AppConstants.EXTRA_STATE, (RadioPiApplicationState) state.getApplicationState());
                 break;
