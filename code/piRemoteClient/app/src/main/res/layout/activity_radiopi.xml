@@ -85,7 +85,7 @@
                 android:layout_alignTop="@+id/button_init"
                 android:layout_toEndOf="@+id/button_init"/>
 
-            <TextView
+            <EditText
                     android:id="@+id/frequency"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -123,7 +123,7 @@
                 android:textAlignment="textEnd"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
         </RelativeLayout>
-
+        
     </RelativeLayout>
 
 </android.support.design.widget.CoordinatorLayout>
