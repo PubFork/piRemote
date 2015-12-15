@@ -86,7 +86,7 @@ public class PausedFragment extends Fragment {
             @Override
             public void onClick(@NonNull View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
-                mCallback.onButtonPressed(ApplicationCsts.VIDEO_STOP);
+                mCallback.onButtonPressed(ApplicationCsts.VIDEO_SPEED_SLOWER);
             }
         });
 
@@ -95,7 +95,7 @@ public class PausedFragment extends Fragment {
             @Override
             public void onClick(@NonNull View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
-                mCallback.onButtonPressed(ApplicationCsts.VIDEO_STOP);
+                mCallback.onButtonPressed(ApplicationCsts.VIDEO_SPEED_FASTER);
             }
         });
 
