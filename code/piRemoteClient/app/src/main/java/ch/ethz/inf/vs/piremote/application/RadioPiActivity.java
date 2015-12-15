@@ -71,6 +71,8 @@ public class RadioPiActivity extends AbstractClientActivity {
 
                 String filePath = mPathView.getText().toString();
                 String freq = mFreqView.getText().toString();
+                freq = String.valueOf(Math.max(Double.valueOf(freq), 87.5)); // freq in valid range
+                freq = String.valueOf(Math.min(Double.valueOf(freq), 108.0));
                 String stringBuild = filePath + ":" + freq;
 
                 Log.d(DEBUG_TAG, "String sent: " + stringBuild);
