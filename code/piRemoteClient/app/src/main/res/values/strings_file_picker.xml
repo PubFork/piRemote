@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="button_pick">Pick</string>
-    <string name="no_file_picked">(no file picked)</string>
+    <string name="no_file_picked">(No file selected)</string>
 
     <string name="title_dialog_file_picker">File Picker</string>
     <string name="button_cancel">Cancel</string>
