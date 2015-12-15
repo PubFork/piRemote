@@ -9,7 +9,7 @@ import java.util.UUID;
 /**
  * Created by Fabian on 14.12.15.
  */
-public class ImageApplication extends AbstractApplication{
+public class ImageApplication extends AbstractApplication implements ProcessListener{
 
     String imagePath = "";
     ProcessBuilder processBuilder = null;
@@ -19,6 +19,7 @@ public class ImageApplication extends AbstractApplication{
     InputStream fehStdout = null;
     BufferedReader fehReader = null;
     BufferedWriter fehWriter = null;
+    ProcessExitDetector processExitDetector = null;
 
     @Override
     public void onApplicationStart() {
@@ -29,7 +30,7 @@ public class ImageApplication extends AbstractApplication{
     @Override
     public void onApplicationStop() {
         System.out.println("ImageApplication: Will now stop.");
-        stopProcess();
+        requestProcessStop();
     }
 
 
@@ -45,23 +46,23 @@ public class ImageApplication extends AbstractApplication{
             return;
         }
         if (newState.equals(ApplicationCsts.ImageApplicationState.IMAGE_DISPLAYED)) {
-            if (getApplicationState().equals(ApplicationCsts.ImageApplicationState.IMAGE_NOT_DISPLAYED)) {
-                // no image is displayed --> start displaying
-                startProcess(imagePath);
-            } else {
-                // a image is already displayed --> send next image to process
-                sendToProcess(imagePath);
-            }
+            // As above .equals() if statement has not triggered, we know that we shall start up
+            startProcess(imagePath);
         } else {
-            // call to show nothing --> stop process
-            stopProcess();
+            // The listener determined that the process terminated, nothing to do here.
         }
     }
 
     @Override
     public void onFilePicked(File file, UUID senderUUID) {
-        System.out.println("ImageApplication: File picked: "+file.getPath());
         closeFilePicker(senderUUID);
+        System.out.println("ImageApplication: File picked: "+file.getPath());
+
+        // Stop current image and busy wait
+        requestProcessStop();
+        while(!getApplicationState().equals(ApplicationCsts.ImageApplicationState.IMAGE_NOT_DISPLAYED));
+
+        // Run new image
         imagePath = file.getAbsolutePath();
         sendString(file.getName());
         changeApplicationState(ApplicationCsts.ImageApplicationState.IMAGE_DISPLAYED);
@@ -77,7 +78,7 @@ public class ImageApplication extends AbstractApplication{
                 || getApplicationState().equals(ApplicationCsts.ImageApplicationState.IMAGE_NOT_DISPLAYED)) {
                 switch (i) {
                     case ApplicationCsts.IMAGE_HIDE:
-                        changeApplicationState(ApplicationCsts.ImageApplicationState.IMAGE_NOT_DISPLAYED);
+                        requestProcessStop(); // This will trigger the listener which will set the state
                         break;
                     case ApplicationCsts.IMAGE_SHOW:
                         changeApplicationState(ApplicationCsts.ImageApplicationState.IMAGE_DISPLAYED);
@@ -100,49 +101,49 @@ public class ImageApplication extends AbstractApplication{
 
 
     void startProcess(String path) {
-        if (fehProcess != null) stopProcess();
-
-        processBuilder = new ProcessBuilder("/usr/bin/feh", path);
-        // TODO: redirect error stream?
+        // TODO: Set up tmp lns to path
+        processBuilder = new ProcessBuilder("feh","-FY", "-D", "1", "/tmp/feh1", "/tmp/feh2");
+        processBuilder.redirectErrorStream(true);
         try {
             fehProcess = processBuilder.start();
+            processExitDetector = new ProcessExitDetector(fehProcess);
+            processExitDetector.addProcessListener(this);
+            processExitDetector.start();
+            if(fehProcess != null) {
+                fehStdin = fehProcess.getOutputStream();
+                fehStderr = fehProcess.getErrorStream();
+                fehStdout = fehProcess.getInputStream();
+
+                fehReader = new BufferedReader(new InputStreamReader(fehStdout));
+                fehWriter = new BufferedWriter(new OutputStreamWriter(fehStdin));
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if (fehProcess != null) {
-            fehStdin = fehProcess.getOutputStream();
-            fehStderr = fehProcess.getErrorStream();
-            fehStdout = fehProcess.getInputStream();
-
-            fehReader = new BufferedReader(new InputStreamReader(fehStdout));
-            fehWriter = new BufferedWriter(new OutputStreamWriter(fehStdin));
-        }
     }
 
-    void stopProcess() {
+    void requestProcessStop() {
         if(fehProcess != null){
             fehProcess.destroy();
-            try {
-                fehProcess.waitFor();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }finally {
-                try {
-                    fehReader.close();
-                    fehWriter.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            fehProcess = null;
+            // Now wait for the listener to trigger and change state
         }
-        fehProcess = null;
     }
 
-    void sendToProcess(String toSend) {
+    @Override
+    public void onProcessExit(Process process) {
+        System.out.println("ImageApplication: Player exited.");
         try {
-            fehWriter.write(toSend);
+            fehReader.close();
+            fehWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        fehReader = null;
+        fehWriter = null;
+        processExitDetector.removeProcessListener(this);
+        processExitDetector = null;
+        fehProcess=null;
+        changeApplicationState(ApplicationCsts.ImageApplicationState.IMAGE_NOT_DISPLAYED);
     }
 }

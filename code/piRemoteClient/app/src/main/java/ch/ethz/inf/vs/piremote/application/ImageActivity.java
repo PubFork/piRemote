@@ -19,6 +19,7 @@ public class ImageActivity extends AbstractClientActivity {
 
     private TextView pickedFile;
     private View progressView;
+    private View imageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +46,7 @@ public class ImageActivity extends AbstractClientActivity {
 
         // spinning wheel
         progressView = findViewById(R.id.view_progress);
+        imageView = findViewById(R.id.view_image);
     }
 
     @Override
@@ -71,5 +73,6 @@ public class ImageActivity extends AbstractClientActivity {
     @Override
     protected void showProgress(boolean show) {
         progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+        imageView.setVisibility(show ? View.GONE : View.VISIBLE);
     }
 }

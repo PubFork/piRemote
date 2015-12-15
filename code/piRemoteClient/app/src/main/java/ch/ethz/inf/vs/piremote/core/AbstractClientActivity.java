@@ -23,9 +23,9 @@ import MessageObject.PayloadObject.ServerStateChange;
 import MessageObject.PayloadObject.StringMessage;
 import SharedConstants.ApplicationCsts;
 import SharedConstants.ApplicationCsts.ApplicationState;
+import SharedConstants.ApplicationCsts.RadioPiApplicationState;
 import SharedConstants.ApplicationCsts.TrafficLightApplicationState;
 import SharedConstants.ApplicationCsts.VideoApplicationState;
-import SharedConstants.ApplicationCsts.RadioPiApplicationState;
 import SharedConstants.CoreCsts.ServerState;
 import StateObject.State;
 import ch.ethz.inf.vs.piremote.R;
@@ -102,8 +102,10 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
     protected void onRestart() {
         super.onRestart();
 
-        if (clientCore != null && clientCore.serverDown) {
-            disconnectRunningApplication();
+        if (clientCore != null && clientCore.serverDownReceived) {
+            Intent networkDestroyedIntent = new Intent(this, MainActivity.class);
+            networkDestroyedIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(networkDestroyedIntent);
         }
     }
 
