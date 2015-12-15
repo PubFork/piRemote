@@ -33,7 +33,7 @@ public class RadioPi extends AbstractApplication {
         String str;
         String executable = "pifm";
         if(newState.equals(RadioPiApplicationState.RADIO_PLAY)) {
-            String executable = "pifm";
+            executable = "pifm";
             String frequency = "96.9"; // use 96.9 or gge
             if (soundFile!=null) {
                 try {

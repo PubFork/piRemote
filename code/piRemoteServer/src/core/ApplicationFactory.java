@@ -1,6 +1,7 @@
 package core;
 
 import application.ImageApplication;
+import application.RadioPi;
 import application.TrafficLight;
 import SharedConstants.CoreCsts;
 import application.VideoApplication;
