@@ -14,6 +14,7 @@ import android.widget.TextView;
 import ch.ethz.inf.vs.piremote.R;
 import ch.ethz.inf.vs.piremote.core.AbstractClientActivity;
 import ch.ethz.inf.vs.piremote.core.AppConstants;
+import ch.ethz.inf.vs.piremote.core.ClientCore;
 
 /**
  * Created by FR4NK-W on 12/12/15.
@@ -73,7 +74,7 @@ public class RadioPiActivity extends AbstractClientActivity {
                 String freq = mFreqView.getText().toString();
                 freq = String.valueOf(Math.max(Double.valueOf(freq), 87.5)); // freq in valid range
                 freq = String.valueOf(Math.min(Double.valueOf(freq), 108.0));
-                String stringBuild = filePath + ":" + freq;
+                String stringBuild = ":" + freq;//filePath + ":" + freq;
 
                 Log.d(DEBUG_TAG, "String sent: " + stringBuild);
                 sendString(stringBuild);
@@ -124,7 +125,7 @@ public class RadioPiActivity extends AbstractClientActivity {
         Log.d(DEBUG_TAG, "Received a string: " + str);
         mPathView.setText(str); // We only receive string messages representing a picked file.
 
-        sendString(str);
+        sendString(ClientCore.currentPath + str); // We concatenate it to the current path
         Log.d(DEBUG_TAG, "Sent file path to server, ready to go for play");
     }
 

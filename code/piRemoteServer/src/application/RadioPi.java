@@ -16,6 +16,7 @@ public class RadioPi extends AbstractApplication {
     Process p;
     String soundFile = "./radiopi2473/music/star_wars.wav";
     String frequency = "96.9"; // use 96.9 or gge
+    //     String clientCurrentUnset = "./radiopi2473/music/";
 
     @Override
     public void onApplicationStart() {
@@ -73,7 +74,7 @@ public class RadioPi extends AbstractApplication {
     @Override
     public void onReceiveInt(int cst, UUID senderUUID) {
         if(cst == ApplicationCsts.RADIO_PICK_FILE){
-            pickFile("./radiopi2473",senderUUID);
+            pickFile("/home/pi/piremote/radiopi2473",senderUUID);
             return;
         }
 
@@ -101,9 +102,15 @@ public class RadioPi extends AbstractApplication {
 
     @Override
     public void onReceiveString(String str, UUID senderUUID) {
-        String []fileFreq = str.split(":");
-        soundFile = fileFreq[0];
-        frequency = fileFreq[1];
-        System.out.println("Radio Pi: file and freqency set");
+        if (str.contains(":")) {
+            System.out.println("Received String: " + str);
+            String[] fileFreq = str.split(":");
+            //soundFile = fileFreq[0];
+            frequency = fileFreq[1];
+            System.out.println("Radio Pi: file and frequency set");
+        } else {
+            System.out.println("Received String, set soundFile to : " + str);
+            soundFile = str;
+        }
     }
 }
