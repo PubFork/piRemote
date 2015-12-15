@@ -7,8 +7,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.ToggleButton;
-import android.widget.Toolbar;
 
 import SharedConstants.ApplicationCsts;
 import SharedConstants.ApplicationCsts.MusicApplicationState;
@@ -33,12 +31,25 @@ public class MusicActivity extends AbstractClientActivity {
     mpc | tail -n1 | awk -F " " '{s="";for (i=2;i<=NF;i+=2) {s=s?s FS $i:$i} print s}'
      */
 
-
-    private TextView mCurrentSong;
-    private TextView mPathView;
-    private TextView mVolume;
-    private View mProgressView;
+    private TextView mTextViewCurrentSong;
+    private TextView mTextViewPathView;
+    private TextView mTextViewVolume;
     private View mMusicView;
+
+    private Button mPickButton;
+    private Button mButtonPlay;
+    private Button mButtonPause;
+    private Button mButtonStop;
+    private Button mButtonNextSong;
+    private Button mButtonPrevSong;
+    private Button mButtonVolumeUp;
+    private Button mButtonVolumeDown;
+    private Button mButtonShowPlaylist;
+
+    private Switch mSwitchLoop;
+    private Switch mSwitchSingleLoop;
+    private Switch mSwitchShuffle;
+    private Switch mSwitchConsume;
 
     private final String INFO_TAG = "# Music #";
     private final String DEBUG_TAG = "# Music DEBUG #";
@@ -50,137 +61,13 @@ public class MusicActivity extends AbstractClientActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(DEBUG_TAG, "ONCREATE: Starting up.");
-
+        Log.d(DEBUG_TAG, "Starting up.");
 
         setContentView(R.layout.activity_music);
-        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
 
-        Button mPickButton = (Button) findViewById(R.id.button_musicFilePicker);
-        mPickButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull View v) {
-                Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
-                sendInt(ApplicationCsts.TRAFFIC_PICK_FILE);
-            }
-        });
-
-        // Keep track of the text field to change the output text when a file was picked.
-        mPathView = (TextView) findViewById(R.id.textView_musicFilePicker);
-        mCurrentSong = (TextView) findViewById(R.id.textView_musicCurrentSong);
-        mVolume = (TextView) findViewById(R.id.textView_musicCurrentVolume);
-
-        Button mButtonPlay = (Button) findViewById(R.id.button_musicPlay);
-        mButtonPlay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull View v) {
-                Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
-                sendInt(ApplicationCsts.MUSIC_PLAY);
-            }
-        });
-
-        Button mButtonPause = (Button) findViewById(R.id.button_musicPause);
-        mButtonPause.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull View v) {
-                Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
-                sendInt(ApplicationCsts.MUSIC_PAUSE);
-            }
-        });
-
-        Button mButtonStop = (Button) findViewById(R.id.button_musicStop);
-        mButtonStop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull View v) {
-                Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
-                sendInt(ApplicationCsts.MUSIC_STOP);
-            }
-        });
-
-        Button mButtonNextSong = (Button) findViewById(R.id.button_musicNextSong);
-        mButtonNextSong.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull View v) {
-                Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
-                sendInt(ApplicationCsts.MUSIC_NEXT);
-            }
-        });
-
-        Button mButtonPrevSong = (Button) findViewById(R.id.button_musicPreviousSong);
-        mButtonPrevSong.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull View v) {
-                Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
-                sendInt(ApplicationCsts.MUSIC_PREV);
-            }
-        });
-
-        Button mButtonVolumeUp = (Button) findViewById(R.id.button_musicVolumeUp);
-        mButtonVolumeUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull View v) {
-                Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
-                sendInt(ApplicationCsts.MUSIC_VOLUME_UP);
-            }
-        });
-
-        Button mButtonVolumeDown = (Button) findViewById(R.id.button_musicVolumeDown);
-        mButtonVolumeDown.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull View v) {
-                Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
-                sendInt(ApplicationCsts.MUSIC_VOLUME_DOWN);
-            }
-        });
-
-        Button mButtonShowPlaylist = (Button) findViewById(R.id.button_musicShowPlaylist);
-        mButtonShowPlaylist.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull View v) {
-                Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
-                sendInt(ApplicationCsts.MUSIC_GET_PLAYLIST);
-            }
-        });
-
-        Switch mSwitchLoop = (Switch) findViewById(R.id.switch_musicLoop);
-        mSwitchLoop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull View v) {
-                Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
-                sendInt(ApplicationCsts.MUSIC_LOOP);
-            }
-        });
-
-        Switch mSwitchSingleLoop = (Switch) findViewById(R.id.switch_musicSingleLoop);
-        mSwitchSingleLoop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull View v) {
-                Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
-                sendInt(ApplicationCsts.MUSIC_SINGLE);
-            }
-        });
-
-        Switch mSwitchShuffle = (Switch) findViewById(R.id.switch_musicShuffle);
-        mSwitchShuffle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull View v) {
-                Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
-                sendInt(ApplicationCsts.MUSIC_SHUFFLE);
-            }
-        });
-
-        Switch mSwitchConsume = (Switch) findViewById(R.id.switch_musicConsume);
-        mSwitchConsume.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull View v) {
-                Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
-                sendInt(ApplicationCsts.MUSIC_CONSUME);
-            }
-        });
-
-        mProgressView = findViewById(R.id.music_viewProgress);
-        mMusicView = findViewById(R.id.music_ViewControls);
+        registerTextViews();
+        registerButtons();
+        registerSwitches();
 
         MusicApplicationState initMusicState = (MusicApplicationState) getIntent().getSerializableExtra(AppConstants.EXTRA_STATE);
 
@@ -194,10 +81,8 @@ public class MusicActivity extends AbstractClientActivity {
 
     @Override
     protected void onApplicationStateChange(ApplicationCsts.ApplicationState newState) {
-        Log.d(DEBUG_TAG, String.format("Changing from state _%s to %s: ", applicationState, newState));
-
-        updateMusicState((ApplicationCsts.MusicApplicationState) newState); // Set a text field that represents our new state.
-
+        Log.d(DEBUG_TAG, String.format("Changing state from %s to %s: ", applicationState, newState));
+        updateMusicState((ApplicationCsts.MusicApplicationState) newState);
     }
 
     @Override
@@ -215,22 +100,161 @@ public class MusicActivity extends AbstractClientActivity {
         Log.d(DEBUG_TAG, "Received a string: " + str);
 
         // TODO: Set to different textViews based on pseudo-header received.
-        // We can receive a song-update
-        // We can receive a status-update of the server
-        // We can receive an update of mpd playback setttins (like volume, loop, ...)
-        // Filepicker also sending here?
+        if (str.startsWith(ApplicationCsts.MUSIC_PREFIX_SONG)) {
+            mTextViewCurrentSong.setText(str.substring(ApplicationCsts.MUSIC_PREFIX_SONG.length()));
+        } else if (str.startsWith(ApplicationCsts.MUSIC_PREFIX_EXTRA)) {
+            String playbackSettings = str.substring(ApplicationCsts.MUSIC_PREFIX_EXTRA.length());
+            // Get volume
+            // Get loop
+            // Get shuffle
+            // Get single
+            // Get consume
+        } else {
+            // Filepicker needed?
+        }
     }
 
     @Override
     protected void showProgress(boolean show) {
-        // Shows the progress UI and hides the traffic light screen.
-        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-        mMusicView.setVisibility(show ? View.GONE : View.VISIBLE);
+        return;
     }
 
-    private void updateMusicState(ApplicationCsts.MusicApplicationState newMusicState) {
+    private void updateMusicState(MusicApplicationState newMusicState) {
         if (newMusicState != null) {
-            //mStatusView.setText(newMusicState);
+            if (newMusicState == MusicApplicationState.MUSIC_PAUSED) {
+                mTextViewCurrentSong.setText("Playback paused");
+            } else if (newMusicState == MusicApplicationState.MUSIC_STOPPED) {
+                mTextViewCurrentSong.setText("Playback stopped");
+            }
         }
+    }
+
+    private void registerTextViews() {
+        mTextViewCurrentSong = (TextView) findViewById(R.id.textView_musicCurrentSong);
+        mTextViewPathView = (TextView) findViewById(R.id.textView_musicFilePicker);
+        mTextViewVolume = (TextView) findViewById(R.id.textView_musicCurrentVolume);
+    }
+
+    private void registerButtons() {
+        mPickButton = (Button) findViewById(R.id.button_musicFilePicker);
+        mButtonPlay = (Button) findViewById(R.id.button_musicPlay);
+        mButtonPause = (Button) findViewById(R.id.button_musicPause);
+        mButtonStop = (Button) findViewById(R.id.button_musicStop);
+        mButtonNextSong = (Button) findViewById(R.id.button_musicNextSong);
+        mButtonPrevSong = (Button) findViewById(R.id.button_musicPreviousSong);
+        mButtonVolumeUp = (Button) findViewById(R.id.button_musicVolumeUp);
+        mButtonVolumeDown = (Button) findViewById(R.id.button_musicVolumeDown);
+        mButtonShowPlaylist = (Button) findViewById(R.id.button_musicShowPlaylist);
+
+        mPickButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(@NonNull View v) {
+                Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
+                sendInt(ApplicationCsts.TRAFFIC_PICK_FILE);
+            }
+        });
+
+        mButtonPlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(@NonNull View v) {
+                Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
+                sendInt(ApplicationCsts.MUSIC_PLAY);
+            }
+        });
+
+        mButtonPause.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(@NonNull View v) {
+                Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
+                sendInt(ApplicationCsts.MUSIC_PAUSE);
+            }
+        });
+
+        mButtonStop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(@NonNull View v) {
+                Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
+                sendInt(ApplicationCsts.MUSIC_STOP);
+            }
+        });
+
+        mButtonNextSong.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(@NonNull View v) {
+                Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
+                sendInt(ApplicationCsts.MUSIC_NEXT);
+            }
+        });
+
+        mButtonPrevSong.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(@NonNull View v) {
+                Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
+                sendInt(ApplicationCsts.MUSIC_PREV);
+            }
+        });
+
+        mButtonVolumeUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(@NonNull View v) {
+                Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
+                sendInt(ApplicationCsts.MUSIC_VOLUME_UP);
+            }
+        });
+
+        mButtonVolumeDown.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(@NonNull View v) {
+                Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
+                sendInt(ApplicationCsts.MUSIC_VOLUME_DOWN);
+            }
+        });
+
+        mButtonShowPlaylist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(@NonNull View v) {
+                Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
+                sendInt(ApplicationCsts.MUSIC_GET_PLAYLIST);
+            }
+        });
+    }
+
+    private void registerSwitches() {
+        mSwitchLoop = (Switch) findViewById(R.id.switch_musicLoop);
+        mSwitchSingleLoop = (Switch) findViewById(R.id.switch_musicSingleLoop);
+        mSwitchShuffle = (Switch) findViewById(R.id.switch_musicShuffle);
+        mSwitchConsume = (Switch) findViewById(R.id.switch_musicConsume);
+
+        mSwitchLoop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(@NonNull View v) {
+                Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
+                sendInt(ApplicationCsts.MUSIC_LOOP);
+            }
+        });
+
+        mSwitchSingleLoop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(@NonNull View v) {
+                Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
+                sendInt(ApplicationCsts.MUSIC_SINGLE);
+            }
+        });
+
+        mSwitchShuffle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(@NonNull View v) {
+                Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
+                sendInt(ApplicationCsts.MUSIC_SHUFFLE);
+            }
+        });
+
+        mSwitchConsume.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(@NonNull View v) {
+                Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
+                sendInt(ApplicationCsts.MUSIC_CONSUME);
+            }
+        });
     }
 }

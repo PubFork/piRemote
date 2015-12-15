@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="music_play">Play</string>
+    <string name="music_stop">Stop</string>
+    <string name="music_pause">Pause</string>
+    <string name="music_previous">Previous</string>
+    <string name="music_next">Next</string>
+    <string name="music_volumeDown">Volume Down</string>
+    <string name="music_volumeUp">Volume Up</string>
+    <string name="music_volume">Vol.</string>
+    <string name="music_loop">Loop</string>
+    <string name="music_single">Single-Loop</string>
+    <string name="music_shuffle">Shuffle</string>
+    <string name="music_consume">Consume</string>
+    <string name="music_playlist">Show playlist</string>
+    <string name="music_defaultState">No song playing</string>
+</resources>
