@@ -15,6 +15,7 @@ import java.util.UUID;
 public class RadioPi extends AbstractApplication {
     Process p;
     String soundFile = "./radiopi2473/music/star_wars.wav";
+    String frequency = "96.9"; // use 96.9 or gge
 
     @Override
     public void onApplicationStart() {
@@ -30,6 +31,7 @@ public class RadioPi extends AbstractApplication {
     @Override
     public void onApplicationStateChange(ApplicationCsts.ApplicationState newState) {
         String str;
+        String executable = "pifm";
         if(newState.equals(RadioPiApplicationState.RADIO_PLAY)) {
             String executable = "pifm";
             String frequency = "96.9"; // use 96.9 or gge
@@ -49,6 +51,11 @@ public class RadioPi extends AbstractApplication {
         } else if(newState.equals(RadioPiApplicationState.RADIO_STOP)) {
             if (p!=null) {
                 p.destroy();
+                try {
+                    p.waitFor(); // wait for the child to terminate
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
             str = "Stop";
         } else {
@@ -96,6 +103,9 @@ public class RadioPi extends AbstractApplication {
 
     @Override
     public void onReceiveString(String str, UUID senderUUID) {
-        soundFile = str;
+        String []fileFreq = str.split(":");
+        soundFile = fileFreq[0];
+        frequency = fileFreq[1];
+        System.out.println("RadioPi: file and freqency set");
     }
 }
