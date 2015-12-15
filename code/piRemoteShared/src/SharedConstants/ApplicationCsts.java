@@ -86,4 +86,9 @@ public class ApplicationCsts implements Serializable {
     public static final int MUSIC_CONSUME = 33;
     public static final int MUSIC_PICK_FILE = 100;
     public static final int MUSIC_GET_PLAYLIST = 101;
+
+    public static final String MUSIC_PREFIX_SONG = "SONG: ";
+    public static final String MUSIC_PREFIX_EXTRA = "XTRA: ";
+    public static final String MUSIC_PREFIX_FILESELECTION = "FILE: ";
+    public static final String MUSIC_PREFIX_PLAYLIST = "LIST: ";
 }
