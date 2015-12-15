@@ -6,4 +6,7 @@
 
     <string name="toast_switch_app">Changed Application</string>
     <string name="toast_disconnected">Disconnected</string>
+
+    <string name="prev">Prev</string>
+    <string name="Next">Next</string>
 </resources>

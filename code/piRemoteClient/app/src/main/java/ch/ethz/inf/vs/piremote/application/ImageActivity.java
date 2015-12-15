@@ -18,6 +18,7 @@ public class ImageActivity extends AbstractClientActivity {
     private TextView pickedFile;
     private View progressView;
     private View imageView;
+    private Button prevButton, nextButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +35,21 @@ public class ImageActivity extends AbstractClientActivity {
             }
         });
 
+        prevButton = (Button) findViewById(R.id.button_prev_image);
+        prevButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendInt(ApplicationCsts.IMAGE_PREV);
+            }
+        });
+        nextButton = (Button) findViewById(R.id.button_next_image);
+        nextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendInt(ApplicationCsts.IMAGE_NEXT);
+            }
+        });
+        
         // shows picked file
         pickedFile = (TextView) findViewById(R.id.picked_path);
 
@@ -65,7 +81,7 @@ public class ImageActivity extends AbstractClientActivity {
 
     @Override
     protected void showProgress(boolean show) {
-        progressView.setVisibility(show ? View.VISIBLE : View.GONE);
-        imageView.setVisibility(show ? View.GONE : View.VISIBLE);
+        /*progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+        imageView.setVisibility(show ? View.GONE : View.VISIBLE);*/
     }
 }
