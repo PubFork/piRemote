@@ -22,6 +22,7 @@ public class RadioPiActivity extends AbstractClientActivity {
 
     // UI references
     private TextView mPathView;
+    private TextView mFreqView;
     private TextView mStatusView;
     private View mProgressView;
     private View mRadioPiView;
@@ -49,6 +50,7 @@ public class RadioPiActivity extends AbstractClientActivity {
 
         // Keep track of the text field to change the output text when a file was picked.
         mPathView = (TextView) findViewById(R.id.picked_path);
+        mFreqView = (TextView) findViewById(R.id.frequency);
 
         mStatusView = (TextView) findViewById(R.id.text_status);
 
@@ -66,6 +68,13 @@ public class RadioPiActivity extends AbstractClientActivity {
             @Override
             public void onClick(@NonNull View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
+
+                String filePath = mPathView.getText().toString();
+                String freq = mFreqView.getText().toString();
+                String stringBuild = filePath + ":" + freq;
+
+                Log.d(DEBUG_TAG, "String sent: " + stringBuild);
+                sendString(stringBuild);
                 sendInt(ApplicationCsts.RADIO_GO_INIT);
             }
         });
