@@ -21,12 +21,14 @@ import MessageObject.PayloadObject.IntMessage;
 import MessageObject.PayloadObject.Payload;
 import MessageObject.PayloadObject.ServerStateChange;
 import MessageObject.PayloadObject.StringMessage;
+import SharedConstants.ApplicationCsts;
 import SharedConstants.ApplicationCsts.ApplicationState;
 import SharedConstants.ApplicationCsts.TrafficLightApplicationState;
 import SharedConstants.ApplicationCsts.VideoApplicationState;
 import SharedConstants.CoreCsts.ServerState;
 import StateObject.State;
 import ch.ethz.inf.vs.piremote.R;
+import ch.ethz.inf.vs.piremote.application.ImageActivity;
 import ch.ethz.inf.vs.piremote.application.TrafficLightActivity;
 import ch.ethz.inf.vs.piremote.application.VideoActivity;
 
@@ -201,6 +203,9 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
             case NONE:
                 newApplication = AppChooserActivity.class; // No application is running: The client may choose an application to run.
                 break;
+            case IMAGE:
+                newApplication = ImageActivity.class;
+                break;
             default:
                 newApplication = MainActivity.class; // Server timed out: Disconnect and switch back to the MainActivity.
                 break;
@@ -216,6 +221,8 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
             case VIDEO:
                 applicationStartIntent.putExtra(AppConstants.EXTRA_STATE, (VideoApplicationState) state.getApplicationState());
                 break;
+            case IMAGE:
+                applicationStartIntent.putExtra(AppConstants.EXTRA_STATE, (ApplicationCsts.ImageApplicationState) state.getApplicationState());
             default:
                 break;
         }

@@ -25,8 +25,10 @@ public class ImageActivity extends AbstractClientActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image);
 
+        /*
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        */
 
         // pick file button
         Button pickButton = (Button) findViewById(R.id.button_pick);
