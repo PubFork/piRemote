@@ -144,6 +144,6 @@ public class ImageApplication extends AbstractApplication implements ProcessList
         processExitDetector.removeProcessListener(this);
         processExitDetector = null;
         fehProcess=null;
-        changeApplicationState(ApplicationCsts.VideoApplicationState.VIDEO_STOPPED);
+        changeApplicationState(ApplicationCsts.ImageApplicationState.IMAGE_NOT_DISPLAYED);
     }
 }
