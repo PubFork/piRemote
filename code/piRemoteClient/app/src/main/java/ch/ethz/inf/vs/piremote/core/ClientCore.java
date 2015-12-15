@@ -41,7 +41,7 @@ public class ClientCore implements Runnable {
     private final ClientNetwork clientNetwork; // Keep track of all activities in the background
     private final AtomicBoolean connected = new AtomicBoolean(false);
 
-    boolean serverDown = false; // flag to indicate receive of notification that server does not react anymore
+    boolean serverDownReceived = false; // flag to indicate receive of notification that server does not react anymore
 
     private final String DEBUG_TAG = "# Core #";
     private final String ERROR_TAG = "# Core ERROR #";
@@ -59,7 +59,7 @@ public class ClientCore implements Runnable {
         establishConnection();  // start the network and connect to the server
 
         // handle messages on the mainQueue that arrived over the network
-        while (clientNetwork.isRunning()) {
+        while (clientNetwork.isRunning() || !mainQueue.isEmpty() || !serverDownReceived) {
             try {
                 Message msg = mainQueue.take();
                 processMessage(msg);
@@ -67,13 +67,14 @@ public class ClientCore implements Runnable {
                 Log.e(ERROR_TAG, "Unable to take message from the queue. ", e.getCause());
             }
         } // terminates as soon as the clientNetwork disconnects from the server
+        Log.d(DEBUG_TAG, "Core ended.");
     }
 
     private void establishConnection() {
         clientNetwork.startNetwork();
         clientNetwork.connectToServer();
         connected.set(true);
-        serverDown = false;
+        serverDownReceived = false;
     }
 
     void destroyConnection() {
@@ -94,7 +95,7 @@ public class ClientCore implements Runnable {
             Log.d(DEBUG_TAG, "Inconsistent server state.");
             // Inconsistent state: Change the serverState before looking at the payload.
             if (msg.getServerState() == ServerState.SERVER_DOWN) {
-                serverDown = true;
+                serverDownReceived = true;
             }
             coreApplication.startAbstractActivity(msg.getState());
             serverState = msg.getServerState(); // Update state

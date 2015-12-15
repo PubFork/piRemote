@@ -32,6 +32,7 @@ public class ApplicationCsts implements Serializable {
     public static final int TRAFFIC_GO_RED = 2;
     public static final int TRAFFIC_PICK_FILE = 3;
 
+
     // VideoApplication
     public enum VideoApplicationState implements ApplicationState{
         VIDEO_STOPPED,
@@ -49,16 +50,17 @@ public class ApplicationCsts implements Serializable {
     public static final int VIDEO_VOLUME_DECREASE = 8;
     public static final int VIDEO_PICK_FILE = 9;
 
+
     // ImageApplication
     public enum ImageApplicationState implements ApplicationState{
         IMAGE_DISPLAYED,
         IMAGE_NOT_DISPLAYED
     }
-
     public static final int IMAGE_PICK_FILE = 0;
     public static final int IMAGE_SHOW = 1;
     public static final int IMAGE_HIDE = 2;
-    
+
+
     // RadioPiApplication
     public enum RadioPiApplicationState implements ApplicationState{
         RADIO_STOP("Stop"),
