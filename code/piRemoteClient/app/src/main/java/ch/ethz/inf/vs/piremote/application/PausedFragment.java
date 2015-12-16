@@ -45,12 +45,13 @@ public class PausedFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_play, container, false);
+        View view = inflater.inflate(R.layout.fragment_paused, container, false);
         Button mPause = (Button) view.findViewById(R.id.button_play_pause);
         mPause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
+                Log.d(DEBUG_TAG, "Button name" + ((Button) v).getText().toString());
                 mCallback.onButtonPressed(ApplicationCsts.VIDEO_PLAY);
             }
         });
