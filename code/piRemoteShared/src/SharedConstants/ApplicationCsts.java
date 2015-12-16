@@ -49,18 +49,37 @@ public class ApplicationCsts implements Serializable {
     public static final int VIDEO_VOLUME_INCREASE = 7;
     public static final int VIDEO_VOLUME_DECREASE = 8;
     public static final int VIDEO_PICK_FILE = 9;
+    public static final int VIDEO_LEAP_BACK = 10;
+    public static final int VIDEO_LEAP_FORWARD = 11;
+    public static final int VIDEO_TOGGLE_SUBTITLES = 12;
 
 
-    // ImageApplication
-    public enum ImageApplicationState implements ApplicationState{
-        IMAGE_DISPLAYED,
-        IMAGE_NOT_DISPLAYED
+    // MusicPlayerApplication
+    public enum MusicApplicationState implements ApplicationState {
+        MUSIC_STOPPED,
+        MUSIC_PLAYING,
+        MUSIC_PAUSED
     }
-    public static final int IMAGE_PICK_FILE = 0;
-    public static final int IMAGE_SHOW = 1;
-    public static final int IMAGE_HIDE = 2;
-    public static final int IMAGE_PREV = 3;
-    public static final int IMAGE_NEXT = 4;
+    public static final int MUSIC_PLAY = 0;
+    public static final int MUSIC_PAUSE = 1;
+    public static final int MUSIC_STOP = 2;
+    public static final int MUSIC_STATUS = 3;
+    public static final int MUSIC_GET_CURRENT = 4;
+    public static final int MUSIC_NEXT = 10;
+    public static final int MUSIC_PREV = 11;
+    public static final int MUSIC_VOLUME_UP = 20;
+    public static final int MUSIC_VOLUME_DOWN = 21;
+    public static final int MUSIC_LOOP = 30;
+    public static final int MUSIC_SINGLE = 31;
+    public static final int MUSIC_SHUFFLE = 32;
+    public static final int MUSIC_CONSUME = 33;
+    public static final int MUSIC_PICK_FILE = 100;
+    public static final int MUSIC_GET_PLAYLIST = 101;
+
+    public static final String MUSIC_PREFIX_SONG = "SONG: ";
+    public static final String MUSIC_PREFIX_EXTRA = "XTRA: ";
+    public static final String MUSIC_PREFIX_FILESELECTION = "FILE: ";
+    public static final String MUSIC_PREFIX_PLAYLIST = "LIST: ";
 
 
     // RadioPiApplication
@@ -83,4 +102,16 @@ public class ApplicationCsts implements Serializable {
     public static final int RADIO_GO_INIT = 1;
     public static final int RADIO_GO_STOP = 2;
     public static final int RADIO_PICK_FILE = 3;
+
+
+    // ImageApplication
+    public enum ImageApplicationState implements ApplicationState{
+        IMAGE_DISPLAYED,
+        IMAGE_NOT_DISPLAYED
+    }
+    public static final int IMAGE_PICK_FILE = 0;
+    public static final int IMAGE_SHOW = 1;
+    public static final int IMAGE_HIDE = 2;
+    public static final int IMAGE_PREV = 3;
+    public static final int IMAGE_NEXT = 4;
 }

@@ -9,7 +9,8 @@ import java.util.UUID;
 /**
  * Created by sandro on 08.12.15.
  * Application for playing videos and music (not optimized for music content though)
- * In order to get this running, you MUST create a file /home/pi/.omxplayer with the following content:
+ * In order to get this running with omxplayer, you MUST create a file ~/.omxplayer with the following content:
+ * (note that PAUSE: has a space behind it)
      DECREASE_SPEED:1
      INCREASE_SPEED:2
      REWIND:<
@@ -33,6 +34,12 @@ import java.util.UUID;
      SEEK_BACK_LARGE:y
      SEEK_FORWARD_LARGE:v
      STEP:p
+     TOGGLE_SUBTITLE:s
+ * In order to get this runnning with mplayer, you MUST create a file ~/.mplayer/input.conf with the following content:
+     ' seek +30
+     " seek -30
+     & seek +600
+     % seek -600
  */
 public class VideoApplication extends AbstractApplication implements ProcessListener {
 
@@ -45,6 +52,7 @@ public class VideoApplication extends AbstractApplication implements ProcessList
     BufferedReader omxReader = null;
     BufferedWriter omxWriter = null;
     ProcessExitDetector processExitDetector = null;
+    boolean useOmxPlayer = true; // If false, will use keys for mplayer
 
     @Override
     public void onApplicationStart() {
@@ -119,22 +127,40 @@ public class VideoApplication extends AbstractApplication implements ProcessList
                         requestProcessStop();
                         break;
                     case ApplicationCsts.VIDEO_JUMP_BACK:
-                        sendToProcess("x");
+                        if(useOmxPlayer) sendToProcess("x");
+                        else sendToProcess("\"");
                         break;
                     case ApplicationCsts.VIDEO_JUMP_FORWARD:
-                        sendToProcess("c");
+                        if(useOmxPlayer) sendToProcess("c");
+                        else sendToProcess("\'");
+                        break;
+                    case ApplicationCsts.VIDEO_LEAP_BACK:
+                        if(useOmxPlayer) sendToProcess("y");
+                        else sendToProcess("%");
+                        break;
+                    case ApplicationCsts.VIDEO_LEAP_FORWARD:
+                        if(useOmxPlayer) sendToProcess("v");
+                        else sendToProcess("&");
                         break;
                     case ApplicationCsts.VIDEO_SPEED_SLOWER:
-                        sendToProcess("2");
+                        if(useOmxPlayer) sendToProcess("1");
+                        else sendToProcess("[");
                         break;
                     case ApplicationCsts.VIDEO_SPEED_FASTER:
-                        sendToProcess("1");
+                        if(useOmxPlayer) sendToProcess("2");
+                        else sendToProcess("]");
                         break;
                     case ApplicationCsts.VIDEO_VOLUME_INCREASE:
-                        sendToProcess("+");
+                        if(useOmxPlayer) sendToProcess("+");
+                        else sendToProcess("*");
                         break;
                     case ApplicationCsts.VIDEO_VOLUME_DECREASE:
-                        sendToProcess("-");
+                        if(useOmxPlayer) sendToProcess("-");
+                        else sendToProcess("/");
+                        break;
+                    case ApplicationCsts.VIDEO_TOGGLE_SUBTITLES:
+                        if(useOmxPlayer) sendToProcess("s");
+                        else sendToProcess("v");
                         break;
                     default:
                         System.out.println("VideoApplication: Warning: Ignoring invalid value: "+Integer.toString(i));
@@ -157,8 +183,16 @@ public class VideoApplication extends AbstractApplication implements ProcessList
     }
 
     void startProcess(String path){
-        processBuilder = new ProcessBuilder("/usr/bin/omxplayer", "-b", "--key-config","/home/pi/.omxplayer", path); // uncomment on raspberry
-        //processBuilder = new ProcessBuilder("/usr/bin/mplayer", "-fs", path); // uncomment on laptop
+        File omx = new File("/usr/bin/omxplayer");
+        if(omx.exists()){
+            // Omxplayer detected, use it
+            useOmxPlayer = true;
+            processBuilder = new ProcessBuilder("/usr/bin/omxplayer", "-b", "--key-config","/home/pi/.omxplayer", path);
+        }else{
+            // Fallback to mplayer
+            useOmxPlayer = false;
+            processBuilder = new ProcessBuilder("/usr/bin/mplayer", "-fs", path);
+        }
         processBuilder.redirectErrorStream(true);
         try {
             omxProcess = processBuilder.start();

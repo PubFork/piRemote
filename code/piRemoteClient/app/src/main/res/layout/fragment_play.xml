@@ -36,21 +36,22 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/speed_faster"
-            android:layout_below="@+id/button_next"
+            android:layout_alignTop="@+id/button_slower"
             android:layout_alignParentEnd="true" />
         <Button
             android:id="@+id/button_slower"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/speed_slower"
-            android:layout_above="@+id/button_softer"
+            android:layout_marginTop="55dp"
+            android:layout_below="@+id/button_softer"
             android:layout_alignParentStart="true" />
         <Button
             android:id="@+id/button_stop"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/stop"
-            android:layout_alignTop="@+id/button_slower"
+            android:layout_below="@+id/button_play_pause"
             android:layout_alignStart="@+id/button_play_pause" />
 
         <Button
@@ -58,7 +59,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/volume_increase"
-            android:layout_below="@+id/button_faster"
+            android:layout_below="@+id/button_tobblesubs"
             android:layout_alignParentEnd="true" />
 
         <Button
@@ -66,8 +67,32 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/volume_decrease"
-            android:layout_alignTop="@+id/button_louder"
+            android:layout_below="@+id/button_tobblesubs"
             android:layout_alignParentStart="true" />
+
+        <Button
+            android:id="@+id/button_leapback"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/leap_back"
+            android:layout_below="@+id/button_previous"
+            android:layout_alignParentStart="true" />
+
+        <Button
+            android:id="@+id/button_leapforward"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/leap_forward"
+            android:layout_below="@+id/button_next"
+            android:layout_alignStart="@+id/button_next" />
+
+        <Button
+            android:id="@+id/button_tobblesubs"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/toggle_subs"
+            android:layout_below="@+id/button_leapforward"
+            android:layout_alignStart="@+id/button_stop" />
     </RelativeLayout>
 
 </FrameLayout>

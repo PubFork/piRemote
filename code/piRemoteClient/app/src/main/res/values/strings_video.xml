@@ -5,8 +5,11 @@
     <string name="pause">Pause</string>
     <string name="jump_back">Back</string>
     <string name="jump_forward">Forward</string>
+    <string name="leap_back">Back!</string>
+    <string name="leap_forward">Forward!</string>
+    <string name="toggle_subs">Subs</string>
     <string name="speed_slower">Slower</string>
     <string name="speed_faster">Faster</string>
-    <string name="volume_increase">Louder</string>
-    <string name="volume_decrease">Softer</string>
+    <string name="volume_increase">+</string>
+    <string name="volume_decrease">-</string>
 </resources>

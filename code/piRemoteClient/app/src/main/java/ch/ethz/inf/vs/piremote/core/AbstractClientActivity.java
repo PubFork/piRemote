@@ -21,8 +21,9 @@ import MessageObject.PayloadObject.IntMessage;
 import MessageObject.PayloadObject.Payload;
 import MessageObject.PayloadObject.ServerStateChange;
 import MessageObject.PayloadObject.StringMessage;
-import SharedConstants.ApplicationCsts;
 import SharedConstants.ApplicationCsts.ApplicationState;
+import SharedConstants.ApplicationCsts.ImageApplicationState;
+import SharedConstants.ApplicationCsts.MusicApplicationState;
 import SharedConstants.ApplicationCsts.RadioPiApplicationState;
 import SharedConstants.ApplicationCsts.TrafficLightApplicationState;
 import SharedConstants.ApplicationCsts.VideoApplicationState;
@@ -30,6 +31,7 @@ import SharedConstants.CoreCsts.ServerState;
 import StateObject.State;
 import ch.ethz.inf.vs.piremote.R;
 import ch.ethz.inf.vs.piremote.application.ImageActivity;
+import ch.ethz.inf.vs.piremote.application.MusicActivity;
 import ch.ethz.inf.vs.piremote.application.RadioPiActivity;
 import ch.ethz.inf.vs.piremote.application.TrafficLightActivity;
 import ch.ethz.inf.vs.piremote.application.VideoActivity;
@@ -106,6 +108,8 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
             Intent networkDestroyedIntent = new Intent(this, MainActivity.class);
             networkDestroyedIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(networkDestroyedIntent);
+        } else if (clientCore != null) {
+            startAbstractActivity(clientCore.getState());
         }
     }
 
@@ -204,14 +208,17 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
             case VIDEO:
                 newApplication = VideoActivity.class;
                 break;
+            case MUSIC:
+                newApplication = MusicActivity.class;
+                break;
             case RADIO_PI:
                 newApplication = RadioPiActivity.class;
                 break;
-            case NONE:
-                newApplication = AppChooserActivity.class; // No application is running: The client may choose an application to run.
-                break;
             case IMAGE:
                 newApplication = ImageActivity.class;
+                break;
+            case NONE:
+                newApplication = AppChooserActivity.class; // No application is running: The client may choose an application to run.
                 break;
             default:
                 newApplication = MainActivity.class; // Server timed out: Disconnect and switch back to the MainActivity.
@@ -228,11 +235,14 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
             case VIDEO:
                 applicationStartIntent.putExtra(AppConstants.EXTRA_STATE, (VideoApplicationState) state.getApplicationState());
                 break;
-            case IMAGE:
-                applicationStartIntent.putExtra(AppConstants.EXTRA_STATE, (ApplicationCsts.ImageApplicationState) state.getApplicationState());
+            case MUSIC:
+                applicationStartIntent.putExtra(AppConstants.EXTRA_STATE, (MusicApplicationState) state.getApplicationState());
                 break;
             case RADIO_PI:
                 applicationStartIntent.putExtra(AppConstants.EXTRA_STATE, (RadioPiApplicationState) state.getApplicationState());
+                break;
+            case IMAGE:
+                applicationStartIntent.putExtra(AppConstants.EXTRA_STATE, (ImageApplicationState) state.getApplicationState());
                 break;
             default:
                 break;
@@ -292,7 +302,7 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
      * @param newState the ServerState the application wants to change to
      */
     protected final void sendServerStateChange(ServerState newState) {
-        Log.d(DEBUG_TAG, "Request to change the sever state to _: " + newState);
+        Log.d(DEBUG_TAG, "Request to change the server state to _: " + newState);
         // Do not yet change the serverState locally, but rather wait for a state update (confirmation) from the server.
         showProgress(true);
         clientCore.sendMessage(clientCore.makeMessage(new ServerStateChange(newState))); // Send request to the server
