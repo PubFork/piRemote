@@ -23,6 +23,7 @@ import MessageObject.PayloadObject.ServerStateChange;
 import MessageObject.PayloadObject.StringMessage;
 import SharedConstants.ApplicationCsts;
 import SharedConstants.ApplicationCsts.ApplicationState;
+import SharedConstants.ApplicationCsts.MusicApplicationState;
 import SharedConstants.ApplicationCsts.RadioPiApplicationState;
 import SharedConstants.ApplicationCsts.TrafficLightApplicationState;
 import SharedConstants.ApplicationCsts.VideoApplicationState;
@@ -199,23 +200,23 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
     private void startAbstractActivity(@NonNull State state) {
         Class newApplication; // Start activity depending on the server state denoting which application to start.
         switch (state.getServerState()) {
-            case MUSIC:
-                newApplication = MusicActivity.class;
-                break;
             case TRAFFIC_LIGHT:
                 newApplication = TrafficLightActivity.class;
                 break;
             case VIDEO:
                 newApplication = VideoActivity.class;
                 break;
+            case IMAGE:
+                newApplication = ImageActivity.class;
+                break;
             case RADIO_PI:
                 newApplication = RadioPiActivity.class;
                 break;
+            case MUSIC:
+                newApplication = MusicActivity.class;
+                break;
             case NONE:
                 newApplication = AppChooserActivity.class; // No application is running: The client may choose an application to run.
-                break;
-            case IMAGE:
-                newApplication = ImageActivity.class;
                 break;
             default:
                 newApplication = MainActivity.class; // Server timed out: Disconnect and switch back to the MainActivity.
@@ -226,9 +227,6 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
 
         // If the application is already running on the server, wee need to forward the dictated state.
         switch (state.getServerState()) {
-            case MUSIC:
-                applicationStartIntent.putExtra(AppConstants.EXTRA_STATE, (ApplicationCsts.MusicApplicationState) state.getApplicationState());
-                break;
             case TRAFFIC_LIGHT:
                 applicationStartIntent.putExtra(AppConstants.EXTRA_STATE, (TrafficLightApplicationState) state.getApplicationState());
                 break;
@@ -240,6 +238,9 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
                 break;
             case RADIO_PI:
                 applicationStartIntent.putExtra(AppConstants.EXTRA_STATE, (RadioPiApplicationState) state.getApplicationState());
+                break;
+            case MUSIC:
+                applicationStartIntent.putExtra(AppConstants.EXTRA_STATE, (MusicApplicationState) state.getApplicationState());
                 break;
             default:
                 break;
@@ -299,7 +300,7 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
      * @param newState the ServerState the application wants to change to
      */
     protected final void sendServerStateChange(ServerState newState) {
-        Log.d(DEBUG_TAG, "Request to change the sever state to _: " + newState);
+        Log.d(DEBUG_TAG, "Request to change the server state to _: " + newState);
         // Do not yet change the serverState locally, but rather wait for a state update (confirmation) from the server.
         showProgress(true);
         clientCore.sendMessage(clientCore.makeMessage(new ServerStateChange(newState))); // Send request to the server
