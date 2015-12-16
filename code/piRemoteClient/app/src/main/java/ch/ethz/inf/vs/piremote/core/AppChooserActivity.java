@@ -42,7 +42,7 @@ public class AppChooserActivity extends AbstractClientActivity {
 
         // Display the available applications in a ListView.
         ListView mApplicationList = (ListView) findViewById(R.id.list_applications);
-        mApplicationList.setAdapter(new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, applicationNames));
+        mApplicationList.setAdapter(new ArrayAdapter<>(this, R.layout.custom_textview, applicationNames));
 
         mApplicationList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
