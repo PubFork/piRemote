@@ -52,7 +52,6 @@ public class PausedFragment extends Fragment {
             @Override
             public void onClick(@NonNull View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
-                Log.d(DEBUG_TAG, "Button name" + ((Button) v).getText().toString());
                 mCallback.onButtonPressed(ApplicationCsts.VIDEO_PLAY);
             }
         });
