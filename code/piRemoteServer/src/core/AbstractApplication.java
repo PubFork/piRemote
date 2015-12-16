@@ -68,7 +68,7 @@ public abstract class AbstractApplication {
         File f = new File(path);
         if(f.exists() && f.isDirectory()){
             ServerCore.setFilePickerBasePath(path);
-            ServerCore.sendMessage(ServerCore.makeOffer(destination,f, true));
+            ServerCore.sendMessage(ServerCore.makeOffer(destination,f, true, false));
         }else System.out.println("WARNING: <"+path+"> is not a valid directory on this machine!");
     }
 

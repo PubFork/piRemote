@@ -152,7 +152,7 @@ public class ServerCore{
                     if(f.exists()){
                         if(f.isDirectory()){
                             // Directory picked
-                            sendMessage(makeOffer(msg.getUuid(), f, false));
+                            sendMessage(makeOffer(msg.getUuid(), f, false, false));
                         }else{
                             // File picked
                             if(application != null) application.onFilePicked(f,msg.getUuid());
@@ -218,7 +218,7 @@ public class ServerCore{
         }
     }
 
-    protected static Message makeOffer(@NotNull UUID recipient, @NotNull File dir, boolean firstTime){
+    protected static Message makeOffer(@NotNull UUID recipient, @NotNull File dir, boolean firstTime, boolean showHidden){
         // This takes a recipient and a File (must be a directory!) and returns a message with an Offer Payload
         //    containing a list of the contents in the specified directory.
         Offer offerPayload = new Offer();
@@ -231,7 +231,9 @@ public class ServerCore{
             for (File path : contents) {
                 String pathtoSend=path.getName();
                 if(path.isDirectory()) pathtoSend+="/";
-                offerPayload.paths.add(pathtoSend);
+                if (showHidden || !pathtoSend.startsWith(".")) { // depending on flag showHidden, shows hidden files and dirs
+                    offerPayload.paths.add(pathtoSend);
+                }
             }
             return makeMessage(recipient, offerPayload);
         }else{
