@@ -9,212 +9,169 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="ch.ethz.inf.vs.piremote.application.MusicActivity">
 
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/title_dialog_file_picker"
+        android:id="@+id/button_musicFilePicker"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/no_file_picked"
+        android:id="@+id/textView_musicFilePicker"
+        android:textAlignment="textEnd"
+        android:layout_below="@+id/button_musicFilePicker"
+        android:layout_alignParentStart="true" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/linearLayout_musicModes"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true">
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_repeat_black_48dp"
+            android:id="@+id/imageButton_musicLoop"
+            android:layout_weight="1"
+            style="?android:attr/borderlessButtonStyle" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_shuffle_black_48dp"
+            android:id="@+id/imageButton_musicShuffle"
+            android:layout_weight="1"
+            style="?android:attr/borderlessButtonStyle" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_repeat_one_black_48dp"
+            android:id="@+id/imageButton_musicSingleLoop"
+            android:layout_weight="1"
+            style="?android:attr/borderlessButtonStyle" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_not_interested_black_48dp"
+            android:id="@+id/imageButton_musicConsume"
+            android:layout_weight="1"
+            style="?android:attr/borderlessButtonStyle" />
+    </LinearLayout>
+
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/linearLayout_musicModes"
+        android:id="@+id/linearLayout_musicBasic">
 
-        <ProgressBar
-            style="?android:attr/progressBarStyleHorizontal"
+        <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/music_viewProgress" />
+            android:src="@drawable/ic_skip_previous_black_48dp"
+            android:id="@+id/imageButton_musicPreviousSong"
+            android:layout_weight="1"
+            style="?android:attr/borderlessButtonStyle" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_play_arrow_black_48dp"
+            android:id="@+id/imageButton_musicPlayPause"
+            android:layout_weight="1"
+            style="?android:attr/borderlessButtonStyle" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_stop_black_48dp"
+            android:id="@+id/imageButton_musicStop"
+            android:layout_weight="1"
+            style="?android:attr/borderlessButtonStyle" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_skip_next_black_48dp"
+            android:id="@+id/imageButton_musicNextSong"
+            android:layout_weight="1"
+            style="?android:attr/borderlessButtonStyle" />
     </LinearLayout>
 
-    <RelativeLayout
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/scrollView"
+        android:layout_alignParentStart="true"
+        android:layout_above="@+id/textView_musicCurrentSong"
+        android:layout_below="@+id/textView_musicFilePicker">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView_musicPlaylist" />
+    </ScrollView>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/music_playlist"
+        android:id="@+id/button_musicShowPlaylist"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@+id/button_musicFilePicker" />
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/music_defaultState"
+        android:id="@+id/textView_musicCurrentSong"
+        android:layout_above="@+id/linearLayout_musicVolume"
+        android:layout_alignParentStart="true" />
+
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/music_ViewControls" >
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/title_dialog_file_picker"
-            android:id="@+id/button_musicFilePicker"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true" />
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/linearLayout_musicBasic"
+        android:layout_alignParentStart="true"
+        android:id="@+id/linearLayout_musicVolume">
 
         <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="@string/no_file_picked"
-            android:id="@+id/textView_musicFilePicker"
-            android:textAlignment="textEnd"
-            android:layout_below="@+id/button_musicFilePicker"
-            android:layout_alignParentStart="true" />
-
-        <GridLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:columnCount="2"
-            android:rowCount="2"
-            android:id="@+id/gridLayout_musicModes"
-            android:layout_above="@+id/gridLayout_musicSeeking"
-            android:layout_alignParentStart="true">
-
-            <Switch
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/music_loop"
-                android:id="@+id/switch_musicLoop"
-                android:layout_row="0"
-                android:layout_column="0"
-                android:layout_columnWeight="1" />
-
-            <Switch
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/music_shuffle"
-                android:id="@+id/switch_musicShuffle"
-                android:checked="false"
-                android:layout_column="1"
-                android:layout_row="0"
-                android:layout_columnWeight="1" />
-
-            <Switch
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/music_single"
-                android:id="@+id/switch_musicSingleLoop"
-                android:layout_column="0"
-                android:layout_row="1"
-                android:layout_columnWeight="1" />
-
-            <Switch
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/music_consume"
-                android:id="@+id/switch_musicConsume"
-                android:layout_column="1"
-                android:layout_row="1"
-                android:layout_columnWeight="1" />
-        </GridLayout>
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true"
-            android:id="@+id/linearLayout_musicBasic">
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/music_pause"
-                android:id="@+id/button_musicPause"
-                android:layout_weight="1" />
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/music_play"
-                android:id="@+id/button_musicPlay"
-                android:layout_weight="1" />
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/music_stop"
-                android:id="@+id/button_musicStop"
-                android:layout_weight="1" />
-        </LinearLayout>
-
-        <GridLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:columnCount="3"
-            android:rowCount="3"
-            android:id="@+id/gridLayout_musicSeeking"
-            android:layout_above="@+id/linearLayout_musicBasic"
-            android:layout_alignParentStart="true">
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/music_previous"
-                android:id="@+id/button_musicPreviousSong"
-                android:layout_column="1"
-                android:layout_row="0"
-                android:layout_columnWeight="1" />
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/music_next"
-                android:id="@+id/button_musicNextSong"
-                android:layout_columnWeight="1"
-                android:layout_column="2"
-                android:layout_row="0" />
-
-        </GridLayout>
-
-        <ScrollView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/scrollView"
-            android:layout_alignParentStart="true"
-            android:layout_above="@+id/textView_musicCurrentSong"
-            android:layout_below="@+id/textView_musicFilePicker">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/textView_musicPlaylist" />
-        </ScrollView>
-
-        <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/music_playlist"
-            android:id="@+id/button_musicShowPlaylist"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true"
-            android:layout_toStartOf="@+id/button_musicFilePicker" />
-
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="@string/music_defaultState"
-            android:id="@+id/textView_musicCurrentSong"
-            android:layout_above="@+id/linearLayout_musicVolume"
-            android:layout_alignParentStart="true" />
+            android:text="@string/music_volume"
+            android:id="@+id/textView_musicCurrentVolume"
+            android:layout_weight="1" />
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
+        <ImageButton
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/gridLayout_musicModes"
-            android:layout_alignParentStart="true"
-            android:id="@+id/linearLayout_musicVolume">
+            android:src="@drawable/ic_volume_mute_black_48dp"
+            android:id="@+id/imageButton_musicVolumeDown"
+            android:layout_weight="1" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="@string/music_volume"
-                android:id="@+id/textView_musicCurrentVolume"
-                android:layout_weight="1" />
+        <ImageButton
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_volume_up_black_48dp"
+            android:id="@+id/imageButton_musicVolumeUp"
+            android:layout_weight="1" />
 
-            <Button
-                style="?android:attr/buttonStyleSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/music_volumeDown"
-                android:id="@+id/button_musicVolumeDown"
-                android:layout_weight="1" />
-
-            <Button
-                style="?android:attr/buttonStyleSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/music_volumeUp"
-                android:id="@+id/button_musicVolumeUp"
-                android:layout_weight="1" />
-
-        </LinearLayout>
-    </RelativeLayout>
+    </LinearLayout>
 
 </RelativeLayout>
