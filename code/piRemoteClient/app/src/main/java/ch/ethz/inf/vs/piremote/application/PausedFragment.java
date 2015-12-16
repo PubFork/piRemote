@@ -98,8 +98,8 @@ public class PausedFragment extends Fragment {
             }
         });
 
-        Button mSlower = (Button) view.findViewById(R.id.button_faster);
-        mSlower.setOnClickListener(new View.OnClickListener() {
+        Button mFaster = (Button) view.findViewById(R.id.button_faster);
+        mFaster.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
@@ -107,8 +107,8 @@ public class PausedFragment extends Fragment {
             }
         });
 
-        Button mFaster = (Button) view.findViewById(R.id.button_slower);
-        mFaster.setOnClickListener(new View.OnClickListener() {
+        Button mSlower = (Button) view.findViewById(R.id.button_slower);
+        mSlower.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
