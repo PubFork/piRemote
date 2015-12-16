@@ -58,6 +58,7 @@ public class VideoActivity extends AbstractClientActivity implements PlayFragmen
 
         mProgressView = findViewById(R.id.view_progress);
 
+        //initialize all the fragments
         mStoppedFragment = new StoppedFragment();
         mStoppedFragment.setArguments(getIntent().getExtras());
 
@@ -79,7 +80,6 @@ public class VideoActivity extends AbstractClientActivity implements PlayFragmen
     @Override
     protected void onApplicationStateChange(ApplicationState newState) {
         Log.d(DEBUG_TAG, "Changing from state _ to _: " + applicationState + newState);
-
         updateVideoState((VideoApplicationState) newState);
     }
 
@@ -106,7 +106,7 @@ public class VideoActivity extends AbstractClientActivity implements PlayFragmen
     private void updateVideoState(VideoApplicationState newVideoState) {
         // Test whether the newState is set: Switch/case statement cannot handle null objects.
         if (newVideoState != null) {
-            switch (newVideoState) { // Change to new state.
+            switch (newVideoState) { // Change to new state by swapping the fragments inside the container
                 case VIDEO_PAUSED:
                     getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, mPausedFragment).commit();
                     break;

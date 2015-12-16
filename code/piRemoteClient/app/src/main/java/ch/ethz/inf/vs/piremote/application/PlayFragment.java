@@ -1,26 +1,24 @@
 package ch.ethz.inf.vs.piremote.application;
 
 import android.app.Activity;
-        import android.os.Bundle;
-        import android.support.annotation.NonNull;
-        import android.support.v4.app.Fragment;
-        import android.util.Log;
-        import android.view.LayoutInflater;
-        import android.view.View;
-        import android.view.ViewGroup;
-        import android.widget.Button;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 
 import SharedConstants.ApplicationCsts;
-        import ch.ethz.inf.vs.piremote.R;
+import ch.ethz.inf.vs.piremote.R;
 
 /**
- *
+ *  This fragment is used to control a playing video
  */
 public class PlayFragment extends Fragment {
 
     private final String DEBUG_TAG = "# VideoApp #";
-    private final String WARN_TAG = "# VideoApp WARN #";
     private onClickAction mCallback;
 
 
@@ -29,8 +27,9 @@ public class PlayFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
+    //This is implemented by the video activity to enable communication between fragment and activity
     public interface onClickAction {
-        public void onButtonPressed(int state);
+        void onButtonPressed(int state);
     }
 
     @Override
@@ -47,6 +46,8 @@ public class PlayFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_play, container, false);
+
+        //All buttons get a listener
         ImageButton mPause = (ImageButton) view.findViewById(R.id.button_play_pause);
         mPause.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -8,19 +8,18 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 
 import SharedConstants.ApplicationCsts;
 import ch.ethz.inf.vs.piremote.R;
 
 /**
- *
+ * This fragment is used to control a paused video. It provides the same functionality as the PlayFragment. The only significant difference is
+ * that there is a play button instead of a pause button
  */
 public class PausedFragment extends Fragment {
 
     private final String DEBUG_TAG = "# VideoApp #";
-    private final String WARN_TAG = "# VideoApp WARN #";
     private onClickAction mCallback;
 
 
@@ -28,9 +27,9 @@ public class PausedFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
-
+    //This is implemented by the video activity to enable communication between fragment and activity
     public interface onClickAction {
-        public void onButtonPressed(int state);
+        void onButtonPressed(int state);
     }
 
     @Override
@@ -47,6 +46,8 @@ public class PausedFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_paused, container, false);
+
+        //All buttons get a listener
         ImageButton mPause = (ImageButton) view.findViewById(R.id.button_play_pause);
         mPause.setOnClickListener(new View.OnClickListener() {
             @Override
