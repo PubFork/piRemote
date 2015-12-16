@@ -81,12 +81,29 @@ public class PlayFragment extends Fragment {
             }
         });
 
+        Button mLeapBack = (Button) view.findViewById(R.id.button_leapback);
+        mLeapBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(@NonNull View v) {
+                Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
+                mCallback.onButtonPressed(ApplicationCsts.VIDEO_LEAP_BACK);
+            }
+        });
+        Button mLeapForward = (Button) view.findViewById(R.id.button_leapforward);
+        mLeapForward.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(@NonNull View v) {
+                Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
+                mCallback.onButtonPressed(ApplicationCsts.VIDEO_LEAP_FORWARD);
+            }
+        });
+
         Button mSlower = (Button) view.findViewById(R.id.button_faster);
         mSlower.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
-                mCallback.onButtonPressed(ApplicationCsts.VIDEO_SPEED_SLOWER);
+                mCallback.onButtonPressed(ApplicationCsts.VIDEO_SPEED_FASTER);
             }
         });
 
@@ -95,7 +112,7 @@ public class PlayFragment extends Fragment {
             @Override
             public void onClick(@NonNull View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
-                mCallback.onButtonPressed(ApplicationCsts.VIDEO_SPEED_FASTER);
+                mCallback.onButtonPressed(ApplicationCsts.VIDEO_SPEED_SLOWER);
             }
         });
 
@@ -114,6 +131,15 @@ public class PlayFragment extends Fragment {
             public void onClick(@NonNull View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
                 mCallback.onButtonPressed(ApplicationCsts.VIDEO_VOLUME_DECREASE);
+            }
+        });
+
+        Button mTogglesubs = (Button) view.findViewById(R.id.button_tobblesubs);
+        mTogglesubs.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(@NonNull View v) {
+                Log.d(DEBUG_TAG, "Clicked button: " + v.toString());
+                mCallback.onButtonPressed(ApplicationCsts.VIDEO_TOGGLE_SUBTITLES);
             }
         });
         return view;

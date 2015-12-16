@@ -137,9 +137,11 @@ public class VideoApplication extends AbstractApplication implements ProcessList
                     case ApplicationCsts.VIDEO_LEAP_BACK:
                         if(useOmxPlayer) sendToProcess("y");
                         else sendToProcess("%");
+                        break;
                     case ApplicationCsts.VIDEO_LEAP_FORWARD:
                         if(useOmxPlayer) sendToProcess("v");
                         else sendToProcess("&");
+                        break;
                     case ApplicationCsts.VIDEO_SPEED_SLOWER:
                         if(useOmxPlayer) sendToProcess("1");
                         else sendToProcess("[");
@@ -159,6 +161,7 @@ public class VideoApplication extends AbstractApplication implements ProcessList
                     case ApplicationCsts.VIDEO_TOGGLE_SUBTITLES:
                         if(useOmxPlayer) sendToProcess("s");
                         else sendToProcess("v");
+                        break;
                     default:
                         System.out.println("VideoApplication: Warning: Ignoring invalid value: "+Integer.toString(i));
                         break;
