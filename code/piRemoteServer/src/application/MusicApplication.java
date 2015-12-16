@@ -30,6 +30,12 @@ public class MusicApplication extends AbstractApplication {
             changeApplicationState(MusicApplicationState.MUSIC_PAUSED);
         } else {
             changeApplicationState(MusicApplicationState.MUSIC_STOPPED);
+
+            // Load a default playlist if none is loaded
+            String playlistLoaded = executeCommand("mpc playlist", null);
+            if (playlistLoaded.contains("NULL")) {
+                executeCommand("mpc load default", null);
+            }
         }
     }
 
