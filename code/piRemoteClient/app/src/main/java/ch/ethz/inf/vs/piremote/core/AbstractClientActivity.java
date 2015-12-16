@@ -108,6 +108,8 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
             Intent networkDestroyedIntent = new Intent(this, MainActivity.class);
             networkDestroyedIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(networkDestroyedIntent);
+        } else if (clientCore != null) {
+            startAbstractActivity(clientCore.getState());
         }
     }
 
