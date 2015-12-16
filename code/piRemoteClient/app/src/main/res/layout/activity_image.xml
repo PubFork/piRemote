@@ -6,58 +6,47 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="ch.ethz.inf.vs.piremote.application.ImageActivity">
-
-    <android.support.design.widget.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
-
-    </android.support.design.widget.AppBarLayout>
+    tools:context=".application.ImageActivity">
 
     <RelativeLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingBottom="@dimen/activity_vertical_margin"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_vertical_margin"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:layout_height="match_parent">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/app_bar"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true">
+            android:theme="@style/AppTheme.AppBarOverlay">
 
-            <ProgressBar
-                android:id="@+id/view_progress"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="?android:attr/progressBarStyle"
-                android:visibility="gone" />
+        </android.support.design.widget.AppBarLayout>
 
-        </LinearLayout>
+        <ProgressBar
+            android:id="@+id/view_progress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/app_bar"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:indeterminate="true"
+            android:visibility="gone" />
 
         <RelativeLayout
-            android:id="@+id/view_image"
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/fragment_container">
-            </FrameLayout>
+            android:layout_height="match_parent"
+            android:layout_below="@+id/app_bar"
+            android:paddingBottom="@dimen/activity_vertical_margin"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingTop="@dimen/activity_vertical_margin"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <Button
                 android:id="@+id/button_pick"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/button_pick"
-                android:layout_below="@+id/fragment_container"
                 android:layout_alignParentStart="true" />
 
             <TextView
@@ -69,26 +58,16 @@
                 android:layout_alignBottom="@+id/button_pick"
                 android:layout_toEndOf="@+id/button_pick" />
 
-            <Button
-                android:id="@+id/button_prev_image"
-                android:layout_width="wrap_content"
+            <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/prev"
-                android:layout_alignTop="@+id/button_next_image"
-                android:layout_alignParentStart="true"
-                android:layout_marginStart="46dp" />
-
-            <Button
-                android:id="@+id/button_next_image"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/Next"
-                android:layout_below="@+id/picked_path"
-                android:layout_alignParentEnd="true"
-                android:layout_marginEnd="39dp"
-                android:layout_marginTop="56dp" />
+                android:id="@+id/fragment_container"
+                android:layout_centerVertical="true"
+                android:layout_alignParentStart="true">
+            </FrameLayout>
 
         </RelativeLayout>
+
     </RelativeLayout>
 
 </android.support.design.widget.CoordinatorLayout>

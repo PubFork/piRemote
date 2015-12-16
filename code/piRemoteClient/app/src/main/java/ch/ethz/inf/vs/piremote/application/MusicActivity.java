@@ -95,6 +95,8 @@ public class MusicActivity extends AbstractClientActivity {
         }
 
         mImageButtonUpdateState.performClick();
+
+        mProgressView = findViewById(R.id.view_progress);
     }
 
     /**
@@ -205,16 +207,6 @@ public class MusicActivity extends AbstractClientActivity {
             //TODO: Remove from productin app, merely used for general output for anything not specfically assigned.
             mTextViewPlaylist.setText(str);
         }
-    }
-
-    /**
-     * Overrides parent method. This application doesn't implement multiple views.
-     *
-     * @param show
-     */
-    @Override
-    protected void showProgress(boolean show) {
-        return;
     }
 
     /**
