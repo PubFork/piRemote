@@ -109,7 +109,7 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
             networkDestroyedIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(networkDestroyedIntent);
         } else if (clientCore != null) {
-            startAbstractActivity(clientCore.getState());
+            startAbstractActivity(clientCore.getState()); // update to current state
         }
     }
 
