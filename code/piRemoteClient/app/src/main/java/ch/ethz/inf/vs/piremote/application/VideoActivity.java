@@ -1,7 +1,5 @@
 package ch.ethz.inf.vs.piremote.application;
 
-import android.support.v4.app.Fragment;
-import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
@@ -16,8 +14,6 @@ import SharedConstants.ApplicationCsts.VideoApplicationState;
 import ch.ethz.inf.vs.piremote.R;
 import ch.ethz.inf.vs.piremote.core.AbstractClientActivity;
 import ch.ethz.inf.vs.piremote.core.AppConstants;
-import ch.ethz.inf.vs.piremote.application.StoppedFragment;
-import ch.ethz.inf.vs.piremote.application.PlayFragment;
 
 
 /**
@@ -27,8 +23,6 @@ public class VideoActivity extends AbstractClientActivity implements PlayFragmen
 
     // UI references
     private TextView mPathView;
-    private View mProgressView;
-    private View mVideoView;
     private StoppedFragment mStoppedFragment;
     private PlayFragment mPlayFragment;
     private PausedFragment mPausedFragment;
@@ -63,7 +57,6 @@ public class VideoActivity extends AbstractClientActivity implements PlayFragmen
         mPathView = (TextView) findViewById(R.id.picked_path);
 
         mProgressView = findViewById(R.id.view_progress);
-        mVideoView = findViewById(R.id.view_video);
 
         mStoppedFragment = new StoppedFragment();
         mStoppedFragment.setArguments(getIntent().getExtras());
@@ -104,13 +97,6 @@ public class VideoActivity extends AbstractClientActivity implements PlayFragmen
     protected void onReceiveString(String str) {
         Log.d(DEBUG_TAG, "Received a string: " + str);
         mPathView.setText(str);
-    }
-
-    @Override
-    protected void showProgress(boolean show) {
-        // Shows the progress UI and hides the video screen.
-        /*mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-        mVideoView.setVisibility(show ? View.GONE : View.VISIBLE);*/
     }
 
     /**

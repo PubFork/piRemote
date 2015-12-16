@@ -49,6 +49,7 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
 
     // UI references
     AlertDialog fpDialog;
+    protected View mProgressView;
 
     private final String DEBUG_TAG = "# AbstractApp #";
     private final String VERBOSE_TAG = "# AbstractApp VERBOSE #";
@@ -367,5 +368,9 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
     /**
      * Called to show the progress UI and hide the view of the current UI components.
      */
-    protected abstract void showProgress(boolean show);
+    void showProgress(boolean show) {
+        if (mProgressView != null) {
+            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+        }
+    }
 }

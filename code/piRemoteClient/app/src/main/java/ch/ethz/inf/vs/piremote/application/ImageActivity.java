@@ -16,8 +16,6 @@ public class ImageActivity extends AbstractClientActivity {
     private final String DEBUG_TAG = "# ImageApp #";
 
     private TextView pickedFile;
-    private View progressView;
-    private View imageView;
     private Button prevButton, nextButton;
 
     @Override
@@ -52,10 +50,6 @@ public class ImageActivity extends AbstractClientActivity {
         
         // shows picked file
         pickedFile = (TextView) findViewById(R.id.picked_path);
-
-        // spinning wheel
-        progressView = findViewById(R.id.view_progress);
-        imageView = findViewById(R.id.view_image);
     }
 
     @Override
@@ -77,11 +71,5 @@ public class ImageActivity extends AbstractClientActivity {
     protected void onReceiveString(String str) {
         Log.d(DEBUG_TAG, "Received a string: " + str);
         pickedFile.setText(str);
-    }
-
-    @Override
-    protected void showProgress(boolean show) {
-        /*progressView.setVisibility(show ? View.VISIBLE : View.GONE);
-        imageView.setVisibility(show ? View.GONE : View.VISIBLE);*/
     }
 }
