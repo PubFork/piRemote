@@ -59,13 +59,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
-                android:layout_marginTop="50dp">
+                android:layout_marginTop="50dp"
+                android:theme="@style/TextLabel">
 
                 <EditText
                     android:id="@+id/server_address"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/server_address"
+                    android:textColorHint="#cccccc"
+                    android:textColor="#cccccc"
                     android:inputType="number"
                     android:digits="0123456789."
                     android:maxLines="1"
@@ -78,7 +81,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/text_server_address"
-                android:layout_marginTop="50dp">
+                android:layout_marginTop="50dp"
+                android:theme="@style/TextLabel">
 
                 <EditText
                     android:id="@+id/server_port"
