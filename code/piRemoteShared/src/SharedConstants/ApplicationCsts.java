@@ -51,6 +51,9 @@ public class ApplicationCsts implements Serializable {
     public static final int VIDEO_VOLUME_INCREASE = 7;
     public static final int VIDEO_VOLUME_DECREASE = 8;
     public static final int VIDEO_PICK_FILE = 9;
+    public static final int VIDEO_LEAP_BACK = 10;
+    public static final int VIDEO_LEAP_FORWARD = 11;
+    public static final int VIDEO_TOGGLE_SUBTITLES = 12;
 
 
     // ImageApplication
