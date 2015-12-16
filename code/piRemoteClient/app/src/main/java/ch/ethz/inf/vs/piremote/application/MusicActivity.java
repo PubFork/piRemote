@@ -1,11 +1,13 @@
 package ch.ethz.inf.vs.piremote.application;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import SharedConstants.ApplicationCsts;
@@ -23,7 +25,6 @@ public class MusicActivity extends AbstractClientActivity {
     private Button mPickButton;
     private Button mButtonShowPlaylist;
 
-
     private ImageButton mImageButtonPlayPause;
     private ImageButton mImageButtonStop;
     private ImageButton mImageButtonNextSong;
@@ -34,6 +35,8 @@ public class MusicActivity extends AbstractClientActivity {
     private ImageButton mImageButtonSingleLoop;
     private ImageButton mImageButtonShuffle;
     private ImageButton mImageButtonConsume;
+
+    private SeekBar mSeekBarVolume;
 
     private final String INFO_TAG = "# Music #";
     private final String DEBUG_TAG = "# Music DEBUG #";
@@ -63,6 +66,26 @@ public class MusicActivity extends AbstractClientActivity {
 
         registerTextViews();
         registerButtons();
+
+        mSeekBarVolume = (SeekBar) findViewById(R.id.seekBar_musicVolume);
+        mSeekBarVolume.setMax(100);
+
+        mSeekBarVolume.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
 
         MusicApplicationState initMusicState = (MusicApplicationState) getIntent().getSerializableExtra(AppConstants.EXTRA_STATE);
 
@@ -123,20 +146,21 @@ public class MusicActivity extends AbstractClientActivity {
             // Set the volume view
             temp = playbackSettings.substring(volumeStart, volumeEnd);
             if (temp.contains(" ")) {
-                mTextViewVolume.setText(temp.substring(1) + "%");
+                mTextViewVolume.setText(temp.substring(1) + "%");;
             } else if (temp.contains("  ")) {
                 mTextViewVolume.setText(temp.substring(2) + "%");
             } else {
                 mTextViewVolume.setText(temp + "%");
             }
+            mSeekBarVolume.setProgress(Integer.getInteger(temp));
 
-            // Set the state of the loop switch
-            temp = playbackSettings.substring(loopStart, loopEnd);
-            Log.wtf(WTF_TAG, temp);
-            if (temp.contains("on")) {
-                mImageButtonLoop.setColorFilter(R.color.colorPrimary);
+            // Set the state of the loop button
+            if (playbackSettings.substring(loopStart, loopEnd).contains("on")) {
+                changeButtonFunction(mImageButtonLoop, R.drawable.ic_repeat_black_48dp, ApplicationCsts.MUSIC_SINGLE);
+            } else if (playbackSettings.substring(singleStart, singleEnd).contains("on")) {
+                changeButtonFunction(mImageButtonLoop, R.drawable.ic_repeat_one_black_48dp, ApplicationCsts.MUSIC_NOLOOPING);
             } else {
-                mImageButtonLoop.setColorFilter(null);
+                changeButtonFunction(mImageButtonLoop, R.drawable.ic_not_interested_black_48dp, ApplicationCsts.MUSIC_LOOP);
             }
 
             // Set the state of the shuffle switch
@@ -147,25 +171,6 @@ public class MusicActivity extends AbstractClientActivity {
             } else {
                 mImageButtonShuffle.setColorFilter(null);
             }
-
-            // Set the state of the single-loop switch
-            temp = playbackSettings.substring(singleStart, singleEnd);
-            Log.wtf(WTF_TAG, temp);
-            if (temp.contains("on")) {
-                mImageButtonSingleLoop.setColorFilter(R.color.colorPrimary);
-            } else {
-                mImageButtonSingleLoop.setColorFilter(null);
-            }
-
-            // Set the state of the consume switch
-            temp = playbackSettings.substring(consumeStart, consumeEnd);
-            Log.wtf(WTF_TAG, temp);
-            if (temp.contains("on")) {
-                mImageButtonConsume.setColorFilter(R.color.colorPrimary);
-            } else {
-                mImageButtonConsume.setColorFilter(null);
-            }
-
         } else if (str.startsWith(ApplicationCsts.MUSIC_PREFIX_PLAYLIST)) {
             // Fill the scrollable playlist window with the current playlist
             mTextViewPlaylist.setText(str.substring(ApplicationCsts.MUSIC_PREFIX_PLAYLIST.length()));
@@ -197,12 +202,12 @@ public class MusicActivity extends AbstractClientActivity {
         if (newMusicState != null) {
             if (newMusicState == MusicApplicationState.MUSIC_PAUSED) {
                 mTextViewCurrentSong.setText("Playback paused");
-                togglePlayPause(true);
+                changeButtonFunction(mImageButtonPlayPause, R.drawable.ic_play_arrow_black_48dp, ApplicationCsts.MUSIC_PLAY);
             } else if (newMusicState == MusicApplicationState.MUSIC_STOPPED) {
                 mTextViewCurrentSong.setText("Playback stopped");
-                togglePlayPause(true);
+                changeButtonFunction(mImageButtonPlayPause, R.drawable.ic_play_arrow_black_48dp, ApplicationCsts.MUSIC_PLAY);
             } else {
-                togglePlayPause(false);
+                changeButtonFunction(mImageButtonPlayPause, R.drawable.ic_pause_black_48dp, ApplicationCsts.MUSIC_PAUSE);
             }
         }
     }
@@ -334,30 +339,21 @@ public class MusicActivity extends AbstractClientActivity {
 
 
     /**
-     * Internal method used for toggling the Play-Pause button correctly.
-     * @param play If set to true, set play-button layout, else pause-button layout.
+     * Internal method to quickly change a button's layout and functionality.
+     * @param button Button to change.
+     * @param drawable Drawable that should be shown.
+     * @param constant New int the button should send upon pressing.
      */
-    private void togglePlayPause(Boolean play) {
-        mImageButtonPlayPause.setOnClickListener(null);
-        if (play) {
-            mImageButtonPlayPause.setImageResource(R.drawable.ic_play_arrow_black_48dp);
-            mImageButtonPlayPause.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(@NonNull View v) {
-                    Log.d(DEBUG_TAG, "Clicked ImageButton: " + v.toString());
-                    sendInt(ApplicationCsts.MUSIC_PLAY);
-                }
-            });
-        } else {
-            mImageButtonPlayPause.setImageResource(R.drawable.ic_pause_black_48dp);
-            mImageButtonPlayPause.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(@NonNull View v) {
-                    Log.d(DEBUG_TAG, "Clicked ImageButton: " + v.toString());
-                    sendInt(ApplicationCsts.MUSIC_PAUSE);
-                }
-            });
-        }
+    private void changeButtonFunction(ImageButton button, int drawable, final int constant) {
+        button.setOnClickListener(null);
+        button.setImageResource(drawable);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(DEBUG_TAG, "Clicked ImageButton: " + v.toString());
+                sendInt(constant);
+            }
+        });
     }
 
 }
