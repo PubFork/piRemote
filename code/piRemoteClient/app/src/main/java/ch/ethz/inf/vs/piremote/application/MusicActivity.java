@@ -185,14 +185,14 @@ public class MusicActivity extends AbstractClientActivity {
             if (statusLines.length > 1) {
 
                 if (statusLines[1].contains("paused")) {
-                    mTextViewCurrentSong.setText("Playback paused.");
+                    mTextViewCurrentSong.setText("Playback paused");
                 } else {
                     mTextViewCurrentSong.setText(statusLines[0]);
                 }
 
                 onReceiveString(ApplicationCsts.MUSIC_PREFIX_EXTRA + statusLines[2]);
             } else {
-                mTextViewCurrentSong.setText("Playback stopped.");
+                mTextViewCurrentSong.setText("Playback stopped");
                 onReceiveString(ApplicationCsts.MUSIC_PREFIX_EXTRA + statusLines[0]);
             }
 
