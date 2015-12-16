@@ -38,24 +38,8 @@
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_repeat_black_48dp"
-            android:id="@+id/imageButton_musicLoop"
-            android:layout_weight="1"
-            style="?android:attr/borderlessButtonStyle" />
-
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_shuffle_black_48dp"
-            android:id="@+id/imageButton_musicShuffle"
-            android:layout_weight="1"
-            style="?android:attr/borderlessButtonStyle" />
-
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_repeat_one_black_48dp"
-            android:id="@+id/imageButton_musicSingleLoop"
+            android:src="@drawable/ic_volume_down_black_48dp"
+            android:id="@+id/imageButton_musicVolumeDown"
             android:layout_weight="1"
             style="?android:attr/borderlessButtonStyle" />
 
@@ -63,7 +47,23 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_not_interested_black_48dp"
-            android:id="@+id/imageButton_musicConsume"
+            android:id="@+id/imageButton_musicLoopToggle"
+            android:layout_weight="1"
+            style="?android:attr/borderlessButtonStyle" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_not_interested_black_48dp"
+            android:id="@+id/imageButton_musicShuffle"
+            android:layout_weight="1"
+            style="?android:attr/borderlessButtonStyle" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_volume_up_black_48dp"
+            android:id="@+id/imageButton_musicVolumeUp"
             android:layout_weight="1"
             style="?android:attr/borderlessButtonStyle" />
     </LinearLayout>
@@ -128,8 +128,7 @@
         android:text="@string/music_playlist"
         android:id="@+id/button_musicShowPlaylist"
         android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:layout_toStartOf="@+id/button_musicFilePicker" />
+        android:layout_centerHorizontal="true" />
 
     <TextView
         android:layout_width="fill_parent"
@@ -137,47 +136,8 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/music_defaultState"
         android:id="@+id/textView_musicCurrentSong"
-        android:layout_above="@+id/linearLayout_musicVolumeNew"
-        android:layout_alignParentStart="true" />
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:layout_above="@+id/linearLayout_musicVolume"
-        android:layout_alignParentStart="true"
-        android:id="@+id/linearLayout_musicVolumeNew">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/music_volume"
-            android:id="@+id/textView_musicCurrentVolumeNew"
-            android:layout_weight="1" />
-
-        <ImageButton
-            android:layout_width="15dp"
-            android:layout_height="15dp"
-            android:src="@drawable/ic_volume_mute_black_48dp"
-            android:id="@+id/imageButton_musicVolumeDownSmall"
-            android:layout_weight="1" />
-
-        <SeekBar
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/seekBar_musicVolume"
-            android:layout_weight="10"
-            android:layout_gravity="center_vertical" />
-
-        <ImageButton
-            android:layout_width="15dp"
-            android:layout_height="15dp"
-            android:src="@drawable/ic_volume_up_black_48dp"
-            android:id="@+id/imageButton_musicVolumeUpSmall"
-            android:layout_weight="1"/>
-
-    </LinearLayout>
-
+        android:layout_alignParentStart="true" />
 
     <LinearLayout
         android:orientation="horizontal"
@@ -190,27 +150,26 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="@string/music_volume"
             android:id="@+id/textView_musicCurrentVolume"
             android:layout_weight="1" />
 
-        <ImageButton
-            style="?android:attr/buttonStyleSmall"
+        <SeekBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_volume_mute_black_48dp"
-            android:id="@+id/imageButton_musicVolumeDown"
-            android:layout_weight="1" />
-
-        <ImageButton
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_volume_up_black_48dp"
-            android:id="@+id/imageButton_musicVolumeUp"
-            android:layout_weight="1" />
-
+            android:id="@+id/seekBar_musicVolume"
+            android:layout_weight="10"
+            android:layout_gravity="center_vertical" />
     </LinearLayout>
 
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_autorenew_black_48dp"
+        android:id="@+id/imageButton_updateState"
+        android:layout_alignTop="@+id/button_musicShowPlaylist"
+        android:layout_alignParentStart="true"
+        android:layout_above="@+id/textView_musicFilePicker"
+        style="?android:attr/borderlessButtonStyle" />
 </RelativeLayout>

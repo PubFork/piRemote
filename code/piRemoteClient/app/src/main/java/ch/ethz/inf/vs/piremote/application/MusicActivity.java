@@ -1,6 +1,5 @@
 package ch.ethz.inf.vs.piremote.application;
 
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -31,10 +30,9 @@ public class MusicActivity extends AbstractClientActivity {
     private ImageButton mImageButtonPrevSong;
     private ImageButton mImageButtonVolumeUp;
     private ImageButton mImageButtonVolumeDown;
-    private ImageButton mImageButtonLoop;
-    private ImageButton mImageButtonSingleLoop;
+    private ImageButton mImageButtonLoopToggle;
     private ImageButton mImageButtonShuffle;
-    private ImageButton mImageButtonConsume;
+    private ImageButton mImageButtonUpdateState;
 
     private SeekBar mSeekBarVolume;
 
@@ -95,10 +93,13 @@ public class MusicActivity extends AbstractClientActivity {
         } else {
             Log.w(WARN_TAG, "Unable to read arguments from Intent. State not set.");
         }
+
+        mImageButtonUpdateState.performClick();
     }
 
     /**
      * Overrides super in logging and calling a private function to set the state.
+     *
      * @param newState ApplicationState we change to
      */
     @Override
@@ -109,6 +110,7 @@ public class MusicActivity extends AbstractClientActivity {
 
     /**
      * Not used.
+     *
      * @param i Message Payload
      */
     @Override
@@ -118,6 +120,7 @@ public class MusicActivity extends AbstractClientActivity {
 
     /**
      * Not used.
+     *
      * @param d Message Payload
      */
     @Override
@@ -128,6 +131,7 @@ public class MusicActivity extends AbstractClientActivity {
     /**
      * Method used for setting different text views in the UI. Those are "playlist", "filepicker",
      * "current playing song" and playback modifiers plus volume
+     *
      * @param str Message Payload
      */
     @Override
@@ -146,30 +150,30 @@ public class MusicActivity extends AbstractClientActivity {
             // Set the volume view
             temp = playbackSettings.substring(volumeStart, volumeEnd);
             if (temp.contains(" ")) {
-                mTextViewVolume.setText(temp.substring(1) + "%");;
+                mTextViewVolume.setText(temp.substring(1) + "%");
             } else if (temp.contains("  ")) {
                 mTextViewVolume.setText(temp.substring(2) + "%");
             } else {
                 mTextViewVolume.setText(temp + "%");
             }
-            mSeekBarVolume.setProgress(Integer.getInteger(temp));
+            //mSeekBarVolume.setProgress(Integer.getInteger(temp));
 
             // Set the state of the loop button
             if (playbackSettings.substring(loopStart, loopEnd).contains("on")) {
-                changeButtonFunction(mImageButtonLoop, R.drawable.ic_repeat_black_48dp, ApplicationCsts.MUSIC_SINGLE);
+                changeButtonFunction(mImageButtonLoopToggle, R.drawable.ic_repeat_black_48dp, ApplicationCsts.MUSIC_SINGLE);
             } else if (playbackSettings.substring(singleStart, singleEnd).contains("on")) {
-                changeButtonFunction(mImageButtonLoop, R.drawable.ic_repeat_one_black_48dp, ApplicationCsts.MUSIC_NOLOOPING);
+                changeButtonFunction(mImageButtonLoopToggle, R.drawable.ic_repeat_one_black_48dp, ApplicationCsts.MUSIC_NOLOOPING);
             } else {
-                changeButtonFunction(mImageButtonLoop, R.drawable.ic_not_interested_black_48dp, ApplicationCsts.MUSIC_LOOP);
+                changeButtonFunction(mImageButtonLoopToggle, R.drawable.ic_not_interested_black_48dp, ApplicationCsts.MUSIC_LOOP);
             }
 
             // Set the state of the shuffle switch
             temp = playbackSettings.substring(shuffleStart, shuffleEnd);
             Log.wtf(WTF_TAG, temp);
             if (temp.contains("on")) {
-                mImageButtonShuffle.setColorFilter(R.color.colorPrimary);
+                changeButtonFunction(mImageButtonShuffle, R.drawable.ic_shuffle_black_48dp, ApplicationCsts.MUSIC_SHUFFLE_OFF);
             } else {
-                mImageButtonShuffle.setColorFilter(null);
+                changeButtonFunction(mImageButtonShuffle, R.drawable.ic_not_interested_black_48dp, ApplicationCsts.MUSIC_SHUFFLE_ON);
             }
         } else if (str.startsWith(ApplicationCsts.MUSIC_PREFIX_PLAYLIST)) {
             // Fill the scrollable playlist window with the current playlist
@@ -179,6 +183,24 @@ public class MusicActivity extends AbstractClientActivity {
             // Show the currently picked file
             mTextViewPathView.setText(str.substring(ApplicationCsts.MUSIC_PREFIX_FILESELECTION.length()));
 
+        } else if (str.startsWith(ApplicationCsts.MUSIC_PREFIX_STATUS)) {
+            String status = str.substring(ApplicationCsts.MUSIC_PREFIX_STATUS.length());
+            String[] statusLines = status.split("\n");
+
+            if (statusLines.length > 1) {
+
+                if (statusLines[1].contains("paused")) {
+                    mTextViewCurrentSong.setText("Playback paused.");
+                } else {
+                    mTextViewCurrentSong.setText(statusLines[0]);
+                }
+
+                onReceiveString(ApplicationCsts.MUSIC_PREFIX_EXTRA + statusLines[2]);
+            } else {
+                mTextViewCurrentSong.setText("Playback stopped.");
+                onReceiveString(ApplicationCsts.MUSIC_PREFIX_EXTRA + statusLines[0]);
+            }
+
         } else {
             //TODO: Remove from productin app, merely used for general output for anything not specfically assigned.
             mTextViewPlaylist.setText(str);
@@ -187,6 +209,7 @@ public class MusicActivity extends AbstractClientActivity {
 
     /**
      * Overrides parent method. This application doesn't implement multiple views.
+     *
      * @param show
      */
     @Override
@@ -196,6 +219,7 @@ public class MusicActivity extends AbstractClientActivity {
 
     /**
      * Update the view slightly depending on the current application state.
+     *
      * @param newMusicState
      */
     private void updateMusicState(MusicApplicationState newMusicState) {
@@ -235,10 +259,9 @@ public class MusicActivity extends AbstractClientActivity {
         mImageButtonPrevSong = (ImageButton) findViewById(R.id.imageButton_musicPreviousSong);
         mImageButtonVolumeUp = (ImageButton) findViewById(R.id.imageButton_musicVolumeUp);
         mImageButtonVolumeDown = (ImageButton) findViewById(R.id.imageButton_musicVolumeDown);
-        mImageButtonLoop = (ImageButton) findViewById(R.id.imageButton_musicLoop);
-        mImageButtonSingleLoop = (ImageButton) findViewById(R.id.imageButton_musicSingleLoop);
+        mImageButtonLoopToggle = (ImageButton) findViewById(R.id.imageButton_musicLoopToggle);
         mImageButtonShuffle = (ImageButton) findViewById(R.id.imageButton_musicShuffle);
-        mImageButtonConsume = (ImageButton) findViewById(R.id.imageButton_musicConsume);
+        mImageButtonUpdateState = (ImageButton) findViewById(R.id.imageButton_updateState);
 
         mPickButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -304,7 +327,7 @@ public class MusicActivity extends AbstractClientActivity {
             }
         });
 
-        mImageButtonLoop.setOnClickListener(new View.OnClickListener() {
+        mImageButtonLoopToggle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull View v) {
                 Log.d(DEBUG_TAG, "Clicked ImageButton: " + v.toString());
@@ -312,27 +335,19 @@ public class MusicActivity extends AbstractClientActivity {
             }
         });
 
-        mImageButtonSingleLoop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(@NonNull View v) {
-                Log.d(DEBUG_TAG, "Clicked ImageButton: " + v.toString());
-                sendInt(ApplicationCsts.MUSIC_SINGLE);
-            }
-        });
-
         mImageButtonShuffle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull View v) {
                 Log.d(DEBUG_TAG, "Clicked ImageButton: " + v.toString());
-                sendInt(ApplicationCsts.MUSIC_SHUFFLE);
+                sendInt(ApplicationCsts.MUSIC_SHUFFLE_ON);
             }
         });
 
-        mImageButtonConsume.setOnClickListener(new View.OnClickListener() {
+        mImageButtonUpdateState.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull View v) {
                 Log.d(DEBUG_TAG, "Clicked ImageButton: " + v.toString());
-                sendInt(ApplicationCsts.MUSIC_CONSUME);
+                sendInt(ApplicationCsts.MUSIC_STATUS);
             }
         });
     }
@@ -340,7 +355,8 @@ public class MusicActivity extends AbstractClientActivity {
 
     /**
      * Internal method to quickly change a button's layout and functionality.
-     * @param button Button to change.
+     *
+     * @param button   Button to change.
      * @param drawable Drawable that should be shown.
      * @param constant New int the button should send upon pressing.
      */
