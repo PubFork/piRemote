@@ -1,7 +1,5 @@
 package SharedConstants;
 
-import javafx.application.Application;
-
 import java.io.Serializable;
 
 /**
@@ -89,15 +87,13 @@ public class ApplicationCsts implements Serializable {
     public static final int RADIO_GO_STOP = 2;
     public static final int RADIO_PICK_FILE = 3;
 
-    /**
-     * Constants used for communication and state management of the music player.
-     */
+
+    // MusicPlayerApplication
     public enum MusicApplicationState implements ApplicationState {
         MUSIC_STOPPED,
         MUSIC_PLAYING,
         MUSIC_PAUSED
     }
-
     public static final int MUSIC_PLAY = 0;
     public static final int MUSIC_PAUSE = 1;
     public static final int MUSIC_STOP = 2;
