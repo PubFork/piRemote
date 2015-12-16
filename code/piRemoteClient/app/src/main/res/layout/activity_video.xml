@@ -10,7 +10,8 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@drawable/footer_lodyas">
 
         <android.support.design.widget.AppBarLayout
             android:id="@+id/app_bar"
@@ -69,6 +70,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/no_file_picked"
+                android:textColor="#cccccc"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:layout_alignBottom="@+id/button_pick"
                 android:layout_toEndOf="@+id/button_pick" />
