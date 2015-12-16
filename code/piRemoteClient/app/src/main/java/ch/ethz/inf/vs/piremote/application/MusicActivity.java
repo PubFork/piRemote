@@ -71,17 +71,19 @@ public class MusicActivity extends AbstractClientActivity {
         mSeekBarVolume.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
+                mTextViewVolume.setText(String.valueOf(progress) + "%");
             }
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
+                //int volume = mSeekBarVolume.getProgress();
+                //mTextViewVolume.setText();
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
+                int volume = mSeekBarVolume.getProgress();
+                sendString(ApplicationCsts.MUSIC_PREFIX_VOLUME + String.valueOf(volume));
             }
         });
 
@@ -94,6 +96,7 @@ public class MusicActivity extends AbstractClientActivity {
             Log.w(WARN_TAG, "Unable to read arguments from Intent. State not set.");
         }
 
+        mImageButtonUpdateState.performClick();
         mImageButtonUpdateState.performClick();
     }
 
@@ -151,15 +154,18 @@ public class MusicActivity extends AbstractClientActivity {
             temp = playbackSettings.substring(volumeStart, volumeEnd);
             if (temp.contains(" ")) {
                 mTextViewVolume.setText(temp.substring(1) + "%");
+                mSeekBarVolume.setProgress(Integer.parseInt(temp.substring(1)));
             } else if (temp.contains("  ")) {
                 mTextViewVolume.setText(temp.substring(2) + "%");
+                mSeekBarVolume.setProgress(Integer.parseInt(temp.substring(2)));
             } else {
                 mTextViewVolume.setText(temp + "%");
+                mSeekBarVolume.setProgress(Integer.parseInt(temp));
             }
-            //mSeekBarVolume.setProgress(Integer.getInteger(temp));
 
             // Set the state of the loop button
-            if (playbackSettings.substring(loopStart, loopEnd).contains("on")) {
+            if (playbackSettings.substring(loopStart, loopEnd).contains("on") &&
+                    playbackSettings.substring(singleStart, singleEnd).contains("off")) {
                 changeButtonFunction(mImageButtonLoopToggle, R.drawable.ic_repeat_black_48dp, ApplicationCsts.MUSIC_SINGLE);
             } else if (playbackSettings.substring(singleStart, singleEnd).contains("on")) {
                 changeButtonFunction(mImageButtonLoopToggle, R.drawable.ic_repeat_one_black_48dp, ApplicationCsts.MUSIC_NOLOOPING);
@@ -168,9 +174,7 @@ public class MusicActivity extends AbstractClientActivity {
             }
 
             // Set the state of the shuffle switch
-            temp = playbackSettings.substring(shuffleStart, shuffleEnd);
-            Log.wtf(WTF_TAG, temp);
-            if (temp.contains("on")) {
+            if (playbackSettings.substring(shuffleStart, shuffleEnd).contains("on")) {
                 changeButtonFunction(mImageButtonShuffle, R.drawable.ic_shuffle_black_48dp, ApplicationCsts.MUSIC_SHUFFLE_OFF);
             } else {
                 changeButtonFunction(mImageButtonShuffle, R.drawable.ic_not_interested_black_48dp, ApplicationCsts.MUSIC_SHUFFLE_ON);
@@ -244,6 +248,8 @@ public class MusicActivity extends AbstractClientActivity {
         mTextViewPathView = (TextView) findViewById(R.id.textView_musicFilePicker);
         mTextViewVolume = (TextView) findViewById(R.id.textView_musicCurrentVolume);
         mTextViewPlaylist = (TextView) findViewById(R.id.textView_musicPlaylist);
+
+        mTextViewPathView.setVisibility(View.INVISIBLE);
     }
 
     /**
@@ -350,6 +356,10 @@ public class MusicActivity extends AbstractClientActivity {
                 sendInt(ApplicationCsts.MUSIC_STATUS);
             }
         });
+
+        // The pick button is not needed thus far, disable it and hide it.
+        mPickButton.setVisibility(View.INVISIBLE);
+        mPickButton.setClickable(false);
     }
 
 
