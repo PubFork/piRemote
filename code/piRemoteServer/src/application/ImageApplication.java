@@ -14,11 +14,13 @@ public class ImageApplication extends AbstractApplication{
 
     String imagePath = "";
     ProcessBuilder processBuilder = null;
+    boolean firstTime = true;
 
     @Override
     public void onApplicationStart() {
         System.out.println("ImageApplication: Starting up");
         changeApplicationState(ApplicationCsts.ImageApplicationState.IMAGE_NOT_DISPLAYED);
+        firstTime=false;
     }
 
     @Override
@@ -44,7 +46,7 @@ public class ImageApplication extends AbstractApplication{
             startProcess(imagePath);
         } else {
             // Terminate geeqie
-            sendToProcess("-q");
+            if(!firstTime) sendToProcess("-q");
         }
     }
 
