@@ -137,8 +137,47 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/music_defaultState"
         android:id="@+id/textView_musicCurrentSong"
-        android:layout_above="@+id/linearLayout_musicVolume"
+        android:layout_above="@+id/linearLayout_musicVolumeNew"
         android:layout_alignParentStart="true" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/linearLayout_musicVolume"
+        android:layout_alignParentStart="true"
+        android:id="@+id/linearLayout_musicVolumeNew">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/music_volume"
+            android:id="@+id/textView_musicCurrentVolumeNew"
+            android:layout_weight="1" />
+
+        <ImageButton
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:src="@drawable/ic_volume_mute_black_48dp"
+            android:id="@+id/imageButton_musicVolumeDownSmall"
+            android:layout_weight="1" />
+
+        <SeekBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/seekBar_musicVolume"
+            android:layout_weight="10"
+            android:layout_gravity="center_vertical" />
+
+        <ImageButton
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:src="@drawable/ic_volume_up_black_48dp"
+            android:id="@+id/imageButton_musicVolumeUpSmall"
+            android:layout_weight="1"/>
+
+    </LinearLayout>
+
 
     <LinearLayout
         android:orientation="horizontal"
