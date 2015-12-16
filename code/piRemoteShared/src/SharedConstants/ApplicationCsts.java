@@ -54,40 +54,6 @@ public class ApplicationCsts implements Serializable {
     public static final int VIDEO_TOGGLE_SUBTITLES = 12;
 
 
-    // ImageApplication
-    public enum ImageApplicationState implements ApplicationState{
-        IMAGE_DISPLAYED,
-        IMAGE_NOT_DISPLAYED
-    }
-    public static final int IMAGE_PICK_FILE = 0;
-    public static final int IMAGE_SHOW = 1;
-    public static final int IMAGE_HIDE = 2;
-    public static final int IMAGE_PREV = 3;
-    public static final int IMAGE_NEXT = 4;
-
-
-    // RadioPiApplication
-    public enum RadioPiApplicationState implements ApplicationState{
-        RADIO_STOP("Stop"),
-        RADIO_INIT("Initialize"),
-        RADIO_PLAY("Play");
-
-        private final String stateRepresentation;
-        RadioPiApplicationState(String s) {
-            this.stateRepresentation = s;
-        }
-
-        @Override
-        public String toString() {
-            return stateRepresentation;
-        }
-    }
-    public static final int RADIO_GO_PLAY = 0;
-    public static final int RADIO_GO_INIT = 1;
-    public static final int RADIO_GO_STOP = 2;
-    public static final int RADIO_PICK_FILE = 3;
-
-
     // MusicPlayerApplication
     public enum MusicApplicationState implements ApplicationState {
         MUSIC_STOPPED,
@@ -114,4 +80,38 @@ public class ApplicationCsts implements Serializable {
     public static final String MUSIC_PREFIX_EXTRA = "XTRA: ";
     public static final String MUSIC_PREFIX_FILESELECTION = "FILE: ";
     public static final String MUSIC_PREFIX_PLAYLIST = "LIST: ";
+
+
+    // RadioPiApplication
+    public enum RadioPiApplicationState implements ApplicationState{
+        RADIO_STOP("Stop"),
+        RADIO_INIT("Initialize"),
+        RADIO_PLAY("Play");
+
+        private final String stateRepresentation;
+        RadioPiApplicationState(String s) {
+            this.stateRepresentation = s;
+        }
+
+        @Override
+        public String toString() {
+            return stateRepresentation;
+        }
+    }
+    public static final int RADIO_GO_PLAY = 0;
+    public static final int RADIO_GO_INIT = 1;
+    public static final int RADIO_GO_STOP = 2;
+    public static final int RADIO_PICK_FILE = 3;
+
+
+    // ImageApplication
+    public enum ImageApplicationState implements ApplicationState{
+        IMAGE_DISPLAYED,
+        IMAGE_NOT_DISPLAYED
+    }
+    public static final int IMAGE_PICK_FILE = 0;
+    public static final int IMAGE_SHOW = 1;
+    public static final int IMAGE_HIDE = 2;
+    public static final int IMAGE_PREV = 3;
+    public static final int IMAGE_NEXT = 4;
 }
