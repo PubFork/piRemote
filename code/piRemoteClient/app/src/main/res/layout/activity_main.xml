@@ -31,6 +31,7 @@
             android:id="@+id/view_progress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/footer_lodyas"
             android:layout_below="@+id/app_bar"
             style="@style/Widget.AppCompat.ProgressBar.Horizontal"
             android:indeterminate="true"
@@ -52,12 +53,15 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="#cccccc"
                 android:text="@string/welcome" />
 
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/text_server_address"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="#cccccc"
+                android:textColorHint="#cccccc"
                 android:layout_alignParentTop="true"
                 android:layout_marginTop="50dp"
                 android:theme="@style/TextLabel">
@@ -89,6 +93,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/server_port"
+                    android:textColorHint="#cccccc"
+                    android:textColor="#cccccc"
                     android:inputType="number"
                     android:maxLines="1"
                     android:singleLine="true" />
