@@ -10,3 +10,15 @@ The application requires one to have set up mpd and mpc such that mpc can be cal
 The application's view should be set in most cases on all clients to the same view.
 
 As this is application uses mpc for communication one can disconnect from the server and it will continue playing, even when changing to other applications. There is no change to the state of mpd upon disconnect/changing to another application.
+
+A small how-to on Raspbian:
+- sudo apt-get install mpd mpc tmux
+- copy over mpd.conf to /etc/
+- sudo service mpd restart
+- mkdir /home/pi/piremote/music
+- mpc update
+- mpc ls | mpc add
+- mpc save default
+- run the server (e.g. java -jar piRemoteServer.jar)
+- Connect to the server with the app
+- Enjoy :)
