@@ -82,6 +82,7 @@ public class ApplicationCsts implements Serializable {
     public static final String MUSIC_PREFIX_FILESELECTION = "FILE: ";
     public static final String MUSIC_PREFIX_PLAYLIST = "LIST: ";
     public static final String MUSIC_PREFIX_STATUS = "STATUS: ";
+    public static final String MUSIC_PREFIX_VOLUME = "VABS: ";
 
 
     // RadioPiApplication
