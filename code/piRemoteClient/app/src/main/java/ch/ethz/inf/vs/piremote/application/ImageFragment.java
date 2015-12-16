@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 
 import SharedConstants.ApplicationCsts;
 import ch.ethz.inf.vs.piremote.R;
@@ -17,7 +18,7 @@ import ch.ethz.inf.vs.piremote.R;
 public class ImageFragment extends Fragment {
 
     private onClickAction mCallback;
-    private Button prevButton, nextButton;
+    private ImageButton prevButton, nextButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -41,9 +42,9 @@ public class ImageFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.image_only_pick, container, false);
+        View view = inflater.inflate(R.layout.fragment_image, container, false);
 
-        prevButton = (Button) view.findViewById(R.id.button_prev_image);
+        prevButton = (ImageButton) view.findViewById(R.id.button_prev_image);
         prevButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -51,7 +52,7 @@ public class ImageFragment extends Fragment {
             }
         });
 
-        nextButton = (Button) view.findViewById(R.id.button_next_image);
+        nextButton = (ImageButton) view.findViewById(R.id.button_next_image);
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
