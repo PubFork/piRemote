@@ -21,8 +21,8 @@ import MessageObject.PayloadObject.IntMessage;
 import MessageObject.PayloadObject.Payload;
 import MessageObject.PayloadObject.ServerStateChange;
 import MessageObject.PayloadObject.StringMessage;
-import SharedConstants.ApplicationCsts;
 import SharedConstants.ApplicationCsts.ApplicationState;
+import SharedConstants.ApplicationCsts.ImageApplicationState;
 import SharedConstants.ApplicationCsts.MusicApplicationState;
 import SharedConstants.ApplicationCsts.RadioPiApplicationState;
 import SharedConstants.ApplicationCsts.TrafficLightApplicationState;
@@ -206,14 +206,14 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
             case VIDEO:
                 newApplication = VideoActivity.class;
                 break;
-            case IMAGE:
-                newApplication = ImageActivity.class;
+            case MUSIC:
+                newApplication = MusicActivity.class;
                 break;
             case RADIO_PI:
                 newApplication = RadioPiActivity.class;
                 break;
-            case MUSIC:
-                newApplication = MusicActivity.class;
+            case IMAGE:
+                newApplication = ImageActivity.class;
                 break;
             case NONE:
                 newApplication = AppChooserActivity.class; // No application is running: The client may choose an application to run.
@@ -233,14 +233,14 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
             case VIDEO:
                 applicationStartIntent.putExtra(AppConstants.EXTRA_STATE, (VideoApplicationState) state.getApplicationState());
                 break;
-            case IMAGE:
-                applicationStartIntent.putExtra(AppConstants.EXTRA_STATE, (ApplicationCsts.ImageApplicationState) state.getApplicationState());
+            case MUSIC:
+                applicationStartIntent.putExtra(AppConstants.EXTRA_STATE, (MusicApplicationState) state.getApplicationState());
                 break;
             case RADIO_PI:
                 applicationStartIntent.putExtra(AppConstants.EXTRA_STATE, (RadioPiApplicationState) state.getApplicationState());
                 break;
-            case MUSIC:
-                applicationStartIntent.putExtra(AppConstants.EXTRA_STATE, (MusicApplicationState) state.getApplicationState());
+            case IMAGE:
+                applicationStartIntent.putExtra(AppConstants.EXTRA_STATE, (ImageApplicationState) state.getApplicationState());
                 break;
             default:
                 break;
