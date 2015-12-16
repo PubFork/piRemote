@@ -59,6 +59,8 @@
                     android:name="android.support.PARENT_ACTIVITY"
                     android:value=".core.AppChooserActivity" />
         </activity>
+        <activity android:name=".application.MusicActivity">
+        </activity>
     </application>
 
 </manifest>

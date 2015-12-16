@@ -15,6 +15,7 @@ public class CoreCsts implements Serializable {
         TRAFFIC_LIGHT("Traffic Light"),
         VIDEO("Play Videos"),
         IMAGE("Show Images"),
+        MUSIC("Play music"),
         RADIO_PI("RadioPi");
 
         private final String stateRepresentation;

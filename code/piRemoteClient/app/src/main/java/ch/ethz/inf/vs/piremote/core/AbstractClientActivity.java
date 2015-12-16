@@ -23,6 +23,7 @@ import MessageObject.PayloadObject.ServerStateChange;
 import MessageObject.PayloadObject.StringMessage;
 import SharedConstants.ApplicationCsts;
 import SharedConstants.ApplicationCsts.ApplicationState;
+import SharedConstants.ApplicationCsts.MusicApplicationState;
 import SharedConstants.ApplicationCsts.RadioPiApplicationState;
 import SharedConstants.ApplicationCsts.TrafficLightApplicationState;
 import SharedConstants.ApplicationCsts.VideoApplicationState;
@@ -30,6 +31,7 @@ import SharedConstants.CoreCsts.ServerState;
 import StateObject.State;
 import ch.ethz.inf.vs.piremote.R;
 import ch.ethz.inf.vs.piremote.application.ImageActivity;
+import ch.ethz.inf.vs.piremote.application.MusicActivity;
 import ch.ethz.inf.vs.piremote.application.RadioPiActivity;
 import ch.ethz.inf.vs.piremote.application.TrafficLightActivity;
 import ch.ethz.inf.vs.piremote.application.VideoActivity;
@@ -198,6 +200,9 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
     private void startAbstractActivity(@NonNull State state) {
         Class newApplication; // Start activity depending on the server state denoting which application to start.
         switch (state.getServerState()) {
+            case MUSIC:
+                newApplication = MusicActivity.class;
+                break;
             case TRAFFIC_LIGHT:
                 newApplication = TrafficLightActivity.class;
                 break;
@@ -222,6 +227,9 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
 
         // If the application is already running on the server, wee need to forward the dictated state.
         switch (state.getServerState()) {
+            case MUSIC:
+                applicationStartIntent.putExtra(AppConstants.EXTRA_STATE, (MusicApplicationState) state.getApplicationState());
+                break;
             case TRAFFIC_LIGHT:
                 applicationStartIntent.putExtra(AppConstants.EXTRA_STATE, (TrafficLightApplicationState) state.getApplicationState());
                 break;
