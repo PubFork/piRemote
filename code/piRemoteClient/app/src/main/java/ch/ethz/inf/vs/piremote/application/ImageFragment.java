@@ -17,7 +17,7 @@ import ch.ethz.inf.vs.piremote.R;
 public class ImageFragment extends Fragment {
 
     private onClickAction mCallback;
-    private Button prevButton, nextButton, pickButton;
+    private Button prevButton, nextButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -59,14 +59,12 @@ public class ImageFragment extends Fragment {
             }
         });
 
-        pickButton = (Button) view.findViewById(R.id.button_pick);
-        pickButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mCallback.onButtonPressed(ApplicationCsts.IMAGE_PICK_FILE);
-            }
-        });
 
         return view;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
     }
 }

@@ -70,8 +70,8 @@ public class ImageActivity extends AbstractClientActivity implements ImageFragme
 
     @Override
     protected void showProgress(boolean show) {
-        /*progressView.setVisibility(show ? View.VISIBLE : View.GONE);
-        imageView.setVisibility(show ? View.GONE : View.VISIBLE);*/
+        progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+        imageView.setVisibility(show ? View.GONE : View.VISIBLE);
     }
 
     @Override
