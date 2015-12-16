@@ -227,7 +227,7 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
         // If the application is already running on the server, wee need to forward the dictated state.
         switch (state.getServerState()) {
             case MUSIC:
-                applicationStartIntent.putExtra(AppConstants.EXTRA_STATE, (MusicApplicationState) state.getApplicationState());
+                applicationStartIntent.putExtra(AppConstants.EXTRA_STATE, (ApplicationCsts.MusicApplicationState) state.getApplicationState());
                 break;
             case TRAFFIC_LIGHT:
                 applicationStartIntent.putExtra(AppConstants.EXTRA_STATE, (TrafficLightApplicationState) state.getApplicationState());
