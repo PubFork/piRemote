@@ -71,8 +71,9 @@ public class ApplicationCsts implements Serializable {
     public static final int MUSIC_VOLUME_DOWN = 21;
     public static final int MUSIC_LOOP = 30;
     public static final int MUSIC_SINGLE = 31;
-    public static final int MUSIC_SHUFFLE = 32;
-    public static final int MUSIC_CONSUME = 33;
+    public static final int MUSIC_NOLOOPING = 32;
+    public static final int MUSIC_SHUFFLE_ON = 33;
+    public static final int MUSIC_SHUFFLE_OFF = 34;
     public static final int MUSIC_PICK_FILE = 100;
     public static final int MUSIC_GET_PLAYLIST = 101;
 
@@ -80,6 +81,7 @@ public class ApplicationCsts implements Serializable {
     public static final String MUSIC_PREFIX_EXTRA = "XTRA: ";
     public static final String MUSIC_PREFIX_FILESELECTION = "FILE: ";
     public static final String MUSIC_PREFIX_PLAYLIST = "LIST: ";
+    public static final String MUSIC_PREFIX_STATUS = "STATUS: ";
 
 
     // RadioPiApplication
