@@ -30,8 +30,6 @@ public class MainActivity extends AbstractClientActivity {
     // UI references
     private EditText mAddressView;
     private EditText mPortView;
-    private View mProgressView;
-    private View mConnectScreenView;
 
     private final String DEBUG_TAG = "# Main #";
     private final String ERROR_TAG = "# Main ERROR #";
@@ -60,7 +58,6 @@ public class MainActivity extends AbstractClientActivity {
         });
 
         mProgressView = findViewById(R.id.view_progress);
-        mConnectScreenView = findViewById(R.id.view_connect_screen);
     }
 
     @Override
@@ -110,13 +107,6 @@ public class MainActivity extends AbstractClientActivity {
     @Override
     public void onReceiveString(String str) {
         Log.d(DEBUG_TAG, "Received a string: " + str);
-    }
-
-    @Override
-    protected void showProgress(boolean show) {
-        // Shows the progress UI and hides the connect screen.
-        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-        mConnectScreenView.setVisibility(show ? View.GONE : View.VISIBLE);
     }
 
     /**

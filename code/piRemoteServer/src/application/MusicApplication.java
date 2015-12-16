@@ -100,7 +100,7 @@ public class MusicApplication extends AbstractApplication {
                     System.out.println("MusicApplication: Ignoring invalid command/state combination.");
                     break;
                 case ApplicationCsts.MUSIC_STATUS:
-                    sendString(createMessage(ApplicationCsts.MUSIC_PREFIX_PLAYLIST, executeCommand("mpc", null)), senderUUID);
+                    sendString(createMessage(ApplicationCsts.MUSIC_PREFIX_STATUS, executeCommand("mpc", null)), senderUUID);
                     break;
                 case ApplicationCsts.MUSIC_VOLUME_UP:
                     executeCommand("mpc volume +2", null);
@@ -111,23 +111,30 @@ public class MusicApplication extends AbstractApplication {
                     sendString(createMessage(ApplicationCsts.MUSIC_PREFIX_EXTRA, executeCommand("/bin/bash -c", "mpc | tail -n1")));
                     break;
                 case ApplicationCsts.MUSIC_LOOP:
-                    executeCommand("mpc repeat", null);
+                    executeCommand("mpc repeat on", null);
+                    executeCommand("mpc single off", null);
                     sendString(createMessage(ApplicationCsts.MUSIC_PREFIX_EXTRA, executeCommand("/bin/bash -c", "mpc | tail -n1")));
                     break;
                 case ApplicationCsts.MUSIC_SINGLE:
-                    executeCommand("mpc single", null);
+                    executeCommand("mpc repeat off", null);
+                    executeCommand("mpc single on", null);
                     sendString(createMessage(ApplicationCsts.MUSIC_PREFIX_EXTRA, executeCommand("/bin/bash -c", "mpc | tail -n1")));
                     break;
-                case ApplicationCsts.MUSIC_SHUFFLE:
-                    executeCommand("mpc random", null);
+                case ApplicationCsts.MUSIC_NOLOOPING:
+                    executeCommand("mpc repeat off", null);
+                    executeCommand("mpc single off", null);
                     sendString(createMessage(ApplicationCsts.MUSIC_PREFIX_EXTRA, executeCommand("/bin/bash -c", "mpc | tail -n1")));
                     break;
-                case ApplicationCsts.MUSIC_CONSUME:
-                    executeCommand("mpc consume", null);
+                case ApplicationCsts.MUSIC_SHUFFLE_ON:
+                    executeCommand("mpc random on", null);
+                    sendString(createMessage(ApplicationCsts.MUSIC_PREFIX_EXTRA, executeCommand("/bin/bash -c", "mpc | tail -n1")));
+                    break;
+                case ApplicationCsts.MUSIC_SHUFFLE_OFF:
+                    executeCommand("mpc random off", null);
                     sendString(createMessage(ApplicationCsts.MUSIC_PREFIX_EXTRA, executeCommand("/bin/bash -c", "mpc | tail -n1")));
                     break;
                 case ApplicationCsts.MUSIC_GET_PLAYLIST:
-                    sendString(createMessage(ApplicationCsts.MUSIC_PREFIX_EXTRA, executeCommand("/bin/bash -c", "mpc | tail -n1")), senderUUID);
+                    sendString(createMessage(ApplicationCsts.MUSIC_PREFIX_PLAYLIST, executeCommand("mpc playlist", null)), senderUUID);
                     break;
                 default:
                     System.out.println("MusicApplication: Ignoring invalid command/state combination.");
@@ -154,7 +161,7 @@ public class MusicApplication extends AbstractApplication {
                     executeCommand("mpc stop", null);
                     break;
                 case ApplicationCsts.MUSIC_STATUS:
-                    sendString(createMessage(ApplicationCsts.MUSIC_PREFIX_PLAYLIST, executeCommand("mpc", null)), senderUUID);
+                    sendString(createMessage(ApplicationCsts.MUSIC_PREFIX_STATUS, executeCommand("mpc", null)), senderUUID);
                     break;
                 case ApplicationCsts.MUSIC_GET_CURRENT:
                     sendString(createMessage(ApplicationCsts.MUSIC_PREFIX_SONG, executeCommand("mpc current", null)), senderUUID);
@@ -176,19 +183,26 @@ public class MusicApplication extends AbstractApplication {
                     sendString(createMessage(ApplicationCsts.MUSIC_PREFIX_EXTRA, executeCommand("/bin/bash -c", "mpc | tail -n1")));
                     break;
                 case ApplicationCsts.MUSIC_LOOP:
-                    executeCommand("mpc repeat", null);
+                    executeCommand("mpc repeat on", null);
+                    executeCommand("mpc single off", null);
                     sendString(createMessage(ApplicationCsts.MUSIC_PREFIX_EXTRA, executeCommand("/bin/bash -c", "mpc | tail -n1")));
                     break;
                 case ApplicationCsts.MUSIC_SINGLE:
-                    executeCommand("mpc single", null);
+                    executeCommand("mpc repeat off", null);
+                    executeCommand("mpc single on", null);
                     sendString(createMessage(ApplicationCsts.MUSIC_PREFIX_EXTRA, executeCommand("/bin/bash -c", "mpc | tail -n1")));
                     break;
-                case ApplicationCsts.MUSIC_SHUFFLE:
-                    executeCommand("mpc random", null);
+                case ApplicationCsts.MUSIC_NOLOOPING:
+                    executeCommand("mpc repeat off", null);
+                    executeCommand("mpc single off", null);
                     sendString(createMessage(ApplicationCsts.MUSIC_PREFIX_EXTRA, executeCommand("/bin/bash -c", "mpc | tail -n1")));
                     break;
-                case ApplicationCsts.MUSIC_CONSUME:
-                    executeCommand("mpc consume", null);
+                case ApplicationCsts.MUSIC_SHUFFLE_ON:
+                    executeCommand("mpc random on", null);
+                    sendString(createMessage(ApplicationCsts.MUSIC_PREFIX_EXTRA, executeCommand("/bin/bash -c", "mpc | tail -n1")));
+                    break;
+                case ApplicationCsts.MUSIC_SHUFFLE_OFF:
+                    executeCommand("mpc random off", null);
                     sendString(createMessage(ApplicationCsts.MUSIC_PREFIX_EXTRA, executeCommand("/bin/bash -c", "mpc | tail -n1")));
                     break;
                 case ApplicationCsts.MUSIC_GET_PLAYLIST:
