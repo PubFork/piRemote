@@ -104,7 +104,7 @@ public class MusicApplication extends AbstractApplication {
     public void onReceiveInt(int i, UUID senderUUID) {
         if(i == ApplicationCsts.MUSIC_PICK_FILE){
             System.out.println("MusicApplication: Initializing file selection.");
-            pickFile(System.getProperty("user.home"),senderUUID);
+            pickFile(System.getProperty("user.home")+"/piremote",senderUUID);
         } else {
             switch(i) {
                 case ApplicationCsts.MUSIC_PLAY:

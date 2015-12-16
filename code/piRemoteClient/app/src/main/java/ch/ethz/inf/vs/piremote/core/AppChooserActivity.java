@@ -21,10 +21,6 @@ public class AppChooserActivity extends AbstractClientActivity {
 
     private final ServerState[] serverStates = ServerState.values();
 
-    // UI references
-    private View mProgressView;
-    private View mAppChooserView;
-
     private final String DEBUG_TAG = "# Chooser #";
     private final String ERROR_TAG = "# Chooser ERROR #";
     private final String WARN_TAG = "# Chooser WARN #";
@@ -46,7 +42,7 @@ public class AppChooserActivity extends AbstractClientActivity {
 
         // Display the available applications in a ListView.
         ListView mApplicationList = (ListView) findViewById(R.id.list_applications);
-        mApplicationList.setAdapter(new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, applicationNames));
+        mApplicationList.setAdapter(new ArrayAdapter<>(this, R.layout.custom_textview, applicationNames));
 
         mApplicationList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -57,7 +53,6 @@ public class AppChooserActivity extends AbstractClientActivity {
         });
 
         mProgressView = findViewById(R.id.view_progress);
-        mAppChooserView = findViewById(R.id.view_application_chooser);
     }
 
     @Override
@@ -85,13 +80,6 @@ public class AppChooserActivity extends AbstractClientActivity {
     @Override
     public void onReceiveString(String str) {
         Log.d(DEBUG_TAG, "Received a string: " + str);
-    }
-
-    @Override
-    protected void showProgress(boolean show) {
-        // Shows the progress UI and hides the application chooser screen.
-        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-        mAppChooserView.setVisibility(show ? View.GONE : View.VISIBLE);
     }
 
     /**

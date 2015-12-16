@@ -1,7 +1,5 @@
 package ch.ethz.inf.vs.piremote.application;
 
-import android.support.v4.app.Fragment;
-import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
@@ -16,8 +14,6 @@ import SharedConstants.ApplicationCsts.VideoApplicationState;
 import ch.ethz.inf.vs.piremote.R;
 import ch.ethz.inf.vs.piremote.core.AbstractClientActivity;
 import ch.ethz.inf.vs.piremote.core.AppConstants;
-import ch.ethz.inf.vs.piremote.application.StoppedFragment;
-import ch.ethz.inf.vs.piremote.application.PlayFragment;
 
 
 /**
@@ -27,8 +23,6 @@ public class VideoActivity extends AbstractClientActivity implements PlayFragmen
 
     // UI references
     private TextView mPathView;
-    private View mProgressView;
-    private View mVideoView;
     private StoppedFragment mStoppedFragment;
     private PlayFragment mPlayFragment;
     private PausedFragment mPausedFragment;
@@ -63,8 +57,8 @@ public class VideoActivity extends AbstractClientActivity implements PlayFragmen
         mPathView = (TextView) findViewById(R.id.picked_path);
 
         mProgressView = findViewById(R.id.view_progress);
-        mVideoView = findViewById(R.id.view_video);
 
+        //initialize all the fragments
         mStoppedFragment = new StoppedFragment();
         mStoppedFragment.setArguments(getIntent().getExtras());
 
@@ -86,7 +80,6 @@ public class VideoActivity extends AbstractClientActivity implements PlayFragmen
     @Override
     protected void onApplicationStateChange(ApplicationState newState) {
         Log.d(DEBUG_TAG, "Changing from state _ to _: " + applicationState + newState);
-
         updateVideoState((VideoApplicationState) newState);
     }
 
@@ -106,13 +99,6 @@ public class VideoActivity extends AbstractClientActivity implements PlayFragmen
         mPathView.setText(str);
     }
 
-    @Override
-    protected void showProgress(boolean show) {
-        // Shows the progress UI and hides the video screen.
-        /*mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-        mVideoView.setVisibility(show ? View.GONE : View.VISIBLE);*/
-    }
-
     /**
      * Update UI elements to new state of the video application.
      * @param newVideoState ApplicationState we change to
@@ -120,7 +106,7 @@ public class VideoActivity extends AbstractClientActivity implements PlayFragmen
     private void updateVideoState(VideoApplicationState newVideoState) {
         // Test whether the newState is set: Switch/case statement cannot handle null objects.
         if (newVideoState != null) {
-            switch (newVideoState) { // Change to new state.
+            switch (newVideoState) { // Change to new state by swapping the fragments inside the container
                 case VIDEO_PAUSED:
                     getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, mPausedFragment).commit();
                     break;

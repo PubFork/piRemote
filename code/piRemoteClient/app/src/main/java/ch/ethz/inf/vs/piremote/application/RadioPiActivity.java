@@ -1,8 +1,5 @@
 package ch.ethz.inf.vs.piremote.application;
 
-import SharedConstants.ApplicationCsts;
-import SharedConstants.ApplicationCsts.ApplicationState;
-import SharedConstants.ApplicationCsts.RadioPiApplicationState;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,6 +8,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import SharedConstants.ApplicationCsts;
+import SharedConstants.ApplicationCsts.ApplicationState;
+import SharedConstants.ApplicationCsts.RadioPiApplicationState;
 import ch.ethz.inf.vs.piremote.R;
 import ch.ethz.inf.vs.piremote.core.AbstractClientActivity;
 import ch.ethz.inf.vs.piremote.core.AppConstants;
@@ -25,8 +26,6 @@ public class RadioPiActivity extends AbstractClientActivity {
     private TextView mPathView;
     private TextView mFreqView;
     private TextView mStatusView;
-    private View mProgressView;
-    private View mRadioPiView;
 
     private final String DEBUG_TAG = "# RPApp #";
     private final String WARN_TAG = "# RPApp WARN #";
@@ -92,7 +91,6 @@ public class RadioPiActivity extends AbstractClientActivity {
         });
 
         mProgressView = findViewById(R.id.view_progress);
-        mRadioPiView = findViewById(R.id.view_radio_pi);
 
         ApplicationCsts.RadioPiApplicationState startRPState = (ApplicationCsts.RadioPiApplicationState) getIntent().getSerializableExtra(AppConstants.EXTRA_STATE);
         // Test whether the startState is set: Cannot update text from null objects.
@@ -127,13 +125,6 @@ public class RadioPiActivity extends AbstractClientActivity {
 
         sendString(ClientCore.currentPath + str); // We concatenate it to the current path
         Log.d(DEBUG_TAG, "Sent file path to server, ready to go for play");
-    }
-
-    @Override
-    protected void showProgress(boolean show) {
-        // Shows the progress UI and hides the RadioPi screen.
-        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-        mRadioPiView.setVisibility(show ? View.GONE : View.VISIBLE);
     }
 
     /**

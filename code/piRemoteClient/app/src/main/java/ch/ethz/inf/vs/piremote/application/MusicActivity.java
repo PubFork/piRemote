@@ -76,8 +76,6 @@ public class MusicActivity extends AbstractClientActivity {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                //int volume = mSeekBarVolume.getProgress();
-                //mTextViewVolume.setText();
             }
 
             @Override
@@ -97,7 +95,8 @@ public class MusicActivity extends AbstractClientActivity {
         }
 
         mImageButtonUpdateState.performClick();
-        mImageButtonUpdateState.performClick();
+
+        mProgressView = findViewById(R.id.view_progress);
     }
 
     /**
@@ -107,7 +106,7 @@ public class MusicActivity extends AbstractClientActivity {
      */
     @Override
     protected void onApplicationStateChange(ApplicationCsts.ApplicationState newState) {
-        Log.d(DEBUG_TAG, String.format("Changing state from %s to %s: ", applicationState, newState));
+        Log.d(DEBUG_TAG, String.format("Changing state: %s -> %s", applicationState, newState));
         updateMusicState((ApplicationCsts.MusicApplicationState) newState);
     }
 
@@ -151,17 +150,9 @@ public class MusicActivity extends AbstractClientActivity {
             String temp;
 
             // Set the volume view
-            temp = playbackSettings.substring(volumeStart, volumeEnd);
-            if (temp.contains(" ")) {
-                mTextViewVolume.setText(temp.substring(1) + "%");
-                mSeekBarVolume.setProgress(Integer.parseInt(temp.substring(1)));
-            } else if (temp.contains("  ")) {
-                mTextViewVolume.setText(temp.substring(2) + "%");
-                mSeekBarVolume.setProgress(Integer.parseInt(temp.substring(2)));
-            } else {
-                mTextViewVolume.setText(temp + "%");
-                mSeekBarVolume.setProgress(Integer.parseInt(temp));
-            }
+            temp = playbackSettings.substring(volumeStart, volumeEnd).replaceAll(" ", "");
+            mTextViewVolume.setText(temp + "%");
+            mSeekBarVolume.setProgress(Integer.parseInt(temp));
 
             // Set the state of the loop button
             if (playbackSettings.substring(loopStart, loopEnd).contains("on") &&
@@ -209,16 +200,6 @@ public class MusicActivity extends AbstractClientActivity {
             //TODO: Remove from productin app, merely used for general output for anything not specfically assigned.
             mTextViewPlaylist.setText(str);
         }
-    }
-
-    /**
-     * Overrides parent method. This application doesn't implement multiple views.
-     *
-     * @param show
-     */
-    @Override
-    protected void showProgress(boolean show) {
-        return;
     }
 
     /**

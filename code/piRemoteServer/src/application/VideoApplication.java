@@ -112,7 +112,7 @@ public class VideoApplication extends AbstractApplication implements ProcessList
     public void onReceiveInt(int i, UUID senderUUID) {
         if(i == ApplicationCsts.VIDEO_PICK_FILE){
             System.out.println("VideoApplication: Initializing file pick.");
-            pickFile(System.getProperty("user.home"),senderUUID);
+            pickFile(System.getProperty("user.home")+"/piremote",senderUUID);
         }else{
             if(getApplicationState().equals(ApplicationCsts.VideoApplicationState.VIDEO_PLAYING)
                 || getApplicationState().equals(ApplicationCsts.VideoApplicationState.VIDEO_PAUSED)){

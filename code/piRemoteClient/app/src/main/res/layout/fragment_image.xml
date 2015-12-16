@@ -1,0 +1,31 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="ch.ethz.inf.vs.piremote.application.ImageFragment">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="16dp">
+
+        <ImageButton
+            android:id="@+id/button_prev_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_chevron_left_black_48dp"
+            android:layout_alignTop="@+id/button_next_image"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="46dp" />
+
+        <ImageButton
+            android:id="@+id/button_next_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_chevron_right_black_48dp"
+            android:layout_below="@+id/picked_path"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="39dp"
+            android:layout_marginTop="56dp" />
+    </RelativeLayout>
+
+</FrameLayout>

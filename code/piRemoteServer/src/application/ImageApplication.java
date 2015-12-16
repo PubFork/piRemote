@@ -67,7 +67,7 @@ public class ImageApplication extends AbstractApplication{
     public void onReceiveInt(int i, UUID senderUUID) {
         if (i == ApplicationCsts.IMAGE_PICK_FILE) {
             System.out.println("ImageApplication: Initializing file pick.");
-            pickFile(System.getProperty("user.home"),senderUUID);
+            pickFile(System.getProperty("user.home")+"/piremote",senderUUID);
         } else {
             switch (i) {
                 case ApplicationCsts.IMAGE_HIDE:

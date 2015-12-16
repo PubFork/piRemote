@@ -1,25 +1,24 @@
 package ch.ethz.inf.vs.piremote.application;
 
 import android.app.Activity;
-        import android.os.Bundle;
-        import android.support.annotation.NonNull;
-        import android.support.v4.app.Fragment;
-        import android.util.Log;
-        import android.view.LayoutInflater;
-        import android.view.View;
-        import android.view.ViewGroup;
-        import android.widget.Button;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageButton;
 
-        import SharedConstants.ApplicationCsts;
-        import ch.ethz.inf.vs.piremote.R;
+import SharedConstants.ApplicationCsts;
+import ch.ethz.inf.vs.piremote.R;
 
 /**
- *
+ *  This fragment is used to control a playing video
  */
 public class PlayFragment extends Fragment {
 
     private final String DEBUG_TAG = "# VideoApp #";
-    private final String WARN_TAG = "# VideoApp WARN #";
     private onClickAction mCallback;
 
 
@@ -28,8 +27,9 @@ public class PlayFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
+    //This is implemented by the video activity to enable communication between fragment and activity
     public interface onClickAction {
-        public void onButtonPressed(int state);
+        void onButtonPressed(int state);
     }
 
     @Override
@@ -46,7 +46,9 @@ public class PlayFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_play, container, false);
-        Button mPause = (Button) view.findViewById(R.id.button_play_pause);
+
+        //All buttons get a listener
+        ImageButton mPause = (ImageButton) view.findViewById(R.id.button_play_pause);
         mPause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull View v) {
@@ -55,7 +57,7 @@ public class PlayFragment extends Fragment {
             }
         });
 
-        Button mStop = (Button) view.findViewById(R.id.button_stop);
+        ImageButton mStop = (ImageButton) view.findViewById(R.id.button_stop);
         mStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull View v) {
@@ -64,7 +66,7 @@ public class PlayFragment extends Fragment {
             }
         });
 
-        Button mBack = (Button) view.findViewById(R.id.button_previous);
+        ImageButton mBack = (ImageButton) view.findViewById(R.id.button_previous);
         mBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull View v) {
@@ -72,7 +74,7 @@ public class PlayFragment extends Fragment {
                 mCallback.onButtonPressed(ApplicationCsts.VIDEO_JUMP_BACK);
             }
         });
-        Button mForward = (Button) view.findViewById(R.id.button_next);
+        ImageButton mForward = (ImageButton) view.findViewById(R.id.button_next);
         mForward.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull View v) {
@@ -81,7 +83,7 @@ public class PlayFragment extends Fragment {
             }
         });
 
-        Button mLeapBack = (Button) view.findViewById(R.id.button_leapback);
+        ImageButton mLeapBack = (ImageButton) view.findViewById(R.id.button_leapback);
         mLeapBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull View v) {
@@ -89,7 +91,7 @@ public class PlayFragment extends Fragment {
                 mCallback.onButtonPressed(ApplicationCsts.VIDEO_LEAP_BACK);
             }
         });
-        Button mLeapForward = (Button) view.findViewById(R.id.button_leapforward);
+        ImageButton mLeapForward = (ImageButton) view.findViewById(R.id.button_leapforward);
         mLeapForward.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull View v) {
@@ -98,7 +100,7 @@ public class PlayFragment extends Fragment {
             }
         });
 
-        Button mFaster = (Button) view.findViewById(R.id.button_faster);
+        ImageButton mFaster = (ImageButton) view.findViewById(R.id.button_faster);
         mFaster.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull View v) {
@@ -107,7 +109,7 @@ public class PlayFragment extends Fragment {
             }
         });
 
-        Button mSlower = (Button) view.findViewById(R.id.button_slower);
+        ImageButton mSlower = (ImageButton) view.findViewById(R.id.button_slower);
         mSlower.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull View v) {
@@ -116,7 +118,7 @@ public class PlayFragment extends Fragment {
             }
         });
 
-        Button mLouder = (Button) view.findViewById(R.id.button_louder);
+        ImageButton mLouder = (ImageButton) view.findViewById(R.id.button_louder);
         mLouder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull View v) {
@@ -125,7 +127,7 @@ public class PlayFragment extends Fragment {
             }
         });
 
-        Button mSofter = (Button) view.findViewById(R.id.button_softer);
+        ImageButton mSofter = (ImageButton) view.findViewById(R.id.button_softer);
         mSofter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull View v) {
@@ -134,7 +136,7 @@ public class PlayFragment extends Fragment {
             }
         });
 
-        Button mTogglesubs = (Button) view.findViewById(R.id.button_tobblesubs);
+        ImageButton mTogglesubs = (ImageButton) view.findViewById(R.id.button_tobblesubs);
         mTogglesubs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull View v) {
