@@ -175,7 +175,7 @@ public class VideoApplication extends AbstractApplication implements ProcessList
                         break;
                 }
             }else{
-                System.out.println("VideoApplication: Warning: Ignoring invalid request: "+Integer.toString(i));
+                System.out.println("VideoApplication: Warning: No video process running, ignoring request \""+Integer.toString(i)+"\"");
             }
         }
     }
