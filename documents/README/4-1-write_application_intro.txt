@@ -1,0 +1,18 @@
+HOW TO WRITE A PIREMOTE APPLICATION (INTRO):
+
+PiRemote provides a simple API for writing remote control-like applications. You can write a program allowing you to control your Raspberry Pi or Linux PC from one or multiple Android devices. A PiRemote application consists of a ServerApplication and a ClientApplication. The server runs on your Pi or PC, the client is part of your PiRemote Android App. The PiRemote Core takes care of network communication and state consistency such that you can focus on the actual use of your remote.
+
+Every application has its own ApplicationState when it is running. PiRemote guarantees that all connected devices will have a consistent view of this state within a few seconds. You can use ApplicationState to communicate fundamental state information, for example whether or not a slideshow is running (you might want to hide controls on your client when no slideshow is running).
+
+In order to communicate between your server and client you can send ints, doubles or Strings. It's very useful to define int constants in our Shared part which is included in both the Java (server) and the Android (client) projects. Those constants are just send once when you fire them and PiRemote will not ensure consistency.
+
+There is a small tool for browsing files and folders on the server, called the File Picker. A file pick is initiated by your server application and happens in the Core part only (hidden from your application) until a file was picked by the client. Then, the server application will be notified. By default, the File Picker does not show hidden files. To change this behaviour, go to piRemoteServer -> src -> core -> AbstractApplication -> pickFile(...) -> [...].makeOffer([...], false); and change the last false to true.
+
+In order to implement your own application follow these steps:
+-> piRemoteShared:
+   --> In ApplicationCsts, create an enum that implements Application State and define your ApplicationState constants there.
+   --> Still in ApplicationCsts, define any int constants that you will use to communicate additional information (for example, you might want to define a PLAY_BUTTON_PRESSED int constant that the client sends to the server). For convention, we recommend that you start your constants with the name of your application.
+   --> In CoreCsts -> ServerState, register your application by adding a new constant to the enum. The constant comes with a String which will be displayed at the application chooser.
+   --> Now build the artifact piRemoteShared.jar and import it in piRemoteServer and piRemoteClient (see the section about compiling for instructions).
+-> piRemoteServer: first make sure that you have imported the artifact from the step above. Then follow the instructions below to implement your server part.
+-> piRemoteClient: first make sure that you have imported the artifact from the step above. Then follow the instructions below to implement your client part.
