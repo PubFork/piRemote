@@ -45,12 +45,12 @@ public class VideoApplication extends AbstractApplication implements ProcessList
 
     String pathToPlay = "";
     ProcessBuilder processBuilder = null;
-    Process omxProcess = null;
-    OutputStream omxStdin = null;
-    InputStream omxStderr = null;
-    InputStream omxStdout = null;
-    BufferedReader omxReader = null;
-    BufferedWriter omxWriter = null;
+    Process process = null;
+    OutputStream stdin = null;
+    InputStream stderr = null;
+    InputStream stdout = null;
+    BufferedReader reader = null;
+    BufferedWriter writer = null;
     ProcessExitDetector processExitDetector = null;
     boolean useOmxPlayer = true; // If false, will use keys for mplayer
 
@@ -110,6 +110,9 @@ public class VideoApplication extends AbstractApplication implements ProcessList
         pathToPlay = file.getAbsolutePath();
         sendString(file.getName());
         changeApplicationState(ApplicationCsts.VideoApplicationState.VIDEO_PLAYING);
+
+        // (*1): If player failed to load, go back to stopped state.
+        if(process == null) changeApplicationState(ApplicationCsts.VideoApplicationState.VIDEO_STOPPED);
     }
 
     @Override
@@ -123,6 +126,7 @@ public class VideoApplication extends AbstractApplication implements ProcessList
                 switch (i){
                     case ApplicationCsts.VIDEO_PLAY:
                         changeApplicationState(ApplicationCsts.VideoApplicationState.VIDEO_PLAYING);
+                        if(process == null) changeApplicationState(ApplicationCsts.VideoApplicationState.VIDEO_STOPPED); // (*2)
                         break;
                     case ApplicationCsts.VIDEO_PAUSE:
                         changeApplicationState(ApplicationCsts.VideoApplicationState.VIDEO_PAUSED);
@@ -187,29 +191,35 @@ public class VideoApplication extends AbstractApplication implements ProcessList
     }
 
     void startProcess(String path){
-        File omx = new File("/usr/bin/omxplayer");
-        if(omx.exists()){
+        File executableFile = new File("/usr/bin/omxplayer");
+        if(executableFile.exists()){
             // Omxplayer detected, use it
             useOmxPlayer = true;
             processBuilder = new ProcessBuilder("/usr/bin/omxplayer", "-b", "--key-config","/home/pi/.omxplayer", path);
         }else{
             // Fallback to mplayer
-            useOmxPlayer = false;
-            processBuilder = new ProcessBuilder("/usr/bin/mplayer", "-fs", path);
+            executableFile = new File("/usr/bin/mplayer");
+            if(executableFile.exists()) {
+                useOmxPlayer = false;
+                processBuilder = new ProcessBuilder("/usr/bin/mplayer", "-fs", path);
+            }else{
+                process = null;
+                return; // Process failed to load -> ApplicationState will change back to stopped at (*1) or (*2)
+            }
         }
         processBuilder.redirectErrorStream(true);
         try {
-            omxProcess = processBuilder.start();
-            processExitDetector = new ProcessExitDetector(omxProcess);
+            process = processBuilder.start();
+            processExitDetector = new ProcessExitDetector(process);
             processExitDetector.addProcessListener(this);
             processExitDetector.start();
-            if(omxProcess != null) {
-                omxStdin = omxProcess.getOutputStream();
-                omxStderr = omxProcess.getErrorStream();
-                omxStdout = omxProcess.getInputStream();
+            if(process != null) {
+                stdin = process.getOutputStream();
+                stderr = process.getErrorStream();
+                stdout = process.getInputStream();
 
-                omxReader = new BufferedReader(new InputStreamReader(omxStdout));
-                omxWriter = new BufferedWriter(new OutputStreamWriter(omxStdin));
+                reader = new BufferedReader(new InputStreamReader(stdout));
+                writer = new BufferedWriter(new OutputStreamWriter(stdin));
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -217,7 +227,7 @@ public class VideoApplication extends AbstractApplication implements ProcessList
     }
 
     void requestProcessStop(){
-        if(omxProcess != null){
+        if(process != null){
             sendToProcess("q");
         }
     }
@@ -226,24 +236,24 @@ public class VideoApplication extends AbstractApplication implements ProcessList
     public void onProcessExit(Process process) {
         System.out.println("VideoApplication: Player exited.");
         try {
-            omxReader.close();
-            omxWriter.close();
+            reader.close();
+            writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        omxReader = null;
-        omxWriter = null;
+        reader = null;
+        writer = null;
         processExitDetector.removeProcessListener(this);
         processExitDetector = null;
-        omxProcess=null;
+        this.process =null;
         changeApplicationState(ApplicationCsts.VideoApplicationState.VIDEO_STOPPED);
     }
 
     void sendToProcess(String what){
         try {
-            if(applicationState != ApplicationCsts.VideoApplicationState.VIDEO_STOPPED && omxWriter != null) {
-                omxWriter.write(what);
-                omxWriter.flush();
+            if(applicationState != ApplicationCsts.VideoApplicationState.VIDEO_STOPPED && process != null && writer != null) {
+                writer.write(what);
+                writer.flush();
             }else{
                 System.out.println("VideoApplication: Request to send \""+what+"\" to process was ignored because I'm stopped");
             }
