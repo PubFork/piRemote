@@ -1,6 +1,6 @@
-TRAFFIC LIGHT APPLICATION
+TRAFFIC LIGHT APPLICATION:
 
-TrafficLightApplication doesn't do anything useful, it was just built for testing the protocol. You might find it useful for verifying connectivity and consistency across all devices.
+TrafficLightApplication does not do anything useful. It was built to test the protocol in the first place. You might find it useful for verifying connectivity and consistency across all devices.
 
--> Colors (red / orange / green) shoud be consistent within seconds across all connected devices.
--> The file name indicated to the right of the file picker is broadcasted once at every pick action. Devices connecting at a later point will not receive the broadcast.
+- Colors (red / orange / green) should be consistent within seconds across all connected devices.
+- The file name indicated to the right of the file picker is broadcasted once at every pick action. Devices connecting at a later point will not receive the broadcast.

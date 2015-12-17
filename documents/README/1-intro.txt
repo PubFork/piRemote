@@ -1,12 +1,12 @@
-INTRO
+INTRO:
 
 PiRemote is a simple API for building remote control-like applications, allowing one or multiple Android devices to control a server running on a Raspberry Pi or a PC. It was designed to serve simple purposes that one would expect from ordinary remote controls. PiRemote is not suitable for tasks such as streaming data across devices, transferring large files or running tasks with high load or runtime.
 
 We provide a few sample applications to illustrate the purpose and the functionality of our software:
--> TrafficLight tests the network communication and consistency.
--> ImageApplication displays a slideshow on the main screen. Users can navigate back and forth. It requires the server to run Linux with a graphical environment and geeqie.
--> VideoApplication plays music and videos and provides basic remote control functionality, including speed change and subtitles toggeling. It requires the server to run Linux with a graphical environment and either omxplayer or mplayer.
--> MusicApplication plays music and manages a playlist. It requires the server to run Linux with mpd and mpc.
--> RadioPi uses a pin of the Raspberry Pi to stream music over FM. Note that using this application may not be legal in some countries.
+- TrafficLight tests the network communication and consistency.
+- VideoApplication plays music and videos and provides basic remote control functionality, including speed change and subtitle toggling. It requires the server to run Linux with a graphical environment and either omxplayer or mplayer.
+- MusicApplication plays music and manages a playlist. It requires the server to run Linux with mpd and mpc.
+- RadioPi uses a pin of the Raspberry Pi to stream music over FM. Note that using this application may not be legal in some countries.
+- ImageApplication displays a slideshow on the main screen. Users can navigate back and forth. It requires the server to run Linux with a graphical environment and geeqie.
 
 In the following sections we will explain how to get PiRemote running and how to write your own PiRemote applications.

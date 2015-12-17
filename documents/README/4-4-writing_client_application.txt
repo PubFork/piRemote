@@ -1,21 +1,22 @@
 HOW TO WRITE A CLIENT APPLICATION:
 
-Again: Make sure that you have imported the piRemoteShared.jar containing your constants (see above)!
+Again: Make sure that you have imported the piRemoteShared.jar containing your constants as described above.
 
--> Create a new activity in the folder "application" and let it inherit from the AbstractClientActivity.
+1. Create a new activity in the "application" package and let it inherit from the AbstractClientActivity.
 
--> In core -> AbstractClientActivity -> startAbstractActivity, add your ServerState constant to BOTH switch statements. Just take the code from an existing application and adjust it for your constant / class name.
+2. In core -> AbstractClientActivity -> startAbstractActivity, add your ServerState constant to both switch statements. Just take the code from an existing application and adjust it for your constant / class name.
 
--> In your new class, override all abstract functions from AbstractClientActivity:
-	--> onApplicationStateChange(ApplicationState newState): Called just before an application switches to another state. Update UI. The application has access to both, the old (getApplicationState()) and the new ApplicationState, given as the argument. There is no need to update ApplicationState in onApplicationStateChange() since the Core will do it after this method returns.
-	--> onReceiveInt(int i): Called when the server sends an IntMessage.
-	--> onReceiveDouble(double d): As above for double.
-	--> onReceiveString(String str): As above for String.
--> Unless you know what you are doing, do not override other methods.
+3. In your new class, override all abstract methods from AbstractClientActivity:
+	- onApplicationStateChange(ApplicationState newState): Called just before an application switches to another state. Update the UI. The application has access to both, the old (applicationState field) and the new ApplicationState (given as the argument). There is no need to update ApplicationState in onApplicationStateChange() since the Core will do it after this method returns.
+	- onReceiveInt(int i): Called when the server sends an IntMessage.
+	- onReceiveDouble(double d): As above for double.
+	- onReceiveString(String str): As above for String.
 
--> Implement protected void onCreate(Bundle savedInstanceState) which gets called when your ClientActivity starts up.
+4. Unless you know what you are doing, do not override other methods.
 
--> Implement the application to your liking just like you normally would. You may use the following methods provided by AbstractClientActivity to talk to your server app:
-	--> sendInt(int i): Use to send the integer i to the server
-	--> sendDouble(double d): As above for double.
-	--> sendString(String str): As above for String.
+5. Implement protected void onCreate(Bundle savedInstanceState) which gets called when your ClientActivity starts up.
+
+6. Implement the application to your liking just like you normally would. You may use the following methods provided by AbstractClientActivity to talk to your server app:
+	- sendInt(int i): Use to send the integer i to the server
+	- sendDouble(double d): As above for double.
+	- sendString(String str): As above for String.

@@ -1,23 +1,23 @@
 HOW TO WRITE A SERVER APPLICATION:
 
-Again: Make sure that you have imported the piRemoteShared.jar containing your constants (see above)!
+Again: Make sure that you have imported the piRemoteShared.jar containing your constants as described above.
 
--> Create a new Java class in piRemoteServer -> src -> application with the name of your application.
+1. Create a new Java class in piRemoteServer -> src -> application with the name of your application.
 
--> Your new class must extend AbstractApplication. Implement all necessary methods:
-   --> onApplicationStart(): Called right after creation of the application. You must set the initial application state here using changeApplicationState (see below).
-   --> onApplicationStop(): Called right before the destruction of the application. Place your last words here.
-   --> onApplicationStateChange(ApplicationState newstate): Called right BEFORE application switches to another state. Within this method, getApplicationState() holds the old state and newstate the new one.
-   --> onFilePicked(File file, UUID senderUUID): Called when the FilePicker on a client sent a file pick message on a file (not a directory). The UUID of the sender is given as an argument and can be used to reply something to that particular client.
-   --> onReceiveInt / -Double / -String(T content, UUID senderUUID): Called when a message arrived. For example, onReceiveInt(int i, UUID, senderUUID) is called on the server after sendInt(...) was called on a client. The UUID of the sender is given as an argument and can be used to reply something to that particular client.
+2. Your new class must extend AbstractApplication. Implement all necessary methods:
+   - onApplicationStart(): Called right after creation of the application. You must set the initial application state here using changeApplicationState (see below).
+   - onApplicationStop(): Called right before the destruction of the application. Place your last words here.
+   - onApplicationStateChange(ApplicationState newState): Called right before the application switches to another state. Within this method, getApplicationState() holds the old state and newState the new one.
+   - onFilePicked(File file, UUID senderUUID): Called when the FilePicker on a client sent a file pick message on a file (not a directory). The UUID of the sender is given as an argument and can be used to reply something to that particular client.
+   - onReceiveInt / -Double / -String(T content, UUID senderUUID): Called when a message arrived. For example, onReceiveInt(int i, UUID, senderUUID) is called on the server after sendInt(...) was called on a client. The UUID of the sender is given as an argument and can be used to reply something to that particular client.
 
--> In order to talk to your client, you may use the following methods provided by AbstractApplication:
-   --> getApplicationState(): This returns the current ApplicationState on the server. Within the method onApplicationStateChange(...) this returns the old ApplicationState.
-   --> changeApplicationState(ApplicationState newstate): Use this to ask the core to change the ApplicationState. All connected clients will be informed and onApplicationStateChange(...) will be called BOTH on the server and on every client!
-   --> pickFile(String path, UUID destination): This shall be called by the server application to initiate a FilePick scenario on a particular client. path: Root path (must be directory!) to start file pick with. destination: UUID of the client to send the offer to. Example scenario: you set the client up to send your constant CHOOSE_VIDEO_BUTTON_PRESSED when the user wants to pick a video to play. Then this constant is received on the server in onReceiveInt which also delivers the UUID of the sender. You can now make the File Picker appear on the client using this function and giving it a start path and the UUID you got from onReceiveInt(...).
-   --> closeFilePicker(UUID destination): This shall be called by the server application to make the file pick overlay disappear in the client's UI
-   --> sendInt / -Double / -String(T content [, UUID destinationUUID] ): Use these 6 methods to send information to the client. There is now guarantee that the message will be delivered. If you omit the destinationUUID, your message will be delivered to all connected clients.
-   
--> Do not override other methods in AbstractApplication unless you know what you are doing.
+3. In order to talk to your client, you may use the following methods provided by AbstractApplication:
+   - getApplicationState(): This returns the current ApplicationState on the server. Within the method onApplicationStateChange(...) this returns the old ApplicationState.
+   - changeApplicationState(ApplicationState newState): Use this to ask the core to change the ApplicationState. All connected clients will be informed and onApplicationStateChange(...) will be called both on the server and on every client.
+   - pickFile(String path, UUID destination): This shall be called by the server application to initiate a FilePick scenario on a particular client. path: Root path (must be a directory) to start the file pick with. destination: UUID of the client to send the offer to. Consider the following example scenario: You set the client up to send your constant CHOOSE_VIDEO_BUTTON_PRESSED when the user wants to pick a video to play. Then this constant is received on the server in onReceiveInt which also delivers the UUID of the sender. You can now make the File Picker appear on the client using this function and giving it a start path and the UUID you got from onReceiveInt(...).
+   - closeFilePicker(UUID destination): Should be called to make the file pick overlay disappear in the client's UI
+   - sendInt / -Double / -String(T content [, UUID destinationUUID] ): Use these 6 methods to send information to the client. There is now guarantee that the message will be delivered. If you omit the destinationUUID, your message will be delivered to all connected clients.
 
--> Feel free to define your own fields, methods etc. You can spawn new threads and create further classes, but make sure to avoid data races.
+4. Do not override other methods in AbstractApplication unless you know what you are doing.
+
+5. Feel free to define your own fields, methods etc. You can spawn new threads and create further classes, but make sure to avoid data races.

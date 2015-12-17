@@ -1,0 +1,54 @@
+VIDEO APPLICATION:
+
+The VideoApplication is a wrapper for omxplayer and mplayer. It can be used to play videos (ideally h264) and music. VideoApplication runs both on standard Linux PCs and Raspberry Pi. When opening a file, it looks for /usr/bin/omxplayer. If not found, it assumes that it is running on a PC and falls back to /usr/bin/mplayer.
+
+Features (the following commands can be sent to both supported players):
+- Play / Pause / Stop
+- Seek back / forward (2 step sizes)
+- Volume increase / decrease
+- Speed increase / decrease
+- Toggle subtitles (on / off)
+
+In order to get the VideoApplication running, you have to do the following steps:
+1. Install either omxplayer or mplayer (for best performance, use omxplayer on Raspberries and mplayer on PCs). The executables must be located at /usr/bin/ (if necessary, create a symlink or change the path in piRemoteServer -> VideoApplication.java -> startProcess()).
+2. If you want to use VideoApplication with omxplayer, create a text file ~/.omxplayer (meaning: create a file called .omxplayer in the home folder of the user that will run PiRemote). In the text file, paste the contents from appendix A.
+3. If you want to use VideoApplication with mplayer, create a key config file for mplayer in the default location, typically ~/.mplayer/input.conf (~/ being the home folder of the user that will run PiRemote). In the text file, paste the contents from appendix B.
+4. Above config file bind the players' keys to a schema that PiRemote can talk to. If you want to use different locations, you need to modify the source code.
+
+== Known issues ==
+- A client connecting to the server after playback has started will not see the filename of the media currently being played. This is normal.
+- On Raspberry Pi 1 omxplayer takes a while to start up. Please give it some time (up to several seconds).
+- mplayer seems to crash after a while when a large file is played. If you have a solution, please send us a pull request.
+
+== VideoApplication Appendix A: ~/.omxplayer ==
+In order to get this running with omxplayer, you MUST create a file ~/.omxplayer with the following content (note that PAUSE: has a space behind it):
+     DECREASE_SPEED:1
+     INCREASE_SPEED:2
+     REWIND:<
+     FAST_FORWARD:>
+     SHOW_INFO:z
+     PREVIOUS_AUDIO:j
+     NEXT_AUDIO:k
+     PREVIOUS_CHAPTER:i
+     NEXT_CHAPTER:o
+     PREVIOUS_SUBTITLE:n
+     NEXT_SUBTITLE:m
+     TOGGLE_SUBTITLE:s
+     DECREASE_SUBTITLE_DELAY:d
+     INCREASE_SUBTITLE_DELAY:f
+     EXIT:q
+     PAUSE:
+     DECREASE_VOLUME:-
+     INCREASE_VOLUME:+
+     SEEK_BACK_SMALL:x
+     SEEK_FORWARD_SMALL:c
+     SEEK_BACK_LARGE:y
+     SEEK_FORWARD_LARGE:v
+     STEP:p
+     TOGGLE_SUBTITLE:s
+
+== VideoApplication Appendix B: ~/.mplayer/input.conf ==
+     ' seek +30
+     " seek -30
+     & seek +600
+     % seek -600

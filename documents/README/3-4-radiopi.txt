@@ -1,0 +1,10 @@
+RADIOPI APPLICATION:
+
+With the RadioPiApplication a client is able to broadcast a song from the Raspberry Pi via radio.
+Please note, that the Raspberry Pi has to be set up with the right executable beforehand. You can use the included binary for the Pi2 or compile it yourself from the included sources for the Pi1.
+At the location where you run the server, create a subfolder called radiopi2473/ where you put the binary pifm executable and also the encoded music files.
+For more information about the transmitter see http://www.icrobotics.co.uk/wiki/index.php/Turning_the_Raspberry_Pi_Into_an_FM_Transmitter or the README.
+Also please don't create interferences with license broadcasters and make sure you are familiar with government regulations about radio emissions.
+
+You can pick the file you want to play in the client app. By pressing the broadcast button, you select the frequency you want to transmit on.
+Play starts and stop stops the transmission, respectively. The rest happens in the background.
