@@ -147,28 +147,32 @@ public class MusicActivity extends AbstractClientActivity {
         } else if (str.startsWith(ApplicationCsts.MUSIC_PREFIX_EXTRA)) {
             // Get the default output sent by mpc
             String playbackSettings = str.substring(ApplicationCsts.MUSIC_PREFIX_EXTRA.length());
-            String temp;
+            if (playbackSettings.length() > shuffleEnd) {
+                String temp;
 
-            // Set the volume view
-            temp = playbackSettings.substring(volumeStart, volumeEnd).replaceAll(" ", "");
-            mTextViewVolume.setText(temp + "%");
-            mSeekBarVolume.setProgress(Integer.parseInt(temp));
+                // Set the volume view
+                temp = playbackSettings.substring(volumeStart, volumeEnd).replaceAll(" ", "");
+                mTextViewVolume.setText(temp + "%");
+                if (temp.matches("-?\\d+(\\.\\d+)?")) {
+                    mSeekBarVolume.setProgress(Integer.parseInt(temp));
+                }
 
-            // Set the state of the loop button
-            if (playbackSettings.substring(loopStart, loopEnd).contains("on") &&
-                    playbackSettings.substring(singleStart, singleEnd).contains("off")) {
-                changeButtonFunction(mImageButtonLoopToggle, R.drawable.ic_repeat_white_48dp, ApplicationCsts.MUSIC_SINGLE);
-            } else if (playbackSettings.substring(singleStart, singleEnd).contains("on")) {
-                changeButtonFunction(mImageButtonLoopToggle, R.drawable.ic_repeat_one_white_48dp, ApplicationCsts.MUSIC_NOLOOPING);
-            } else {
-                changeButtonFunction(mImageButtonLoopToggle, R.drawable.ic_not_interested_white_48dp, ApplicationCsts.MUSIC_LOOP);
-            }
+                // Set the state of the loop button
+                if (playbackSettings.substring(loopStart, loopEnd).contains("on") &&
+                        playbackSettings.substring(singleStart, singleEnd).contains("off")) {
+                    changeButtonFunction(mImageButtonLoopToggle, R.drawable.ic_repeat_white_48dp, ApplicationCsts.MUSIC_SINGLE);
+                } else if (playbackSettings.substring(singleStart, singleEnd).contains("on")) {
+                    changeButtonFunction(mImageButtonLoopToggle, R.drawable.ic_repeat_one_white_48dp, ApplicationCsts.MUSIC_NOLOOPING);
+                } else {
+                    changeButtonFunction(mImageButtonLoopToggle, R.drawable.ic_not_interested_white_48dp, ApplicationCsts.MUSIC_LOOP);
+                }
 
-            // Set the state of the shuffle switch
-            if (playbackSettings.substring(shuffleStart, shuffleEnd).contains("on")) {
-                changeButtonFunction(mImageButtonShuffle, R.drawable.ic_shuffle_white_48dp, ApplicationCsts.MUSIC_SHUFFLE_OFF);
-            } else {
-                changeButtonFunction(mImageButtonShuffle, R.drawable.ic_not_interested_white_48dp, ApplicationCsts.MUSIC_SHUFFLE_ON);
+                // Set the state of the shuffle switch
+                if (playbackSettings.substring(shuffleStart, shuffleEnd).contains("on")) {
+                    changeButtonFunction(mImageButtonShuffle, R.drawable.ic_shuffle_white_48dp, ApplicationCsts.MUSIC_SHUFFLE_OFF);
+                } else {
+                    changeButtonFunction(mImageButtonShuffle, R.drawable.ic_not_interested_white_48dp, ApplicationCsts.MUSIC_SHUFFLE_ON);
+                }
             }
         } else if (str.startsWith(ApplicationCsts.MUSIC_PREFIX_PLAYLIST)) {
             // Fill the scrollable playlist window with the current playlist
@@ -197,8 +201,7 @@ public class MusicActivity extends AbstractClientActivity {
             }
 
         } else {
-            //TODO: Remove from productin app, merely used for general output for anything not specfically assigned.
-            mTextViewPlaylist.setText(str);
+            mTextViewPlaylist.setText("Invalid string received from server.");
         }
     }
 
@@ -215,8 +218,10 @@ public class MusicActivity extends AbstractClientActivity {
             } else if (newMusicState == MusicApplicationState.MUSIC_STOPPED) {
                 mTextViewCurrentSong.setText("Playback stopped");
                 changeButtonFunction(mImageButtonPlayPause, R.drawable.ic_play_arrow_white_48dp, ApplicationCsts.MUSIC_PLAY);
-            } else {
+            } else if (newMusicState == MusicApplicationState.MUSIC_PLAYING){
                 changeButtonFunction(mImageButtonPlayPause, R.drawable.ic_pause_white_48dp, ApplicationCsts.MUSIC_PAUSE);
+            } else {
+                // Invalid state reached.
             }
         }
     }

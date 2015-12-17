@@ -15,6 +15,20 @@ import java.util.UUID;
  */
 public class MusicApplication extends AbstractApplication {
 
+    // Paths needed for the application to work
+    private final File bash = new File("/bin/bash");
+    private final File tail = new File("/usr/bin/tail");
+    private final File mpd = new File("/usr/bin/mpd");
+    private final File mpc = new File("/usr/bin/mpc");
+
+    // Predefined strings
+    private final String SERVER_BROKEN = "Serverapplication broken, check your installation for validity.";
+    private final String NOEXEC = "Invalid Execution.";
+
+    // Used for restarting the musicapp twice in a row upon correcting the installation.
+    private boolean onStartBroken = false;
+
+
     /**
      * Initialisation of the music application.
      */
@@ -22,19 +36,30 @@ public class MusicApplication extends AbstractApplication {
     public void onApplicationStart() {
         System.out.println("MusicApplication: Initialised.");
 
-        // Set the default application state based on the actual current state of mpd.
-        String currentState = executeCommand("mpc", null);
-        if (currentState.contains("playing")) {
-            changeApplicationState(MusicApplicationState.MUSIC_PLAYING);
-        } else if (currentState.contains("paused")) {
-            changeApplicationState(MusicApplicationState.MUSIC_PAUSED);
-        } else {
-            changeApplicationState(MusicApplicationState.MUSIC_STOPPED);
+        if (!bash.exists() || !tail.exists() || !mpd.exists() || !mpc.exists()) {
+            if (getApplicationState() == null) {
+                // Check for null, could be the very first instantiation of an server application.
+                System.out.printf("MusicApplication: Not configured/installed.\n");
+            }
 
-            // Load a default playlist if none is loaded
-            String playlistLoaded = executeCommand("mpc playlist", null);
-            if (playlistLoaded.contains("NULL")) {
-                executeCommand("mpc load default", null);
+            onStartBroken = true;
+            changeApplicationState(MusicApplicationState.MUSIC_INVALID);
+
+        } else {
+            // Set the default application state based on the actual current state of mpd.
+            String currentState = executeCommand("mpc", null);
+            if (currentState.contains("playing")) {
+                changeApplicationState(MusicApplicationState.MUSIC_PLAYING);
+            } else if (currentState.contains("paused")) {
+                changeApplicationState(MusicApplicationState.MUSIC_PAUSED);
+            } else if (!currentState.equals(NOEXEC)) {
+                changeApplicationState(MusicApplicationState.MUSIC_STOPPED);
+
+                // Load a default playlist if none is loaded
+                String playlistLoaded = executeCommand("mpc playlist", null);
+                if (playlistLoaded.contains("NULL")) {
+                    executeCommand("mpc load default", null);
+                }
             }
         }
     }
@@ -63,6 +88,10 @@ public class MusicApplication extends AbstractApplication {
                 System.out.printf("MusicApplication: Warning: Ignoring attempt to change to current state: %s\n",
                         getApplicationState().toString());
 
+            } else if (getApplicationState().equals(MusicApplicationState.MUSIC_INVALID)) {
+                // The music installation is broken.
+                System.out.printf("MusicApplication: Not configured/installed.\n");
+
             } else if (newState.equals(MusicApplicationState.MUSIC_PLAYING)) {
 
                 if (getApplicationState().equals(MusicApplicationState.MUSIC_STOPPED)) {
@@ -76,13 +105,17 @@ public class MusicApplication extends AbstractApplication {
             } else if (newState.equals(MusicApplicationState.MUSIC_PAUSED)) {
 
                 if (getApplicationState().equals(MusicApplicationState.MUSIC_PLAYING)) {
-                    // Currently playing back music, pause playback
+                    // Currently playing back music, pause playback.
                     System.out.printf("MusicApplication: Pausing playback.\n");
                 }
 
-            } else {
+            } else if (newState.equals(MusicApplicationState.MUSIC_STOPPED)){
                 // New state is to stop playback.
                 System.out.printf("MusicApplication: Stopping playback.\n");
+
+            } else {
+                // The music installation is broken.
+                System.out.printf("MusicApplication: Not configured/installed.\n");
             }
         }
     }
@@ -108,16 +141,23 @@ public class MusicApplication extends AbstractApplication {
      */
     @Override
     public void onReceiveInt(int i, UUID senderUUID) {
-        if(i == ApplicationCsts.MUSIC_PICK_FILE){
+        if (getApplicationState() == MusicApplicationState.MUSIC_INVALID) {
+            sendString(createMessage(ApplicationCsts.MUSIC_PREFIX_PLAYLIST, SERVER_BROKEN));
+            return;
+
+        } else if(i == ApplicationCsts.MUSIC_PICK_FILE){
             System.out.println("MusicApplication: Initializing file selection.");
             pickFile(System.getProperty("user.home")+"/piremote",senderUUID);
+
         } else {
             switch(i) {
+
                 case ApplicationCsts.MUSIC_PLAY:
                     changeApplicationState(MusicApplicationState.MUSIC_PLAYING);
                     executeCommand("mpc play", null);
                     sendString(createMessage(ApplicationCsts.MUSIC_PREFIX_SONG, executeCommand("mpc current", null)));
                     break;
+
                 case ApplicationCsts.MUSIC_PAUSE:
                     if (!getApplicationState().equals(MusicApplicationState.MUSIC_STOPPED)) {
                         changeApplicationState(MusicApplicationState.MUSIC_PAUSED);
@@ -126,6 +166,7 @@ public class MusicApplication extends AbstractApplication {
                         System.out.println("MusicApplication: Ignoring invalid command/state combination.");
                     }
                     break;
+
                 case ApplicationCsts.MUSIC_STOP:
                     if (!getApplicationState().equals(MusicApplicationState.MUSIC_STOPPED)) {
                         changeApplicationState(MusicApplicationState.MUSIC_STOPPED);
@@ -134,9 +175,11 @@ public class MusicApplication extends AbstractApplication {
                         System.out.println("MusicApplication: Ignoring invalid command/state combination.");
                     }
                     break;
+
                 case ApplicationCsts.MUSIC_STATUS:
                     sendString(createMessage(ApplicationCsts.MUSIC_PREFIX_STATUS, executeCommand("mpc", null)), senderUUID);
                     break;
+
                 case ApplicationCsts.MUSIC_GET_CURRENT:
                     if (!getApplicationState().equals(MusicApplicationState.MUSIC_STOPPED)) {
                         sendString(createMessage(ApplicationCsts.MUSIC_PREFIX_SONG, executeCommand("mpc current", null)), senderUUID);
@@ -144,6 +187,7 @@ public class MusicApplication extends AbstractApplication {
                         System.out.println("MusicApplication: Ignoring invalid command/state combination.");
                     }
                     break;
+
                 case ApplicationCsts.MUSIC_NEXT:
                     if (!getApplicationState().equals(MusicApplicationState.MUSIC_STOPPED)) {
                         executeCommand("mpc next", null);
@@ -152,6 +196,7 @@ public class MusicApplication extends AbstractApplication {
                         System.out.println("MusicApplication: Ignoring invalid command/state combination.");
                     }
                     break;
+
                 case ApplicationCsts.MUSIC_PREV:
                     if (!getApplicationState().equals(MusicApplicationState.MUSIC_STOPPED)) {
                         executeCommand("mpc prev", null);
@@ -160,42 +205,52 @@ public class MusicApplication extends AbstractApplication {
                         System.out.println("MusicApplication: Ignoring invalid command/state combination.");
                     }
                     break;
+
                 case ApplicationCsts.MUSIC_VOLUME_UP:
                     executeCommand("mpc volume +1", null);
                     sendString(createMessage(ApplicationCsts.MUSIC_PREFIX_EXTRA, executeCommand("/bin/bash -c", "mpc | tail -n1")));
                     break;
+
                 case ApplicationCsts.MUSIC_VOLUME_DOWN:
                     executeCommand("mpc volume -1", null);
                     sendString(createMessage(ApplicationCsts.MUSIC_PREFIX_EXTRA, executeCommand("/bin/bash -c", "mpc | tail -n1")));
                     break;
+
                 case ApplicationCsts.MUSIC_LOOP:
                     executeCommand("mpc repeat on", null);
                     executeCommand("mpc single off", null);
                     sendString(createMessage(ApplicationCsts.MUSIC_PREFIX_EXTRA, executeCommand("/bin/bash -c", "mpc | tail -n1")));
                     break;
+
                 case ApplicationCsts.MUSIC_SINGLE:
                     executeCommand("mpc repeat on", null);
                     executeCommand("mpc single on", null);
                     sendString(createMessage(ApplicationCsts.MUSIC_PREFIX_EXTRA, executeCommand("/bin/bash -c", "mpc | tail -n1")));
                     break;
+
                 case ApplicationCsts.MUSIC_NOLOOPING:
                     executeCommand("mpc repeat off", null);
                     executeCommand("mpc single off", null);
                     sendString(createMessage(ApplicationCsts.MUSIC_PREFIX_EXTRA, executeCommand("/bin/bash -c", "mpc | tail -n1")));
                     break;
+
                 case ApplicationCsts.MUSIC_SHUFFLE_ON:
                     executeCommand("mpc random on", null);
                     sendString(createMessage(ApplicationCsts.MUSIC_PREFIX_EXTRA, executeCommand("/bin/bash -c", "mpc | tail -n1")));
                     break;
+
                 case ApplicationCsts.MUSIC_SHUFFLE_OFF:
                     executeCommand("mpc random off", null);
                     sendString(createMessage(ApplicationCsts.MUSIC_PREFIX_EXTRA, executeCommand("/bin/bash -c", "mpc | tail -n1")));
                     break;
+
                 case ApplicationCsts.MUSIC_GET_PLAYLIST:
                     sendString(createMessage(ApplicationCsts.MUSIC_PREFIX_PLAYLIST, executeCommand("mpc playlist", null)), senderUUID);
                     break;
+
                 default:
                     System.out.printf("MusicApplication: Received unknown value %d\n", i);
+                    break;
             }
         }
     }
@@ -217,7 +272,11 @@ public class MusicApplication extends AbstractApplication {
      */
     @Override
     public void onReceiveString(String str, @NotNull UUID senderUUID) {
-        if (str.contains(ApplicationCsts.MUSIC_PREFIX_VOLUME)) {
+        if (getApplicationState() == MusicApplicationState.MUSIC_INVALID) {
+            sendString(createMessage(ApplicationCsts.MUSIC_PREFIX_PLAYLIST, SERVER_BROKEN));
+            return;
+
+        } else if (str.contains(ApplicationCsts.MUSIC_PREFIX_VOLUME)) {
             String newVolume = str.substring(ApplicationCsts.MUSIC_PREFIX_VOLUME.length());
             executeCommand("mpc volume " + newVolume, null);
             sendString(createMessage(ApplicationCsts.MUSIC_PREFIX_EXTRA, executeCommand("/bin/bash -c", "mpc | tail -n1")));
@@ -234,6 +293,15 @@ public class MusicApplication extends AbstractApplication {
      */
     @NotNull
     private String executeCommand(@NotNull String strCommand, String strParams) {
+        if (getApplicationState() != null && getApplicationState().equals(MusicApplicationState.MUSIC_INVALID) && onStartBroken) {
+            return NOEXEC;
+        }
+
+        if (!bash.exists() || !tail.exists() || !mpd.exists() || !mpc.exists()) {
+            changeApplicationState(MusicApplicationState.MUSIC_INVALID);
+            return SERVER_BROKEN;
+        }
+
         ProcessBuilder processBuilder = new ProcessBuilder(buildCommand(strCommand, strParams));
         processBuilder.redirectErrorStream(true);
 

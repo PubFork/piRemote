@@ -58,7 +58,8 @@ public class ApplicationCsts implements Serializable {
     public enum MusicApplicationState implements ApplicationState {
         MUSIC_STOPPED,
         MUSIC_PLAYING,
-        MUSIC_PAUSED
+        MUSIC_PAUSED,
+        MUSIC_INVALID
     }
     public static final int MUSIC_PLAY = 0;
     public static final int MUSIC_PAUSE = 1;
