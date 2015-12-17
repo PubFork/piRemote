@@ -1,5 +1,7 @@
 package application;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +37,17 @@ public class ProcessExitDetector extends Thread {
 
     public void run() {
         try {
+            // drain input stream (from https://www.securecoding.cert.org/confluence/display/java/FIO07-J.+Do+not+let+external+processes+block+on+IO+buffers)
+            InputStream is = process.getInputStream();
+            int c;
+            try {
+                while ((c = is.read()) != -1) {
+                    System.out.print((char) c); // Uncomment to get the player's output
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             // wait for the process to finish
             process.waitFor();
             // invokes the listeners

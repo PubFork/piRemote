@@ -201,7 +201,7 @@ public class VideoApplication extends AbstractApplication implements ProcessList
             executableFile = new File("/usr/bin/mplayer");
             if(executableFile.exists()) {
                 useOmxPlayer = false;
-                processBuilder = new ProcessBuilder("/usr/bin/mplayer", "-really-quiet", "-fs", path);
+                processBuilder = new ProcessBuilder("/usr/bin/mplayer", "-fs", path);
             }else{
                 process = null;
                 return; // Process failed to load -> ApplicationState will change back to stopped at (*1) or (*2)
