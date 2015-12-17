@@ -63,6 +63,10 @@ public class VideoApplication extends AbstractApplication implements ProcessList
     @Override
     public void onApplicationStop() {
         System.out.println("VideoApplication: Will now stop.");
+        if(processExitDetector != null) {
+            processExitDetector.removeProcessListener(this);
+            processExitDetector = null;
+        }
         requestProcessStop();
     }
 
