@@ -11,7 +11,7 @@ import java.io.*;
 import java.util.UUID;
 
 /**
- *
+ * This is the music player of the server, using mpd and mpc plus some bash.
  */
 public class MusicApplication extends AbstractApplication {
 
