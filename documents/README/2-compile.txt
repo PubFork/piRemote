@@ -1,0 +1,15 @@
+COMPILING PIREMOTE:
+
+PiRemote consists of 3 parts: shared, server and client. We use IntelliJ Idea for shared and server and Android Studio for client.
+-> Setting up the Intellij Idea projects: After import, go to File -> Project Structure. We use Project SDK 1.8 and language level 7.
+-> Setting up the Android Studio project: After import, go to File -> Project Structure and verify that Sdk Version is API 18 or higher. Source and Target Compatibility should be at least 1.7.
+
+Once you have all three projects set up, your're ready to compile:
+-> First, compile piRemoteShared. Build the piRemoteShared.jar artifact. In IntelliJ:
+	--> Setup your Intellij project (do this once): File -> Project Structure -> Artifacts -> '+' -> JAR -> From modules with dependencies... -> OK -> Apply -> OK
+	--> Everytime an update is required: Build -> Build Artifacts... -> Build
+	--> The .jar can be found in "./out/artifacts/piRemoteShared_jar/piRemoteShared.jar"
+-> This file needs to be included then in the two projects:
+	--> IntelliJ (server): File -> Project Structure -> Libraries -> '+' -> Java -> Select JAR -> OK -> Apply -> OK
+	--> Android Studio (client): Create directory "libs" in "app" (./app/libs/), copy JAR there (it should be autodetected).
+-> You may now run the server on your PC or build the piRemoteServer.jar artifact as in the first step. On the raspberry, you may run the jar file using: javar -jar piRemoteServer.jar
