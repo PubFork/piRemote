@@ -1,5 +1,6 @@
 package ch.ethz.inf.vs.piremote.core;
 
+import android.app.ActionBar;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
@@ -31,8 +32,8 @@ public class AppChooserActivity extends AbstractClientActivity {
         Log.d(DEBUG_TAG, "ONCREATE: Starting up.");
 
         setContentView(R.layout.activity_application_chooser);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar)
+        //setSupportActionBar(toolbar);
 
         // Get an array of all the available applications (given by the ServerState enumeration) and store their names.
         final String[] applicationNames = new String[serverStates.length-2];

@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 import java.net.InetAddress;
 
@@ -41,14 +42,14 @@ public class MainActivity extends AbstractClientActivity {
         Log.d(DEBUG_TAG, "ONCREATE: Starting up.");
 
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        //setSupportActionBar(toolbar);
 
         // Keep track of the settings form.
         mAddressView = (EditText) findViewById(R.id.server_address);
         mPortView = (EditText) findViewById(R.id.server_port);
 
-        Button mConnectButton = (Button) findViewById(R.id.button_connect);
+        ImageButton mConnectButton = (ImageButton) findViewById(R.id.imageButton_connect);
         mConnectButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(@NonNull View v) {

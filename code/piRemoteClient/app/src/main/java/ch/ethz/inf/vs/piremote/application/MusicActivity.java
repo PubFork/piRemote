@@ -22,8 +22,8 @@ public class MusicActivity extends AbstractClientActivity {
     private TextView mTextViewPlaylist;
 
     private Button mPickButton;
-    private Button mButtonShowPlaylist;
 
+    private ImageButton mImageButtonShowPlaylist;
     private ImageButton mImageButtonPlayPause;
     private ImageButton mImageButtonStop;
     private ImageButton mImageButtonNextSong;
@@ -157,18 +157,18 @@ public class MusicActivity extends AbstractClientActivity {
             // Set the state of the loop button
             if (playbackSettings.substring(loopStart, loopEnd).contains("on") &&
                     playbackSettings.substring(singleStart, singleEnd).contains("off")) {
-                changeButtonFunction(mImageButtonLoopToggle, R.drawable.ic_repeat_black_48dp, ApplicationCsts.MUSIC_SINGLE);
+                changeButtonFunction(mImageButtonLoopToggle, R.drawable.ic_repeat_white_48dp, ApplicationCsts.MUSIC_SINGLE);
             } else if (playbackSettings.substring(singleStart, singleEnd).contains("on")) {
-                changeButtonFunction(mImageButtonLoopToggle, R.drawable.ic_repeat_one_black_48dp, ApplicationCsts.MUSIC_NOLOOPING);
+                changeButtonFunction(mImageButtonLoopToggle, R.drawable.ic_repeat_one_white_48dp, ApplicationCsts.MUSIC_NOLOOPING);
             } else {
-                changeButtonFunction(mImageButtonLoopToggle, R.drawable.ic_not_interested_black_48dp, ApplicationCsts.MUSIC_LOOP);
+                changeButtonFunction(mImageButtonLoopToggle, R.drawable.ic_not_interested_white_48dp, ApplicationCsts.MUSIC_LOOP);
             }
 
             // Set the state of the shuffle switch
             if (playbackSettings.substring(shuffleStart, shuffleEnd).contains("on")) {
-                changeButtonFunction(mImageButtonShuffle, R.drawable.ic_shuffle_black_48dp, ApplicationCsts.MUSIC_SHUFFLE_OFF);
+                changeButtonFunction(mImageButtonShuffle, R.drawable.ic_shuffle_white_48dp, ApplicationCsts.MUSIC_SHUFFLE_OFF);
             } else {
-                changeButtonFunction(mImageButtonShuffle, R.drawable.ic_not_interested_black_48dp, ApplicationCsts.MUSIC_SHUFFLE_ON);
+                changeButtonFunction(mImageButtonShuffle, R.drawable.ic_not_interested_white_48dp, ApplicationCsts.MUSIC_SHUFFLE_ON);
             }
         } else if (str.startsWith(ApplicationCsts.MUSIC_PREFIX_PLAYLIST)) {
             // Fill the scrollable playlist window with the current playlist
@@ -211,12 +211,12 @@ public class MusicActivity extends AbstractClientActivity {
         if (newMusicState != null) {
             if (newMusicState == MusicApplicationState.MUSIC_PAUSED) {
                 mTextViewCurrentSong.setText("Playback paused");
-                changeButtonFunction(mImageButtonPlayPause, R.drawable.ic_play_arrow_black_48dp, ApplicationCsts.MUSIC_PLAY);
+                changeButtonFunction(mImageButtonPlayPause, R.drawable.ic_play_arrow_white_48dp, ApplicationCsts.MUSIC_PLAY);
             } else if (newMusicState == MusicApplicationState.MUSIC_STOPPED) {
                 mTextViewCurrentSong.setText("Playback stopped");
-                changeButtonFunction(mImageButtonPlayPause, R.drawable.ic_play_arrow_black_48dp, ApplicationCsts.MUSIC_PLAY);
+                changeButtonFunction(mImageButtonPlayPause, R.drawable.ic_play_arrow_white_48dp, ApplicationCsts.MUSIC_PLAY);
             } else {
-                changeButtonFunction(mImageButtonPlayPause, R.drawable.ic_pause_black_48dp, ApplicationCsts.MUSIC_PAUSE);
+                changeButtonFunction(mImageButtonPlayPause, R.drawable.ic_pause_white_48dp, ApplicationCsts.MUSIC_PAUSE);
             }
         }
     }
@@ -238,8 +238,8 @@ public class MusicActivity extends AbstractClientActivity {
      */
     private void registerButtons() {
         mPickButton = (Button) findViewById(R.id.button_musicFilePicker);
-        mButtonShowPlaylist = (Button) findViewById(R.id.button_musicShowPlaylist);
 
+        mImageButtonShowPlaylist = (ImageButton) findViewById(R.id.imageButton_musicShowPlaylist);
         mImageButtonPlayPause = (ImageButton) findViewById(R.id.imageButton_musicPlayPause);
         mImageButtonStop = (ImageButton) findViewById(R.id.imageButton_musicStop);
         mImageButtonNextSong = (ImageButton) findViewById(R.id.imageButton_musicNextSong);
@@ -258,7 +258,7 @@ public class MusicActivity extends AbstractClientActivity {
             }
         });
 
-        mButtonShowPlaylist.setOnClickListener(new View.OnClickListener() {
+        mImageButtonShowPlaylist.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(@NonNull View v) {
                 Log.d(DEBUG_TAG, "Clicked button: " + v.toString());

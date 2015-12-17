@@ -1,5 +1,12 @@
 <resources>
     <string name="app_name">PiRemote</string>
+    <string name="app_selector">Select Application</string>
+    <string name="app_trafficLight">Traffic Light</string>
+    <string name="app_video">Video Remote</string>
+    <string name="app_music">Music Remote</string>
+    <string name="app_radio">Radio Remote</string>
+    <string name="app_image">Image Remote</string>
+
 
     <string name="menu_item_switch_app">Change Application</string>
     <string name="menu_item_disconnect">Disconnect</string>

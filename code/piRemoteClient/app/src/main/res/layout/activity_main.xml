@@ -19,13 +19,6 @@
             android:layout_height="wrap_content"
             android:theme="@style/AppTheme.AppBarOverlay">
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="?attr/colorPrimary"
-                app:popupTheme="@style/AppTheme.PopupOverlay" />
-
         </android.support.design.widget.AppBarLayout>
 
         <ProgressBar
@@ -102,12 +95,13 @@
 
             </android.support.design.widget.TextInputLayout>
 
-            <Button
-                android:id="@+id/button_connect"
+            <ImageButton
+                android:id="@+id/imageButton_connect"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:text="@string/button_connect" />
+                android:src="@drawable/ic_compare_arrows_white_48dp"
+                android:layout_below="@+id/text_server_port"
+                style="?android:attr/borderlessButtonStyle" />
 
         </RelativeLayout>
 

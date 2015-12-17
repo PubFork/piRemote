@@ -36,8 +36,8 @@ public class RadioPiActivity extends AbstractClientActivity {
         Log.d(DEBUG_TAG, "ONCREATE: Starting up.");
 
         setContentView(R.layout.activity_radiopi);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        //setSupportActionBar(toolbar);
 
         Button mPickButton = (Button) findViewById(R.id.button_pick);
         mPickButton.setOnClickListener(new View.OnClickListener() {

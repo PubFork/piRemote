@@ -10,16 +10,15 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/Theme.AppCompat">
         <activity
             android:name=".core.MainActivity"
             android:screenOrientation="portrait"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/Theme.AppCompat">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -27,55 +26,43 @@
             android:name=".core.AppChooserActivity"
             android:screenOrientation="portrait"
             android:configChanges="orientation|keyboardHidden"
-            android:label="@string/app_name"
-            android:parentActivityName=".core.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".core.MainActivity" />
+            android:label="@string/app_selector"
+            android:theme="@style/Theme.AppCompat">
         </activity>
         <activity
             android:name=".application.TrafficLightActivity"
             android:screenOrientation="portrait"
             android:configChanges="orientation|keyboardHidden"
-            android:label="@string/app_name"
-            android:parentActivityName=".core.AppChooserActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".core.AppChooserActivity" />
+            android:label="@string/app_trafficLight"
+            android:theme="@style/Theme.AppCompat">
         </activity>
         <activity
             android:name=".application.VideoActivity"
             android:screenOrientation="portrait"
             android:configChanges="orientation|keyboardHidden"
-            android:label="@string/app_name"
-            android:parentActivityName=".core.AppChooserActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="ch.ethz.inf.vs.piremote.core.AppChooserActivity" />
+            android:label="@string/app_video"
+            android:theme="@style/Theme.AppCompat">
         </activity>
         <activity
             android:name=".application.ImageActivity"
             android:screenOrientation="portrait"
-            android:configChanges="orientation|keyboardHidden" >
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/app_image"
+            android:theme="@style/Theme.AppCompat">
         </activity>
         <activity
-                android:name=".application.RadioPiActivity"
-                android:screenOrientation="portrait"
-                android:configChanges="orientation|keyboardHidden"
-                android:label="@string/app_name"
-                android:parentActivityName=".core.AppChooserActivity"
-                android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                    android:name="android.support.PARENT_ACTIVITY"
-                    android:value=".core.AppChooserActivity" />
+            android:name=".application.RadioPiActivity"
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/app_radio"
+            android:theme="@style/Theme.AppCompat">
         </activity>
         <activity
             android:name=".application.MusicActivity"
             android:screenOrientation="portrait"
-            android:configChanges="orientation|keyboardHidden">
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/app_music"
+            android:theme="@style/Theme.AppCompat">
         </activity>
     </application>
 
