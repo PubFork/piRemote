@@ -1,11 +1,7 @@
 package core;
 
-import application.ImageApplication;
-import application.MusicApplication;
-import application.RadioPi;
-import application.TrafficLight;
+import application.*;
 import SharedConstants.CoreCsts;
-import application.VideoApplication;
 
 /**
  * Created by sandro on 11.11.15.
@@ -18,6 +14,7 @@ public class ApplicationFactory {
         if(applicationToStart.equals(CoreCsts.ServerState.IMAGE)) return new ImageApplication();
         if(applicationToStart.equals(CoreCsts.ServerState.MUSIC)) return new MusicApplication();
         if(applicationToStart.equals(CoreCsts.ServerState.RADIO_PI)) return new RadioPi();
+        if(applicationToStart.equals(CoreCsts.ServerState.SHUTDOWN)) return new ShutdownApplication();
         return null;
     }
 }

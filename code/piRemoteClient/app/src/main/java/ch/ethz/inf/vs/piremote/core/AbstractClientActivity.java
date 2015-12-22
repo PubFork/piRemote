@@ -21,6 +21,7 @@ import MessageObject.PayloadObject.IntMessage;
 import MessageObject.PayloadObject.Payload;
 import MessageObject.PayloadObject.ServerStateChange;
 import MessageObject.PayloadObject.StringMessage;
+import SharedConstants.ApplicationCsts;
 import SharedConstants.ApplicationCsts.ApplicationState;
 import SharedConstants.ApplicationCsts.ImageApplicationState;
 import SharedConstants.ApplicationCsts.MusicApplicationState;
@@ -33,6 +34,7 @@ import ch.ethz.inf.vs.piremote.R;
 import ch.ethz.inf.vs.piremote.application.ImageActivity;
 import ch.ethz.inf.vs.piremote.application.MusicActivity;
 import ch.ethz.inf.vs.piremote.application.RadioPiActivity;
+import ch.ethz.inf.vs.piremote.application.ShutdownActivity;
 import ch.ethz.inf.vs.piremote.application.TrafficLightActivity;
 import ch.ethz.inf.vs.piremote.application.VideoActivity;
 
@@ -218,6 +220,9 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
             case IMAGE:
                 newApplication = ImageActivity.class;
                 break;
+            case SHUTDOWN:
+                newApplication = ShutdownActivity.class;
+                break;
             case NONE:
                 newApplication = AppChooserActivity.class; // No application is running: The client may choose an application to run.
                 break;
@@ -244,6 +249,9 @@ public abstract class AbstractClientActivity extends AppCompatActivity {
                 break;
             case IMAGE:
                 applicationStartIntent.putExtra(AppConstants.EXTRA_STATE, (ImageApplicationState) state.getApplicationState());
+                break;
+            case SHUTDOWN:
+                applicationStartIntent.putExtra(AppConstants.EXTRA_STATE, (ApplicationCsts.ShutdownApplicationState) state.getApplicationState());
                 break;
             default:
                 break;

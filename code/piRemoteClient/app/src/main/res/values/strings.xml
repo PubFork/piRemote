@@ -16,4 +16,5 @@
 
     <string name="prev">Prev</string>
     <string name="Next">Next</string>
+    <string name="title_activity_shutdown">ShutdownActivity</string>
 </resources>

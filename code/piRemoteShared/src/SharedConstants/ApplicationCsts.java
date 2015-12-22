@@ -118,4 +118,10 @@ public class ApplicationCsts implements Serializable {
     public static final int IMAGE_HIDE = 2;
     public static final int IMAGE_PREV = 3;
     public static final int IMAGE_NEXT = 4;
+
+    // ShutdownApplication
+    public enum ShutdownApplicationState implements ApplicationState{
+        SHUTDOWN_APPLICATION_STATE;
+    }
+    public static final int SHUTODNW_BUTTON_PRESSED = 0;
 }

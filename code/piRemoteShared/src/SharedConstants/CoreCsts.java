@@ -15,6 +15,7 @@ public class CoreCsts implements Serializable {
         MUSIC("Play Music"),
         RADIO_PI("RadioPi"),
         IMAGE("Show Images"),
+        SHUTDOWN("Shut Down"),
         NONE("Application Chooser"),
         SERVER_DOWN("Connect Screen"); // Message put into Client MainQueue by Client Dispatcher when the server times out
 
