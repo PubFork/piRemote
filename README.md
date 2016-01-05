@@ -58,6 +58,7 @@ In order to get the VideoApplication running, you have to do the following steps
 
 #### VideoApplication Appendix A: ~/.omxplayer
 In order to get this running with omxplayer, you MUST create a file ~/.omxplayer with the following content (note that PAUSE: has a space behind it):
+
      DECREASE_SPEED:1
      INCREASE_SPEED:2
      REWIND:<
