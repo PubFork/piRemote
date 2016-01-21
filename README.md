@@ -13,6 +13,8 @@ We provide a few sample applications to illustrate the purpose and the functiona
 
 In the following sections we will explain how to get PiRemote running and how to write your own PiRemote applications.
 
+**Note:** Upon start, the PiRemote server creates the hidden file .piremote-port which contains the port on which PiRemote is listening. This can be used with external display software such as Conky.
+
 ## 2 Compiling PiRemote
 PiRemote consists of 3 parts: shared, server and client. We use IntelliJ Idea for shared and server and Android Studio for client.
 - Setting up the IntelliJ Idea projects: After import, go to File -> Project Structure. We use Project SDK 1.8 and language level 7.
