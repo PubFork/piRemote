@@ -1,5 +1,9 @@
 # PiRemote
 
+## Abandoned!
+
+This project was developed as part of my studies and is now abandoned. Feel free to fork!
+
 ## 1 Introduction
 
 PiRemote is a simple API for building remote control-like applications, allowing one or multiple Android devices to control a server running on a Raspberry Pi or a PC. It was designed to serve simple purposes that one would expect from ordinary remote controls. PiRemote is not suitable for tasks such as streaming data across devices, transferring large files or running tasks with high load or runtime.
